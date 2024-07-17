@@ -22,7 +22,7 @@ const PopularArtists = () => {
             className="h-16 w-16 rounded-full object-cover"
           />
           <div className="text-center">
-            <h3 className="text-sm font-medium">Vincent Van Gogh</h3>
+            <h3 className="text-sm font-medium">Shimreingam</h3>
             <p className="text-xs text-muted-foreground">10,000 songs</p>
           </div>
         </Link>
@@ -39,7 +39,7 @@ const PopularArtists = () => {
             className="h-16 w-16 rounded-full object-cover"
           />
           <div className="text-center">
-            <h3 className="text-sm font-medium">Leonard Cohen</h3>
+            <h3 className="text-sm font-medium">Yung yung</h3>
             <p className="text-xs text-muted-foreground">8,000 songs</p>
           </div>
         </Link>
@@ -56,7 +56,7 @@ const PopularArtists = () => {
             className="h-16 w-16 rounded-full object-cover"
           />
           <div className="text-center">
-            <h3 className="text-sm font-medium">Billie Holiday</h3>
+            <h3 className="text-sm font-medium">Thangmeiso</h3>
             <p className="text-xs text-muted-foreground">7,500 songs</p>
           </div>
         </Link>
@@ -73,8 +73,178 @@ const PopularArtists = () => {
             className="h-16 w-16 rounded-full object-cover"
           />
           <div className="text-center">
-            <h3 className="text-sm font-medium">Bob Dylan</h3>
+            <h3 className="text-sm font-medium">Oshim Soho</h3>
             <p className="text-xs text-muted-foreground">9,000 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Nimshimphi</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Ningshang</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Kakami</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Ramchanthing</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Shimshang</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Reitim</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Joni Mitchell</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Joni Mitchell</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Joni Mitchell</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
+          </div>
+        </Link>
+        <Link
+          href="#"
+          className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+          prefetch={false}
+        >
+          <img
+            src="/placeholder.svg"
+            width={64}
+            height={64}
+            alt="Joni Mitchell"
+            className="h-16 w-16 rounded-full object-cover"
+          />
+          <div className="text-center">
+            <h3 className="text-sm font-medium">Joni Mitchell</h3>
+            <p className="text-xs text-muted-foreground">6,800 songs</p>
           </div>
         </Link>
         <Link

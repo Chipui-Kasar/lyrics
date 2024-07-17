@@ -14,25 +14,28 @@ const FeaturedLyrics = () => {
         <div className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted">
           <div className="flex-1">
             <h3 className="font-medium">
-              <Link href="/Vincent/details/Starry-Night" prefetch={false}>
-                Starry Night
+              <Link
+                href="/artists/Vincent/details/Starry-Night"
+                prefetch={false}
+              >
+                Manarim
               </Link>
             </h3>
             <p className="text-sm text-muted-foreground">
               by{" "}
               <Link
-                href="/Vincent"
+                href="/artists/Vincent"
                 className="font-medium hover:underline"
                 prefetch={false}
               >
-                Vincent Van Gogh
+                Achui Soro
               </Link>
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100"
+            className="group-hover:opacity-100"
           >
             <ArrowRightIcon className="h-5 w-5" />
           </Button>
@@ -41,7 +44,7 @@ const FeaturedLyrics = () => {
           <div className="flex-1">
             <h3 className="font-medium">
               <Link href="#" prefetch={false}>
-                Hallelujah
+                Ishava Chida Horanu
               </Link>
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -51,14 +54,14 @@ const FeaturedLyrics = () => {
                 className="font-medium hover:underline"
                 prefetch={false}
               >
-                Leonard Cohen
+                Oshim
               </Link>
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100"
+            className="group-hover:opacity-100"
           >
             <ArrowRightIcon className="h-5 w-5" />
           </Button>

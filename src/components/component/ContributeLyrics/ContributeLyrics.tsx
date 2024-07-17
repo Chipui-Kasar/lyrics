@@ -8,7 +8,7 @@ const ContributeLyrics = () => {
   return (
     <section className="container py-4 sm:py-8 md:py-10 m-auto">
       <div className="rounded-lg bg-muted p-6 shadow-lg">
-        <h2 className="text-2xl font-bold">Contribute Lyrics</h2>
+        <h2 className="text-2xl font-bold">Share Lyrics</h2>
         <p className="mt-2 text-muted-foreground">
           Share your favorite song lyrics with the community.
         </p>

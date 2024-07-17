@@ -15,7 +15,7 @@ const TopLyrics = () => {
           <div className="flex-1">
             <h3 className="font-medium">
               <Link href="#" prefetch={false}>
-                Starry Night
+                Leishat won yamkui
               </Link>
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -25,14 +25,14 @@ const TopLyrics = () => {
                 className="font-medium hover:underline"
                 prefetch={false}
               >
-                Vincent Van Gogh
+                PC Makang
               </Link>
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100"
+            className="group-hover:opacity-100"
           >
             <ArrowRightIcon className="h-5 w-5" />
           </Button>
@@ -41,7 +41,7 @@ const TopLyrics = () => {
           <div className="flex-1">
             <h3 className="font-medium">
               <Link href="#" prefetch={false}>
-                Hallelujah
+                Huinahao
               </Link>
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -51,14 +51,14 @@ const TopLyrics = () => {
                 className="font-medium hover:underline"
                 prefetch={false}
               >
-                Leonard Cohen
+                Thangmeiso Shinglai
               </Link>
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100"
+            className="group-hover:opacity-100"
           >
             <ArrowRightIcon className="h-5 w-5" />
           </Button>
@@ -67,7 +67,7 @@ const TopLyrics = () => {
           <div className="flex-1">
             <h3 className="font-medium">
               <Link href="#" prefetch={false}>
-                Strange Fruit
+                Kongyaonao
               </Link>
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -77,14 +77,14 @@ const TopLyrics = () => {
                 className="font-medium hover:underline"
                 prefetch={false}
               >
-                Billie Holiday
+                Litsuku Lohe
               </Link>
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100"
+            className="group-hover:opacity-100"
           >
             <ArrowRightIcon className="h-5 w-5" />
           </Button>

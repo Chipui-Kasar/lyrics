@@ -35,7 +35,9 @@ export default function SongDetails({
                 <ShareIcon className="mr-2 h-4 w-4" />
                 Share
               </Button>
-              <Link href={`/${params.artists}/lyrics/${params.songTitle}`}>
+              <Link
+                href={`/artists/${params.artists}/lyrics/${params.songTitle}`}
+              >
                 <Button>View Lyrics</Button>
               </Link>
             </div>

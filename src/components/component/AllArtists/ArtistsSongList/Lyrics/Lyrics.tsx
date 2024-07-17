@@ -12,7 +12,7 @@ const Lyrics = ({
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-start gap-4">
             <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm font-medium">
-              Song
+              Lyrics
             </div>
             <h1 className="text-3xl font-bold">{params.songTitle}</h1>
             <div className="text-muted-foreground">{params.artists}</div>
