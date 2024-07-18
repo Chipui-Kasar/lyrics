@@ -6,6 +6,10 @@ const Lyrics = ({
 }: {
   params: { artists: string; songTitle: string };
 }) => {
+  const escapeApostrophe = (text: string) => {
+    return text.replace(/'/g, "&apos;");
+  };
+
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background">
       <main className="container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
@@ -14,8 +18,12 @@ const Lyrics = ({
             <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm font-medium">
               Lyrics
             </div>
-            <h1 className="text-3xl font-bold">{params.songTitle}</h1>
-            <div className="text-muted-foreground">{params.artists}</div>
+            <h1 className="text-3xl font-bold">
+              {escapeApostrophe(params.songTitle)}
+            </h1>
+            <div className="text-muted-foreground">
+              {escapeApostrophe(params.artists)}
+            </div>
           </div>
           <div className="flex w-full items-start gap-6">
             <img
@@ -29,19 +37,19 @@ const Lyrics = ({
               <p>
                 Is this the real life? Is this just fantasy? Caught in the
                 landslide, no escape from reality. Open your eyes, look up to
-                the skies and see, I'm just a poor boy, I need no sympathy.
+                the skies and see, I&apos;m just a poor boy, I need no sympathy.
               </p>
               <p>
-                Because I'm easy come, easy go, a little high, little low.
+                Because I&apos;m easy come, easy go, a little high, little low.
                 Anyway the wind blows, nothing really matters to me.
               </p>
               <p>
                 Mama, just killed a man, put a gun against his head, pulled my
-                trigger, now he's dead.
+                trigger, now he&apos;s dead.
               </p>
               <p>
-                Mama, life had just begun, but now I've gone and thrown it all
-                away.
+                Mama, life had just begun, but now I&apos;ve gone and thrown it
+                all away.
               </p>
             </div>
           </div>
