@@ -17,7 +17,7 @@ const Navigation = () => {
   };
   return (
     <header className="border-b bg-background">
-      <div className="container m-auto flex flex-col w-full py-4 gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
+      <div className="m-auto flex flex-col w-full p-4 gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         <div className="flex items-center gap-4">
           <Link
             href="/"
@@ -43,7 +43,7 @@ const Navigation = () => {
         <div className="flex items-center gap-4">
           <Link
             href="/allartists"
-            className="h-9 rounded-full p-2 transition-colors md:inline-block border text-primary-foreground bg-primary rounded-md text-sm text-center"
+            className="h-9 flex-1 rounded-full p-2 transition-colors md:inline-block text-primary-foreground bg-primary rounded-md text-sm text-center"
             prefetch={false}
           >
             Browse Artists

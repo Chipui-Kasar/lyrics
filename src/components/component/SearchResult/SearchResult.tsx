@@ -14,12 +14,12 @@ import React from "react";
 const SearchResult = ({ params }: { params: string }) => {
   return (
     <div className="container mx-auto py-12">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between mb-8 px-4">
         <h1 className="text-3xl font-bold">{params}</h1>
         <p className="text-muted-foreground">Showing 1-10 of 32 results</p>
       </div>
       <div className="grid gap-8">
-        <div className="grid gap-4">
+        <div className="grid gap-4 px-4">
           <Link href="#" className="group" prefetch={false}>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors">
               <div className="flex-1">
