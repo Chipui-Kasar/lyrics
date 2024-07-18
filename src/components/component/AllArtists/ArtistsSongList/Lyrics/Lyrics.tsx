@@ -26,23 +26,31 @@ const Lyrics = ({
               className="aspect-square overflow-hidden rounded-lg object-cover"
             />
             <div className="prose text-muted-foreground">
-              <p>
-                Is this the real life? Is this just fantasy? Caught in the
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: ` Is this the real life? Is this just fantasy? Caught in the
                 landslide, no escape from reality. Open your eyes, look up to
-                the skies and see, I'm just a poor boy, I need no sympathy.
-              </p>
-              <p>
-                Because I'm easy come, easy go, a little high, little low.
-                Anyway the wind blows, nothing really matters to me.
-              </p>
-              <p>
-                Mama, just killed a man, put a gun against his head, pulled my
-                trigger, now he's dead.
-              </p>
-              <p>
-                Mama, life had just begun, but now I've gone and thrown it all
-                away.
-              </p>
+                the skies and see, I'm just a poor boy, I need no sympathy.`,
+                }}
+              ></p>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: ` Because I'm easy come, easy go, a little high, little low.
+                Anyway the wind blows, nothing really matters to me.`,
+                }}
+              ></p>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: `  Mama, just killed a man, put a gun against his head, pulled my
+                trigger, now he's dead.`,
+                }}
+              ></p>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: `Mama, life had just begun, but now I've gone and thrown it all
+                away.`,
+                }}
+              ></p>
             </div>
           </div>
         </div>

@@ -56,12 +56,15 @@ export default function SongDetails({
             </div>
             <div>
               <h2 className="mb-2 text-lg font-medium">About</h2>
-              <p className="text-sm text-muted-foreground">
-                "Stairway to Heaven" is a song by the English rock band Led
+              <p
+                className="text-sm text-muted-foreground"
+                dangerouslySetInnerHTML={{
+                  __html: ` "Stairway to Heaven" is a song by the English rock band Led
                 Zeppelin, released in 1971. It is widely regarded as one of the
                 greatest rock songs of all time, known for its complex structure
-                and Robert Plant's poetic lyrics.
-              </p>
+                and Robert Plant's poetic lyrics.`,
+                }}
+              ></p>
             </div>
           </div>
         </div>
