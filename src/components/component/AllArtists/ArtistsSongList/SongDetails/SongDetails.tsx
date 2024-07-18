@@ -25,9 +25,11 @@ export default function SongDetails({
             />
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">{params.songTitle}</h1>
-              <p className="text-muted-foreground">{params.artists}</p>
               <p className="text-muted-foreground">
-                {params.artists} IV (1971)
+                {params.artists.replace(/'/g, "&apos;")}
+              </p>
+              <p className="text-muted-foreground">
+                {params.artists.replace(/'/g, "&#39;")} IV (1971)
               </p>
             </div>
             <div className="mt-6 flex gap-4">
@@ -36,7 +38,10 @@ export default function SongDetails({
                 Share
               </Button>
               <Link
-                href={`/artists/${params.artists}/lyrics/${params.songTitle}`}
+                href={`/artists/${params.artists.replace(
+                  /'/g,
+                  "&apos;"
+                )}/lyrics/${params.songTitle.replace(/'/g, "&apos;")}`}
               >
                 <Button>View Lyrics</Button>
               </Link>
@@ -56,15 +61,12 @@ export default function SongDetails({
             </div>
             <div>
               <h2 className="mb-2 text-lg font-medium">About</h2>
-              <p
-                className="text-sm text-muted-foreground"
-                dangerouslySetInnerHTML={{
-                  __html: ` "Stairway to Heaven" is a song by the English rock band Led
-                Zeppelin, released in 1971. It is widely regarded as one of the
-                greatest rock songs of all time, known for its complex structure
-                and Robert Plant's poetic lyrics.`,
-                }}
-              ></p>
+              <p className="text-sm text-muted-foreground">
+                &quot;Stairway to Heaven&quot; is a song by the English rock
+                band Led Zeppelin, released in 1971. It is widely regarded as
+                one of the greatest rock songs of all time, known for its
+                complex structure and Robert Plant&apos;s poetic lyrics.
+              </p>
             </div>
           </div>
         </div>
