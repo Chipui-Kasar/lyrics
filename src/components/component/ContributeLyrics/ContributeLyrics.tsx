@@ -6,8 +6,8 @@ import React from "react";
 
 const ContributeLyrics = () => {
   return (
-    <section className="container py-4 sm:py-8 md:py-10 m-auto">
-      <div className="rounded-lg bg-muted p-6 shadow-lg">
+    <section className="container py-4 sm:py-8 md:py-10 m-auto ">
+      <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <h2 className="text-2xl font-bold">Share Lyrics</h2>
         <p className="mt-2 text-muted-foreground">
           Share your favorite song lyrics with the community.

@@ -5,7 +5,7 @@ import { ArrowRightIcon } from "lucide-react";
 
 const TopLyrics = () => {
   return (
-    <div className="col-span-2 md:col-span-2 lg:col-span-1  rounded-lg bg-muted p-6 shadow-lg">
+    <div className="col-span-2 md:col-span-2 lg:col-span-1  rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
       <h2 className="text-2xl font-bold">Top Lyrics</h2>
       <p className="mt-2 text-muted-foreground">
         Check out the most popular lyrics on our platform.

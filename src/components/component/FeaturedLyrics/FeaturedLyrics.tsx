@@ -5,7 +5,7 @@ import { ArrowRightIcon } from "lucide-react";
 
 const FeaturedLyrics = () => {
   return (
-    <div className="rounded-lg bg-muted p-6 shadow-lg">
+    <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
       <h2 className="text-2xl font-bold">Featured Lyrics</h2>
       <p className="mt-2 text-muted-foreground">
         Check out the latest featured song lyrics.

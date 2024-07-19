@@ -33,7 +33,7 @@ const Navigation = () => {
             <Input
               type="search"
               placeholder="Search for lyrics..."
-              className="w-full rounded-full bg-muted pl-8 pr-4 focus:bg-background"
+              className="w-full rounded-full bg-muted pl-8 pr-4 focus:bg-background bg-gradient-to-r from-[#79095c33] to-[#001fff29]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -43,7 +43,7 @@ const Navigation = () => {
         <div className="flex items-center gap-4">
           <Link
             href="/allartists"
-            className="h-9 flex-1 rounded-full p-2 transition-colors md:inline-block text-primary-foreground bg-primary rounded-md text-sm text-center"
+            className="h-9 flex-1 flex-shrink flex-grow basis-auto rounded-full px-4 py-2 transition-colors md:inline-block text-primary-foreground bg-primary rounded-md text-sm text-center"
             prefetch={false}
           >
             Browse Artists
@@ -51,7 +51,7 @@ const Navigation = () => {
 
           <Link
             href="/contribute"
-            className="inline-flex flex-1 h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex flex-1 flex-shrink flex-grow basis-auto h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
             prefetch={false}
           >
             Share Lyrics

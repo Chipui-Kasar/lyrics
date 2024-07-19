@@ -21,7 +21,7 @@ const SearchResult = ({ params }: { params: string }) => {
       <div className="grid gap-8">
         <div className="grid gap-4 px-4">
           <Link href="#" className="group" prefetch={false}>
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
                   &#39;Imagine&#39; by John Lennon
@@ -34,7 +34,7 @@ const SearchResult = ({ params }: { params: string }) => {
             </div>
           </Link>
           <Link href="#" className="group" prefetch={false}>
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
                   &#39;Bohemian Rhapsody&#39; by Queen
@@ -47,7 +47,7 @@ const SearchResult = ({ params }: { params: string }) => {
             </div>
           </Link>
           <Link href="#" className="group" prefetch={false}>
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
                   &apos;Hallelujah&apos; by Leonard Cohen
@@ -61,7 +61,7 @@ const SearchResult = ({ params }: { params: string }) => {
             </div>
           </Link>
           <Link href="#" className="group" prefetch={false}>
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
                   &#39;Smells Like Teen Spirit&#39; by Nirvana
@@ -75,7 +75,7 @@ const SearchResult = ({ params }: { params: string }) => {
             </div>
           </Link>
           <Link href="#" className="group" prefetch={false}>
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
                   &#39;Stairway to Heaven&#39; by Led Zeppelin
@@ -89,7 +89,7 @@ const SearchResult = ({ params }: { params: string }) => {
             </div>
           </Link>
           <Link href="#" className="group" prefetch={false}>
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
                   &#39;Wonderwall&#39; by Oasis

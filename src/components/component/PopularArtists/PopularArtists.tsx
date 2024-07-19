@@ -3,7 +3,7 @@ import React from "react";
 
 const PopularArtists = () => {
   return (
-    <div className="rounded-lg bg-muted p-6 shadow-lg">
+    <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
       <h2 className="text-2xl font-bold">Popular Artists</h2>
       <p className="mt-2 text-muted-foreground">
         Explore the most popular artists on our platform.

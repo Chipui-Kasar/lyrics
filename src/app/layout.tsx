@@ -24,7 +24,7 @@ export default function RootLayout({
         <header>
           <Navigation />
         </header>
-        {children}
+        <div className="p-4">{children}</div>
         <footer>
           <Footer />
         </footer>
