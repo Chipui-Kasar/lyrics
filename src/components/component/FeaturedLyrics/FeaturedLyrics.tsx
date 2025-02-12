@@ -16,7 +16,7 @@ const FeaturedLyrics = () => {
             <h3 className="font-medium">
               <Link
                 href="/artists/Vincent/details/Starry-Night"
-                prefetch={false}
+                prefetch={true}
               >
                 Manarim
               </Link>
@@ -26,7 +26,7 @@ const FeaturedLyrics = () => {
               <Link
                 href="/artists/Vincent"
                 className="font-medium hover:underline"
-                prefetch={false}
+                prefetch={true}
               >
                 Achui Soro
               </Link>
@@ -43,16 +43,19 @@ const FeaturedLyrics = () => {
         <div className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted">
           <div className="flex-1">
             <h3 className="font-medium">
-              <Link href="#" prefetch={false}>
+              <Link
+                href="/artists/Vincent/details/Starry-Night"
+                prefetch={true}
+              >
                 Ishava Chida Horanu
               </Link>
             </h3>
             <p className="text-sm text-muted-foreground">
               by{" "}
               <Link
-                href="#"
+                href="/artists/Vincent"
                 className="font-medium hover:underline"
-                prefetch={false}
+                prefetch={true}
               >
                 Oshim
               </Link>

@@ -20,7 +20,7 @@ const SearchResult = ({ params }: { params: string }) => {
       </div>
       <div className="grid gap-8">
         <div className="grid gap-4 px-4">
-          <Link href="#" className="group" prefetch={false}>
+          <Link href="#" className="group" prefetch={true}>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
@@ -33,7 +33,7 @@ const SearchResult = ({ params }: { params: string }) => {
               <ArrowRightIcon className="w-5 h-5 text-muted-foreground" />
             </div>
           </Link>
-          <Link href="#" className="group" prefetch={false}>
+          <Link href="#" className="group" prefetch={true}>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
@@ -46,7 +46,7 @@ const SearchResult = ({ params }: { params: string }) => {
               <ArrowRightIcon className="w-5 h-5 text-muted-foreground" />
             </div>
           </Link>
-          <Link href="#" className="group" prefetch={false}>
+          <Link href="#" className="group" prefetch={true}>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
@@ -60,7 +60,7 @@ const SearchResult = ({ params }: { params: string }) => {
               <ArrowRightIcon className="w-5 h-5 text-muted-foreground" />
             </div>
           </Link>
-          <Link href="#" className="group" prefetch={false}>
+          <Link href="#" className="group" prefetch={true}>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
@@ -74,7 +74,7 @@ const SearchResult = ({ params }: { params: string }) => {
               <ArrowRightIcon className="w-5 h-5 text-muted-foreground" />
             </div>
           </Link>
-          <Link href="#" className="group" prefetch={false}>
+          <Link href="#" className="group" prefetch={true}>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">
@@ -88,7 +88,7 @@ const SearchResult = ({ params }: { params: string }) => {
               <ArrowRightIcon className="w-5 h-5 text-muted-foreground" />
             </div>
           </Link>
-          <Link href="#" className="group" prefetch={false}>
+          <Link href="#" className="group" prefetch={true}>
             <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
               <div className="flex-1">
                 <h2 className="text-lg font-medium group-hover:underline">

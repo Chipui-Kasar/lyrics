@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import Navigation from "@/components/component/Navigation/Navigation";
 import Footer from "@/components/component/Footer/Footer";
 import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
+import PageLoader from "@/components/component/Spinner/Spinner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,10 @@ export default function RootLayout({
         <header>
           <Navigation />
         </header>
-        <div className="p-4">{children}</div>
+        <div className="p-4">
+          <PageLoader />
+          {children}
+        </div>
         <footer>
           <Footer />
         </footer>

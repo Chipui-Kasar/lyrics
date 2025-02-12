@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   Pagination,
@@ -26,9 +27,9 @@ const ArtistsSongLists = ({ params }: { params: { artists: string } }) => {
                 <tr className="border-b hover:bg-muted/20">
                   <td className="py-3 px-4 text-left">
                     <Link
-                      href={`/artists/${params.artists}/lyrics/Song Title 1`}
+                      href={`/artists/${params.artists}/lyrics/Starry-Night`}
                       className="font-medium hover:underline"
-                      prefetch={false}
+                      prefetch={true}
                     >
                       Song Title 1
                     </Link>
@@ -39,7 +40,7 @@ const ArtistsSongLists = ({ params }: { params: { artists: string } }) => {
                     <Link
                       href="#"
                       className="font-medium hover:underline"
-                      prefetch={false}
+                      prefetch={true}
                     >
                       Song Title 2
                     </Link>
@@ -50,7 +51,7 @@ const ArtistsSongLists = ({ params }: { params: { artists: string } }) => {
                     <Link
                       href="#"
                       className="font-medium hover:underline"
-                      prefetch={false}
+                      prefetch={true}
                     >
                       Song Title 3
                     </Link>
