@@ -14,6 +14,7 @@
 */
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 export default function Contact() {
@@ -108,12 +109,12 @@ export default function Contact() {
           </div>
         </div>
         <div className="mt-10">
-          <button
+          <Button
             type="submit"
             className="block w-full rounded-md px-3.5 py-2.5 text-center text-sm text-primary-foreground bg-primary transition"
           >
             Submit
-          </button>
+          </Button>
         </div>
       </form>
     </div>
