@@ -9,19 +9,23 @@ const PageLoader = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Handle clicks on internal links only
+    // Handle clicks on internal links only, except for the current page link
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       const link = target.closest("a");
 
-      if (link && link.getAttribute("href")?.startsWith("/")) {
+      if (
+        link &&
+        link.getAttribute("href")?.startsWith("/") &&
+        link.getAttribute("href") !== pathname
+      ) {
         setLoading(true);
       }
     };
 
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     // Trigger loader on route change
