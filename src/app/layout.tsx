@@ -5,6 +5,7 @@ import Navigation from "@/components/component/Navigation/Navigation";
 import Footer from "@/components/component/Footer/Footer";
 import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
 import PageLoader from "@/components/component/Spinner/Spinner";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Head>
+        <meta
+          name="google-site-verification"
+          content="KrT1sWgLJCi0eyUJuGBI4aZ3Nc1PjP0Pqe1z4Jeq22I"
+        />
+      </Head>
       <body className={`${inter.className}`}>
         <DarkTheme />
         <header>
