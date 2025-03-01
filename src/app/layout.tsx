@@ -26,7 +26,7 @@ export default function RootLayout({
         <div className="p-4">
           <PageLoader />
           {/* {children} */}
-          COMING SOON, PLEASE STAY TUNED
+          COMING SOON ...
         </div>
         <footer>{/* <Footer /> */}</footer>
       </body>

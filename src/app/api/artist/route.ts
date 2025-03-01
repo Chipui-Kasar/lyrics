@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Artist } from "@/models/model";
 
@@ -16,19 +16,26 @@ export async function GET() {
   const artists = await Artist.find();
   return NextResponse.json(artists);
 }
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
 
-export async function DELETE(req: {
-  nextUrl: { searchParams: { get: (arg0: string) => any } };
-}) {
-  // const { id } = await req.json();
-  const id = req.nextUrl.searchParams.get("id");
-
-  await connectMongoDB();
-  await Artist.findByIdAndDelete(id);
-  return NextResponse.json(
-    { message: "Artist deleted successfully" },
-    {
-      status: 200,
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
-  );
+
+    await connectMongoDB();
+    await Artist.findByIdAndDelete(id);
+
+    return NextResponse.json(
+      { message: "Artist deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete artist" },
+      { status: 500 }
+    );
+  }
 }
