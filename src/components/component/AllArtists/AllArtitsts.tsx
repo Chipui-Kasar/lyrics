@@ -1,5 +1,4 @@
 import React from "react";
-import FeaturedLyrics from "../FeaturedLyrics/FeaturedLyrics";
 import PopularArtists from "../PopularArtists/PopularArtists";
 
 const AllArtitsts = () => {

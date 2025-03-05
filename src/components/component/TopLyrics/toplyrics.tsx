@@ -14,7 +14,7 @@ const TopLyrics = () => {
         <div className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted">
           <div className="flex-1">
             <h3 className="font-medium">
-              <Link href="#" prefetch={true}>
+              <Link href="#" prefetch={false}>
                 Leishat won yamkui
               </Link>
             </h3>
@@ -23,7 +23,7 @@ const TopLyrics = () => {
               <Link
                 href="#"
                 className="font-medium hover:underline"
-                prefetch={true}
+                prefetch={false}
               >
                 PC Makang
               </Link>
@@ -40,7 +40,7 @@ const TopLyrics = () => {
         <div className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted">
           <div className="flex-1">
             <h3 className="font-medium">
-              <Link href="#" prefetch={true}>
+              <Link href="#" prefetch={false}>
                 Huinahao
               </Link>
             </h3>
@@ -49,7 +49,7 @@ const TopLyrics = () => {
               <Link
                 href="#"
                 className="font-medium hover:underline"
-                prefetch={true}
+                prefetch={false}
               >
                 Thangmeiso Shinglai
               </Link>
@@ -66,7 +66,7 @@ const TopLyrics = () => {
         <div className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted">
           <div className="flex-1">
             <h3 className="font-medium">
-              <Link href="#" prefetch={true}>
+              <Link href="#" prefetch={false}>
                 Kongyaonao
               </Link>
             </h3>
@@ -75,7 +75,7 @@ const TopLyrics = () => {
               <Link
                 href="#"
                 className="font-medium hover:underline"
-                prefetch={true}
+                prefetch={false}
               >
                 Litsuku Lohe
               </Link>

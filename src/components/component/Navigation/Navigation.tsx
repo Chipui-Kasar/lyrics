@@ -33,7 +33,7 @@ const Navigation = () => {
           <Link
             href="/"
             className="flex items-center gap-2 text-2xl font-bold"
-            prefetch={true}
+            prefetch={false}
           >
             <Music2Icon className="h-6 w-6 text-primary" />
             <span>Tangkhul Lyrics</span>
@@ -62,7 +62,7 @@ const Navigation = () => {
           <Link
             href="/allartists"
             className="h-9 flex-1 flex-shrink flex-grow basis-auto rounded-full px-4 py-2 transition-colors md:inline-block text-primary-foreground bg-primary rounded-md text-sm text-center"
-            prefetch={true}
+            prefetch={false}
           >
             Browse Artists
           </Link>
@@ -70,7 +70,7 @@ const Navigation = () => {
           <Link
             href="/contribute"
             className="inline-flex flex-1 flex-shrink flex-grow basis-auto h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-            prefetch={true}
+            prefetch={false}
           >
             Share Lyrics
           </Link>

@@ -9,13 +9,35 @@ import {
   PaginationEllipsis,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { useEffect, useState } from "react";
+import { ILyrics } from "@/models/IObjects";
 
-const ArtistsSongLists = ({ params }: { params: { artists: string } }) => {
+const ArtistsSongLists = ({
+  params,
+}: {
+  params: { artists: string; artistId: string };
+}) => {
+  const [lyrics, setLyrics] = useState<ILyrics[]>([]);
+
+  useEffect(() => {
+    fetch(`/api/lyrics/author/lyrics?artistId=${params.artistId}`).then(
+      (res) => {
+        if (res.ok) {
+          res.json().then((data) => setLyrics(data));
+        }
+      }
+    );
+
+    return () => {};
+  }, []);
+
   return (
     <>
       <main className="flex-1 py-8 px-6">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold mb-6">{params.artists}</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            {params.artists.replace(/-/g, " ")}
+          </h2>
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-muted text-muted-foreground">
@@ -24,39 +46,21 @@ const ArtistsSongLists = ({ params }: { params: { artists: string } }) => {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b hover:bg-muted/20">
-                  <td className="py-3 px-4 text-left">
-                    <Link
-                      href={`/artists/${params.artists}/lyrics/Starry-Night`}
-                      className="font-medium hover:underline"
-                      prefetch={true}
-                    >
-                      Song Title 1
-                    </Link>
-                  </td>
-                </tr>
-                <tr className="border-b hover:bg-muted/20">
-                  <td className="py-3 px-4 text-left">
-                    <Link
-                      href="#"
-                      className="font-medium hover:underline"
-                      prefetch={true}
-                    >
-                      Song Title 2
-                    </Link>
-                  </td>
-                </tr>
-                <tr className="border-b hover:bg-muted/20">
-                  <td className="py-3 px-4 text-left">
-                    <Link
-                      href="#"
-                      className="font-medium hover:underline"
-                      prefetch={true}
-                    >
-                      Song Title 3
-                    </Link>
-                  </td>
-                </tr>
+                {lyrics.map((lyric) => (
+                  <tr className="border-b hover:bg-muted/20">
+                    <td className="py-3 px-4 text-left">
+                      <Link
+                        href={`/artists/${
+                          params.artists
+                        }/lyrics/${lyric.title.replace(/ /g, "-")}`}
+                        className="font-medium hover:underline"
+                        prefetch={false}
+                      >
+                        {lyric.title}
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

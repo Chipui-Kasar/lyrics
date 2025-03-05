@@ -7,6 +7,7 @@ const artistSchema = new Schema({
   image: String,
   village: String,
 });
+artistSchema.index({ name: "text" });
 
 const Artist = mongoose.models.Artist || mongoose.model("Artist", artistSchema);
 
@@ -19,7 +20,7 @@ const lyricsSchema = new Schema({
   streamingLinks: { type: Object, default: {} },
   thumbnail: String,
 });
-
+lyricsSchema.index({ title: "text", lyrics: "text" });
 const Lyrics = mongoose.models.Lyrics || mongoose.model("Lyrics", lyricsSchema);
 
 export { Artist, Lyrics };

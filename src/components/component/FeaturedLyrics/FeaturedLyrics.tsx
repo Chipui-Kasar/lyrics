@@ -16,7 +16,7 @@ const FeaturedLyrics = () => {
             <h3 className="font-medium">
               <Link
                 href="/artists/Vincent/details/Starry-Night"
-                prefetch={true}
+                prefetch={false}
               >
                 Manarim
               </Link>
@@ -26,7 +26,7 @@ const FeaturedLyrics = () => {
               <Link
                 href="/artists/Vincent"
                 className="font-medium hover:underline"
-                prefetch={true}
+                prefetch={false}
               >
                 Achui Soro
               </Link>
@@ -45,7 +45,7 @@ const FeaturedLyrics = () => {
             <h3 className="font-medium">
               <Link
                 href="/artists/Vincent/details/Starry-Night"
-                prefetch={true}
+                prefetch={false}
               >
                 Ishava Chida Horanu
               </Link>
@@ -55,7 +55,7 @@ const FeaturedLyrics = () => {
               <Link
                 href="/artists/Vincent"
                 className="font-medium hover:underline"
-                prefetch={true}
+                prefetch={false}
               >
                 Oshim
               </Link>

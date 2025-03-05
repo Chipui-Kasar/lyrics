@@ -16,7 +16,6 @@ const SearchPage = () => {
 const WithSearchParams = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
-  console.log("query", query);
 
   return <SearchResult params={query} />;
 };
