@@ -55,16 +55,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className}`}>
         <DarkTheme />
-        <header>
-          <Navigation />
-        </header>
+        <header>{/* <Navigation /> */}</header>
         <div className="p-4">
           <PageLoader />
-          {children}
+          {/* {children} */}
+          COMING SOON...
         </div>
-        <footer>
-          <Footer />
-        </footer>
+        <footer>{/* <Footer /> */}</footer>
       </body>
     </html>
   );
