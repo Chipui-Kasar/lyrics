@@ -1,5 +1,6 @@
 "use client";
 import { IArtists } from "@/models/IObjects";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -59,7 +60,7 @@ const PopularArtists = () => {
             className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
             prefetch={false}
           >
-            <img
+            <Image
               src={artist.image || "/placeholder-user.jpg"}
               width={64}
               height={64}

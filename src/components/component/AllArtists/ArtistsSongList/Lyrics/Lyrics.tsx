@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import Link from "next/link";
 
 const Lyrics = ({
@@ -26,7 +27,7 @@ const Lyrics = ({
             </div>
           </div>
           <div className="flex w-full items-start gap-6">
-            <img
+            <Image
               src="/placeholder.svg"
               width="200"
               height="200"

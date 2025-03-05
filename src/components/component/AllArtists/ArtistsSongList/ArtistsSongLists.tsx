@@ -20,16 +20,22 @@ const ArtistsSongLists = ({
   const [lyrics, setLyrics] = useState<ILyrics[]>([]);
 
   useEffect(() => {
-    fetch(`/api/lyrics/author/lyrics?artistId=${params.artistId}`).then(
-      (res) => {
+    const fetchLyrics = async () => {
+      try {
+        const res = await fetch(
+          `/api/lyrics/author/lyrics?artistId=${params.artistId}`
+        );
         if (res.ok) {
-          res.json().then((data) => setLyrics(data));
+          const data = await res.json();
+          setLyrics(data);
         }
+      } catch (err) {
+        console.error("Failed to fetch lyrics:", err);
       }
-    );
+    };
 
-    return () => {};
-  }, []);
+    fetchLyrics();
+  }, [params.artistId]);
 
   return (
     <>

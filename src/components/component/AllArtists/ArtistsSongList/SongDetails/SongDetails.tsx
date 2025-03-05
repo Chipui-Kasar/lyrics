@@ -5,6 +5,7 @@
  */
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function SongDetails({
   params,
@@ -16,7 +17,7 @@ export default function SongDetails({
       <main className="flex-1 py-12">
         <div className="container mx-auto grid grid-cols-1 gap-8 px-4 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
           <div className="flex flex-col items-center justify-center">
-            <img
+            <Image
               src="/placeholder.svg"
               width={400}
               height={400}
