@@ -52,8 +52,8 @@ const ArtistsSongLists = ({
                 </tr>
               </thead>
               <tbody>
-                {lyrics.map((lyric) => (
-                  <tr className="border-b hover:bg-muted/20">
+                {lyrics.map((lyric, key) => (
+                  <tr className="border-b hover:bg-muted/20" key={key}>
                     <td className="py-3 px-4 text-left">
                       <Link
                         href={`/artists/${
