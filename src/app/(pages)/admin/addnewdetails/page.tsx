@@ -13,7 +13,7 @@ const AddNew = () => {
   const [artists, setArtists] = useState([]);
 
   useEffect(() => {
-    fetch("/api/artist")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`)
       .then((res) => res.json())
       .then((data) => setArtists(data))
       .catch((err) => console.error("Failed to fetch artists:", err));

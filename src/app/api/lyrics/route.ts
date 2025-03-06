@@ -19,10 +19,26 @@ export async function POST(req: Request) {
     { status: 201 }
   );
 }
-export async function GET() {
-  await connectMongoDB();
-  const lyrics = await Lyrics.find();
-  return NextResponse.json(lyrics);
+export async function GET(req: NextRequest) {
+  try {
+    await connectMongoDB();
+
+    // Extract 'limit' from query params and convert it to a number (default to 10)
+    const url = new URL(req.url);
+    const limit = Number(url.searchParams.get("limit")) || 10;
+
+    // Fetch lyrics with a limit
+    const lyrics = await Lyrics.find()
+      .populate("artistId", "name image")
+      .limit(limit);
+
+    return NextResponse.json(lyrics);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch lyrics" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(req: NextRequest) {

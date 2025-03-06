@@ -6,31 +6,25 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { ILyrics } from "@/models/IObjects";
 
-export default function SongDetails({
-  params,
-}: {
-  params: { artists: string; songTitle: string };
-}) {
+export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="flex-1 py-12">
         <div className="container mx-auto grid grid-cols-1 gap-8 px-4 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
           <div className="flex flex-col items-center justify-center">
             <Image
-              src="/placeholder.svg"
+              src={songLyrics.thumbnail || "/placeholder.svg"}
               width={400}
               height={400}
               alt="Album Cover"
               className="mb-6 rounded-lg shadow-lg"
             />
             <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">{params.songTitle}</h1>
+              <h1 className="text-3xl font-bold">{songLyrics.title}</h1>
               <p className="text-muted-foreground">
-                {params.artists.replace(/'/g, "&apos;")}
-              </p>
-              <p className="text-muted-foreground">
-                {params.artists.replace(/'/g, "&#39;")} IV (1971)
+                {songLyrics.artistId.name}
               </p>
             </div>
             <div className="mt-6 flex gap-4">
@@ -39,10 +33,10 @@ export default function SongDetails({
                 Share
               </Button>
               <Link
-                href={`/artists/${params.artists.replace(
+                href={`/artists/${songLyrics.artistId.name.replace(
                   /'/g,
                   "&apos;"
-                )}/lyrics/${params.songTitle.replace(/'/g, "&apos;")}`}
+                )}/lyrics/${songLyrics.title.replace(/'/g, "&apos;")}`}
               >
                 <Button>View Lyrics</Button>
               </Link>
@@ -53,21 +47,19 @@ export default function SongDetails({
               <h2 className="mb-2 text-lg font-medium">Details</h2>
               <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
                 <div>Release Year:</div>
-                <div>1971</div>
-                <div>Genre:</div>
-                <div>Rock</div>
+                <div>{songLyrics.releaseYear}</div>
                 <div>Songwriter:</div>
-                <div>Robert Plant, Jimmy Page</div>
+                <div>{songLyrics.artistId.name}</div>
               </div>
             </div>
             <div>
               <h2 className="mb-2 text-lg font-medium">About</h2>
-              <p className="text-sm text-muted-foreground">
-                &quot;Stairway to Heaven&quot; is a song by the English rock
-                band Led Zeppelin, released in 1971. It is widely regarded as
-                one of the greatest rock songs of all time, known for its
-                complex structure and Robert Plant&apos;s poetic lyrics.
-              </p>
+              <p
+                className="text-sm text-muted-foreground"
+                dangerouslySetInnerHTML={{
+                  __html: songLyrics.lyrics.replace(/\n/g, "<br/>"),
+                }}
+              ></p>
             </div>
           </div>
         </div>

@@ -9,11 +9,12 @@ export interface IArtists {
   village: string;
   image: string;
   _id: string;
+  songCount: number;
 }
 
 export interface ILyrics {
   title: string;
-  artistId: string;
+  artistId: IArtists;
   album: string;
   releaseYear: number;
   lyrics: string;

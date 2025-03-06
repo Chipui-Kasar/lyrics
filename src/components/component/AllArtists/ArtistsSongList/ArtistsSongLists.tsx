@@ -9,41 +9,14 @@ import {
   PaginationEllipsis,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { useEffect, useState } from "react";
 import { ILyrics } from "@/models/IObjects";
 
-const ArtistsSongLists = ({
-  params,
-}: {
-  params: { artists: string; artistId: string };
-}) => {
-  const [lyrics, setLyrics] = useState<ILyrics[]>([]);
-
-  useEffect(() => {
-    const fetchLyrics = async () => {
-      try {
-        const res = await fetch(
-          `/api/lyrics/author/lyrics?artistId=${params.artistId}`
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setLyrics(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch lyrics:", err);
-      }
-    };
-
-    fetchLyrics();
-  }, [params.artistId]);
-
+const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
   return (
     <>
       <main className="flex-1 py-8 px-6">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold mb-6">
-            {params.artists.replace(/-/g, " ")}
-          </h2>
+          <h2 className="text-3xl font-bold mb-6">{lyrics[0].artistId.name}</h2>
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-muted text-muted-foreground">
@@ -57,7 +30,7 @@ const ArtistsSongLists = ({
                     <td className="py-3 px-4 text-left">
                       <Link
                         href={`/artists/${
-                          params.artists
+                          lyric.artistId.name
                         }/lyrics/${lyric.title.replace(/ /g, "-")}`}
                         className="font-medium hover:underline"
                         prefetch={false}

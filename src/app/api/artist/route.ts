@@ -11,6 +11,8 @@ export async function POST(req: Request) {
     { status: 201 }
   );
 }
+
+//get all artists
 export async function GET() {
   await connectMongoDB();
   const artists = await Artist.find();

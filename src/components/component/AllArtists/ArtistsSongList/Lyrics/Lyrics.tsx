@@ -1,16 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { ILyrics } from "@/models/IObjects";
 import Image from "next/image";
 import Link from "next/link";
 
-const Lyrics = ({
-  params,
-}: {
-  params: { artists: string; songTitle: string };
-}) => {
+const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
   const escapeApostrophe = (text: string) => {
     return text.replace(/'/g, "&apos;");
   };
-
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background">
       <main className="container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
@@ -20,39 +16,26 @@ const Lyrics = ({
               Lyrics
             </div>
             <h1 className="text-3xl font-bold">
-              {escapeApostrophe(params.songTitle)}
+              {escapeApostrophe(lyrics.title)}
             </h1>
             <div className="text-muted-foreground">
-              {escapeApostrophe(params.artists)}
+              {escapeApostrophe(lyrics.artistId?.name)}
             </div>
           </div>
           <div className="flex w-full items-start gap-6">
             <Image
-              src="/placeholder.svg"
+              src={lyrics.artistId.image || "/placeholder.svg"}
               width="200"
               height="200"
               alt="Album Cover"
               className="aspect-square overflow-hidden rounded-lg object-cover"
             />
-            <div className="prose text-muted-foreground">
-              <p>
-                Is this the real life? Is this just fantasy? Caught in the
-                landslide, no escape from reality. Open your eyes, look up to
-                the skies and see, I&apos;m just a poor boy, I need no sympathy.
-              </p>
-              <p>
-                Because I&apos;m easy come, easy go, a little high, little low.
-                Anyway the wind blows, nothing really matters to me.
-              </p>
-              <p>
-                Mama, just killed a man, put a gun against his head, pulled my
-                trigger, now he&apos;s dead.
-              </p>
-              <p>
-                Mama, life had just begun, but now I&apos;ve gone and thrown it
-                all away.
-              </p>
-            </div>
+            <div
+              className="prose text-muted-foreground"
+              dangerouslySetInnerHTML={{
+                __html: lyrics.lyrics.replace(/\n/g, "<br/>"),
+              }}
+            ></div>
           </div>
         </div>
         <div className="flex flex-col gap-6">
@@ -69,32 +52,28 @@ const Lyrics = ({
             <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
               <div className="flex items-center justify-between">
                 <span>Artist:</span>
-                <span>Queen</span>
+                <span>{lyrics.artistId.name}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Album:</span>
-                <span>A Night at the Opera</span>
+                <span>{lyrics.album}</span>
               </div>
+
               <div className="flex items-center justify-between">
                 <span>Release Date:</span>
-                <span>31 October 1975</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Duration:</span>
-                <span>5:55</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Genre:</span>
-                <span>Rock</span>
+                <span>{lyrics.releaseYear}</span>
               </div>
             </div>
             <div className="mt-4">
               <Link
-                href="#"
+                href={
+                  lyrics.streamingLinks?.spotify ||
+                  lyrics.streamingLinks?.youtube
+                }
                 className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 prefetch={false}
               >
-                Stream on Spotify
+                Stream now
               </Link>
             </div>
           </div>

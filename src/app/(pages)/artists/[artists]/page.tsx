@@ -1,12 +1,37 @@
-"use client";
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
-import { useSearchParams } from "next/navigation";
 
-const Slug = ({ params }: { params: { artists: string } }) => {
-  const searchParams = useSearchParams();
-  const artistId = searchParams.get("artistId") || "";
-
-  return <ArtistsSongLists params={{ ...params, artistId }} />;
+const fetchFeaturedLyrics = async (artistName: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/lyrics?artistName=${artistName}`
+    );
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching featured lyrics:", error);
+    return [];
+  }
 };
 
-export default Slug;
+export default async function Slug({
+  params,
+}: {
+  params: { artists: string };
+}) {
+  const lyrics = await fetchFeaturedLyrics(params.artists);
+  return <ArtistsSongLists lyrics={lyrics} />;
+}
+
+// ✅ Pre-generating Static Pages at Build Time
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artists`);
+    const artists = res.ok ? await res.json() : [];
+
+    return artists.map((artist: { name: string }) => ({
+      artists: artist.name, // Generates `/artists/{artist-name}`
+    }));
+  } catch (error) {
+    console.error("Error fetching artist list:", error);
+    return [];
+  }
+}
