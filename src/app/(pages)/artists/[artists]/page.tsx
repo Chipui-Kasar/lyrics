@@ -24,7 +24,7 @@ export default async function Slug({
 // ✅ Pre-generating Static Pages at Build Time
 export async function generateStaticParams() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artists`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`);
     const artists = res.ok ? await res.json() : [];
 
     return artists.map((artist: { name: string }) => ({
