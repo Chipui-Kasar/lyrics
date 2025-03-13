@@ -4,25 +4,32 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
+import { ILyrics } from "@/models/IObjects";
+import { getSingleLyrics } from "@/service/allartists";
+import { notFound } from "next/navigation";
 
 const fetchSingleLyrics = async (artistName: string, songTitle: string) => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?artistName=${artistName}&songTitle=${songTitle}`,
-      { next: { revalidate: 60 } }
-    );
-    return res.ok ? await res.json() : [];
-  } catch (error) {
-    console.error("Error fetching featured lyrics:", error);
-    return [];
-  }
+  return await getSingleLyrics(artistName, songTitle);
 };
+
+export async function generateStaticParams() {
+  const posts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
+    cache: "force-cache",
+  }).then((res) => res.json());
+
+  return posts.map((post: ILyrics) => ({
+    artists: post.artistId.name,
+    songTitle: post.title,
+  }));
+}
+
 export default async function SongDetailsPage({
   params,
 }: {
   params: { artists: string; songTitle: string };
 }) {
   const songLyrics = await fetchSingleLyrics(params.artists, params.songTitle);
+  if (!songLyrics) return notFound();
 
   return <SongDetails songLyrics={songLyrics} />;
 }

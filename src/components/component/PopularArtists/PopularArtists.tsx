@@ -20,7 +20,7 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
             key={key}
             href={`/artists/${artist.name.replace(/ /g, "-")}`}
             className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
-            prefetch={false}
+            prefetch={true}
           >
             <Image
               src={artist.image || "/placeholder-user.jpg"}

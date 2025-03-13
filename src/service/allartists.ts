@@ -1,159 +1,95 @@
-export const AllArtistsJson = [
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Vincent Van Gogh",
-    name: "Shimreingam",
-    songsCount: "10,000 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Leonard Cohen",
-    name: "Yung yung",
-    songsCount: "8,000 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Billie Holiday",
-    name: "Thangmeiso",
-    songsCount: "7,500 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Bob Dylan",
-    name: "Oshim Soho",
-    songsCount: "9,000 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Nimshimphi",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Ningshang",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Kakami",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Ramchanthing",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Shimshang",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Reitim",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Joni Mitchell",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Joni Mitchell",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Joni Mitchell",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Joni Mitchell",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Joni Mitchell",
-    songsCount: "6,800 songs",
-  },
-  {
-    href: "#",
-    imgSrc: "https://i.ytimg.com/vi/swgXgoqGgqY/maxresdefault.jpg",
-    imgWidth: 64,
-    imgHeight: 64,
-    imgAlt: "Joni Mitchell",
-    name: "Joni Mitchell",
-    songsCount: "6,800 songs",
-  },
-];
+import { IArtists } from "@/models/IObjects";
 
-export const convertFiletoBase64 = async (file: File) => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = () => {
-      resolve(fileReader.result);
-    };
-    fileReader.onerror = (error) => {
-      reject(error);
-    };
-  });
+export const getLyrics = async () => {};
+export const getSingleLyrics = async (
+  artistName: string,
+  songTitle: string
+) => {
+  try {
+    const res = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/lyrics/author/singleLyrics?artistName=${encodeURIComponent(
+        artistName
+      )}&songTitle=${encodeURIComponent(songTitle)}`,
+      { cache: "force-cache" }
+    );
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching lyrics:", error);
+    return [];
+  }
 };
+export const getFeaturedLyrics = async () => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2`,
+      {
+        next: { revalidate: 60 },
+        // cache: "force-cache",
+      }
+    );
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching featured lyrics:", error);
+    return [];
+  }
+};
+export const getTopLyrics = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
+      next: { revalidate: 60 },
+      // cache: "force-cache",
+    });
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching top lyrics:", error);
+    return [];
+  }
+};
+export const getAllArtists = async () => {};
+export const getArtistsWithSongCount = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
+      next: { revalidate: 60 },
+      // cache: "force-cache",
+    });
+
+    if (!res.ok) return [];
+
+    const artists = await res.json();
+    if (artists.length === 0) return [];
+
+    // Fetch song counts
+    const artistIds = artists.map((artist: IArtists) => artist._id).join(",");
+    const countRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/artist/lyricscount?artistIds=${artistIds}`
+    );
+
+    if (!countRes.ok)
+      return artists.map((artist: IArtists) => ({ ...artist, songCount: 0 }));
+
+    const songCounts = await countRes.json();
+
+    // Merge song counts with artists
+    return artists.map((artist: IArtists) => ({
+      ...artist,
+      songCount: songCounts[artist._id] ?? 0,
+    }));
+  } catch (error) {
+    console.error("Error fetching artists with song counts:", error);
+    return [];
+  }
+};
+export const getSingleArtist = async () => {};
+export const getSingleArtistWithSongCount = async () => {};
+
+export const createArtist = async () => {};
+export const updateArtist = async () => {};
+export const deleteArtist = async () => {};
+
+export const createLyrics = async () => {};
+export const updateLyrics = async () => {};
+export const deleteLyrics = async () => {};
+
+export const getLyricsCount = async () => {};

@@ -22,7 +22,7 @@ const TopLyrics = ({ lyrics }: TopLyricsProps) => {
             >
               <div className="flex-1">
                 <h3 className="font-medium">
-                  <Link href="#" prefetch={false}>
+                  <Link href="#" prefetch={true}>
                     {lyric.title}
                   </Link>
                 </h3>
@@ -31,7 +31,7 @@ const TopLyrics = ({ lyrics }: TopLyricsProps) => {
                   <Link
                     href="#"
                     className="font-medium hover:underline"
-                    prefetch={false}
+                    prefetch={true}
                   >
                     {lyric.artistId?.name}
                   </Link>

@@ -16,7 +16,9 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
     <>
       <main className="flex-1 py-8 px-6">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold mb-6">{lyrics[0].artistId.name}</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            {lyrics[0]?.artistId?.name}
+          </h2>
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-muted text-muted-foreground">
@@ -33,7 +35,7 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
                           lyric.artistId.name
                         }/lyrics/${lyric.title.replace(/ /g, "-")}`}
                         className="font-medium hover:underline"
-                        prefetch={false}
+                        prefetch={true}
                       >
                         {lyric.title}
                       </Link>

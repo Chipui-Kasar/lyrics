@@ -1,20 +1,20 @@
 import Lyrics from "@/components/component/AllArtists/ArtistsSongList/Lyrics/Lyrics";
+import { ILyrics } from "@/models/IObjects";
+import { getSingleLyrics } from "@/service/allartists";
 
 const fetchSingleLyrics = async (params: { artists: any; songTitle: any }) => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?artistName=${params.artists}&songTitle=${params.songTitle}`,
-      {
-        next: { revalidate: 60 },
-        // cache: "force-cache",
-      }
-    );
-    return res.ok ? await res.json() : [];
-  } catch (error) {
-    console.error("Error fetching featured lyrics:", error);
-    return [];
-  }
+  return await getSingleLyrics(params.artists, params.songTitle);
 };
+export async function generateStaticParams() {
+  const posts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
+    cache: "force-cache",
+  }).then((res) => res.json());
+
+  return posts.map((post: ILyrics) => ({
+    artists: post.artistId.name,
+    songTitle: post.title,
+  }));
+}
 const LyricsPage = async ({
   params,
 }: {

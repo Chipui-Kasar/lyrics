@@ -28,7 +28,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
                     href={`/artists/${
                       lyric.artistId.name
                     }/details/${lyric.title.replace(/'/g, "&apos;")}`}
-                    prefetch={false}
+                    prefetch={true}
                   >
                     {lyric.title}
                   </Link>
@@ -38,7 +38,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
                   <Link
                     href={`/artists/${lyric.artistId.name}`}
                     className="font-medium hover:underline"
-                    prefetch={false}
+                    prefetch={true}
                   >
                     {lyric.artistId?.name}
                   </Link>

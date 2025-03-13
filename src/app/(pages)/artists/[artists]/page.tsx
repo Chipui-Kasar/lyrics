@@ -1,4 +1,5 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
+import { IArtists } from "@/models/IObjects";
 
 const fetchFeaturedLyrics = async (artistName: string) => {
   try {
@@ -10,6 +11,14 @@ const fetchFeaturedLyrics = async (artistName: string) => {
     console.error("Error fetching featured lyrics:", error);
     return [];
   }
+};
+
+export const generateStaticParams = async () => {
+  const posts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
+    cache: "force-cache",
+  }).then((res) => res.json());
+
+  return posts.map((post: IArtists) => ({ artists: post.name }));
 };
 
 export default async function ArtistPage({
