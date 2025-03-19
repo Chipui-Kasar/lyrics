@@ -26,6 +26,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.54deg 17.33% 14.71%;
     --radius: 0.5rem;
+    --border-error: 0 72% 51%;
   }
 
   .dark {
@@ -51,7 +52,9 @@
     --radius: 0rem;
   }
 }
-
+.border-error {
+  border-color: hsl(var(--border-error));
+}
 @layer base {
   * {
     @apply border-border;
