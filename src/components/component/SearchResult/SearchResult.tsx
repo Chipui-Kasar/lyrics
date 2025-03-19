@@ -7,11 +7,17 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ILyrics } from "@/models/IObjects";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import React from "react";
+interface SearchResultProps {
+  params: string;
+  lyrics: ILyrics[];
+}
+const SearchResult = ({ params, lyrics }: SearchResultProps) => {
+  console.log(lyrics);
 
-const SearchResult = ({ params }: { params: string }) => {
   return (
     <div className="container mx-auto py-12">
       <div className="flex flex-wrap items-center justify-between mb-8 px-4">

@@ -1,6 +1,16 @@
 import { IArtists } from "@/models/IObjects";
 
-export const getLyrics = async () => {};
+export const getLyrics = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
+      cache: "force-cache",
+    });
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching lyrics:", error);
+    return [];
+  }
+};
 export const getSingleLyrics = async (
   artistName: string,
   songTitle: string
@@ -47,7 +57,18 @@ export const getTopLyrics = async () => {
     return [];
   }
 };
-export const getAllArtists = async () => {};
+export const getAllArtists = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
+      next: { revalidate: 60 },
+      // cache: "force-cache",
+    });
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching artists:", error);
+    return [];
+  }
+};
 export const getArtistsWithSongCount = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
@@ -82,7 +103,21 @@ export const getArtistsWithSongCount = async () => {
   }
 };
 export const getSingleArtist = async () => {};
-export const getSingleArtistWithSongCount = async () => {};
+export const getSingleArtistWithSongCount = async (artistName: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/lyrics?artistName=${artistName}`,
+      {
+        next: { revalidate: 60 },
+        // cache: "force-cache",
+      }
+    );
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching artists:", error);
+    return [];
+  }
+};
 
 export const createArtist = async () => {};
 export const updateArtist = async () => {};

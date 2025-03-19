@@ -5,6 +5,8 @@ import Navigation from "@/components/component/Navigation/Navigation";
 import Footer from "@/components/component/Footer/Footer";
 import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
 import PageLoader from "@/components/component/Spinner/Spinner";
+import { getLyrics } from "@/service/allartists";
+import { ILyrics } from "@/models/IObjects";
 // const ico = require("../../public/tangkhullyrics.ico");
 
 const inter = Inter({ subsets: ["latin"] });
@@ -45,18 +47,23 @@ export const metadata: Metadata = {
       "lyrics, tangkhul, tangkhul lyrics, tangkhul laa, tangkhul laa lyrics",
   },
 };
-
-export default function RootLayout({
+export const generateStaticParams = async () => {
+  const posts = await getLyrics();
+  return posts;
+};
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lyrics: ILyrics[] = await getLyrics();
+
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
         <DarkTheme />
         <header>
-          <Navigation />
+          <Navigation lyrics={lyrics} />
         </header>
         <div className="p-4">
           <PageLoader />

@@ -74,7 +74,11 @@ const ContributeLyrics = () => {
               id="title"
               placeholder="Enter the song title"
               value={songTitle}
-              className={songTitle ? "" : "border-error"}
+              className={
+                submitStatus === "Please fill all the required fields"
+                  ? "border-error"
+                  : ""
+              }
               required
               onChange={(e) => setSongTitle(e.target.value)}
             />
@@ -85,7 +89,11 @@ const ContributeLyrics = () => {
               id="artist"
               placeholder="Enter the artist name"
               value={artistsName}
-              className={artistsName ? "" : "border-error"}
+              className={
+                submitStatus === "Please fill all the required fields"
+                  ? "border-error"
+                  : ""
+              }
               required
               onChange={(e) => setArtistsName(e.target.value)}
             />
@@ -99,7 +107,11 @@ const ContributeLyrics = () => {
               rows={8}
               required
               value={lyrics}
-              className={lyrics ? "" : "border-error"}
+              className={
+                submitStatus === "Please fill all the required fields"
+                  ? "border-error"
+                  : ""
+              }
               onChange={(e) => setLyrics(e.target.value)}
             />
           </div>

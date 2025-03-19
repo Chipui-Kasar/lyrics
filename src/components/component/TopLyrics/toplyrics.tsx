@@ -14,39 +14,35 @@ const TopLyrics = ({ lyrics }: TopLyricsProps) => {
         Check out the most popular lyrics on our platform.
       </p>
       <div className="mt-6 grid gap-4">
-        {lyrics.map((lyric, key) => {
-          return (
-            <div
-              className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
-              key={key}
-            >
-              <div className="flex-1">
-                <h3 className="font-medium">
-                  <Link href="#" prefetch={true}>
-                    {lyric.title}
-                  </Link>
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  by{" "}
-                  <Link
-                    href="#"
-                    className="font-medium hover:underline"
-                    prefetch={true}
-                  >
-                    {lyric.artistId?.name}
-                  </Link>
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="group-hover:opacity-100"
-              >
-                <ArrowRightIcon className="h-5 w-5" />
-              </Button>
+        {lyrics.map((lyric, key) => (
+          <Link
+            href={`/artists/${
+              lyric.artistId?.name ?? "unknown"
+            }/lyrics/${lyric.title.replace(/'/g, "&apos;")}`}
+            prefetch={true}
+            className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+            key={key}
+          >
+            <div className="flex-1">
+              <h3 className="font-medium">{lyric.title}</h3>{" "}
+              {/* ✅ Removed nested <Link> */}
+              <p className="text-sm text-muted-foreground">
+                by{" "}
+                <span className="font-medium">
+                  {lyric.artistId?.name ?? "Unknown Artist"}
+                </span>{" "}
+                {/* ✅ No nested <Link> */}
+              </p>
             </div>
-          );
-        })}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="group-hover:opacity-100"
+            >
+              <ArrowRightIcon className="h-5 w-5" />
+            </Button>
+          </Link>
+        ))}
       </div>
     </div>
   );

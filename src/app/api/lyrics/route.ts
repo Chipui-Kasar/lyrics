@@ -25,12 +25,14 @@ export async function GET(req: NextRequest) {
 
     // Extract 'limit' from query params and convert it to a number (default to 10)
     const url = new URL(req.url);
-    const limit = Number(url.searchParams.get("limit")) || 10;
+    const limit = Number(url.searchParams.get("limit"));
 
     // Fetch lyrics with a limit
-    const lyrics = await Lyrics.find()
-      .populate("artistId", "name image")
-      .limit(limit);
+    const query = Lyrics.find().populate("artistId", "name image");
+    if (limit) {
+      query.limit(limit);
+    }
+    const lyrics = await query.exec();
 
     return NextResponse.json(lyrics);
   } catch (error) {

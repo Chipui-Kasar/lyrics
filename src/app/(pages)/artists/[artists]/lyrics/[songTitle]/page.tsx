@@ -1,14 +1,12 @@
 import Lyrics from "@/components/component/AllArtists/ArtistsSongList/Lyrics/Lyrics";
 import { ILyrics } from "@/models/IObjects";
-import { getSingleLyrics } from "@/service/allartists";
+import { getLyrics, getSingleLyrics } from "@/service/allartists";
 
 const fetchSingleLyrics = async (params: { artists: any; songTitle: any }) => {
   return await getSingleLyrics(params.artists, params.songTitle);
 };
 export async function generateStaticParams() {
-  const posts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
-    cache: "force-cache",
-  }).then((res) => res.json());
+  const posts = await getLyrics();
 
   return posts.map((post: ILyrics) => ({
     artists: post.artistId.name,

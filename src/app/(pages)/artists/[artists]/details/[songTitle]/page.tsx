@@ -5,7 +5,7 @@
  */
 import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
 import { ILyrics } from "@/models/IObjects";
-import { getSingleLyrics } from "@/service/allartists";
+import { getLyrics, getSingleLyrics } from "@/service/allartists";
 import { notFound } from "next/navigation";
 
 const fetchSingleLyrics = async (artistName: string, songTitle: string) => {
@@ -13,9 +13,7 @@ const fetchSingleLyrics = async (artistName: string, songTitle: string) => {
 };
 
 export async function generateStaticParams() {
-  const posts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
-    cache: "force-cache",
-  }).then((res) => res.json());
+  const posts = await getLyrics();
 
   return posts.map((post: ILyrics) => ({
     artists: post.artistId.name,

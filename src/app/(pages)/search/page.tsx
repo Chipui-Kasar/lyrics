@@ -13,11 +13,11 @@ const SearchPage = () => {
   );
 };
 
-const WithSearchParams = () => {
+const WithSearchParams = async () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
 
-  return <SearchResult params={query} />;
+  return <SearchResult params={query} lyrics={[]} />;
 };
 
 export default SearchPage;

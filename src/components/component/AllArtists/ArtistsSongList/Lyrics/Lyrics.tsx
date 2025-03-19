@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ILyrics } from "@/models/IObjects";
-import Image from "next/image";
+import { Video } from "lucide-react";
 import Link from "next/link";
 
 const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
@@ -22,12 +22,10 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
               {escapeApostrophe(lyrics.artistId?.name)}
             </div>
           </div>
-          <div className="flex w-full items-start gap-6">
-            <Image
-              src={lyrics.artistId.image || "/placeholder.svg"}
+          <div className="flex flex-wrap w-full items-start gap-6">
+            <Video
               width="200"
               height="200"
-              alt="Album Cover"
               className="aspect-square overflow-hidden rounded-lg object-cover"
             />
             <div
