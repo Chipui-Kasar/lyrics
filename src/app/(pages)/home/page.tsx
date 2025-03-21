@@ -2,30 +2,37 @@ import ContributeLyrics from "@/components/component/ContributeLyrics/Contribute
 import FeaturedLyrics from "@/components/component/FeaturedLyrics/FeaturedLyrics";
 import PopularArtists from "@/components/component/PopularArtists/PopularArtists";
 import TopLyrics from "@/components/component/TopLyrics/toplyrics";
+import { generatePageMetadata } from "@/lib/utils";
 import {
   getArtistsWithSongCount,
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
 
-const fetchArtistsWithSongCount = async () => {
-  return await getArtistsWithSongCount();
-};
-
-const fetchFeaturedLyrics = async () => {
-  return await getFeaturedLyrics();
-};
-
-const fetchTopLyrics = async () => {
-  return await getTopLyrics();
-};
-
-const HomePage = async () => {
-  const [artists, featuredLyrics, topLyrics] = await Promise.all([
-    fetchArtistsWithSongCount(),
-    fetchFeaturedLyrics(),
-    fetchTopLyrics(),
+// ✅ Fetch all data in parallel
+const fetchHomeData = async () => {
+  return await Promise.all([
+    getArtistsWithSongCount(),
+    getFeaturedLyrics(),
+    getTopLyrics(),
   ]);
+};
+
+// ✅ Generate Metadata for SEO
+export async function generateMetadata() {
+  return generatePageMetadata({
+    title: "Tangkhul Lyrics - Find Your Favorite Tangkhul Songs",
+    description:
+      "Explore the best Tangkhul lyrics, featured songs, top artists, and contribute your own lyrics to the community.",
+    url: "https://tangkhullyrics.com",
+    keywords:
+      "Tangkhul lyrics, Tangkhul songs, Tangkhul artists, contribute lyrics, top songs",
+  });
+}
+
+// ✅ Home Page Component
+const HomePage = async () => {
+  const [artists, featuredLyrics, topLyrics] = await fetchHomeData();
 
   return (
     <div className="flex min-h-screen flex-col dark:bg-background">

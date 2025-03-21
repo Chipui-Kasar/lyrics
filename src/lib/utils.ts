@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { Metadata } from "next";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,6 +12,59 @@ export function slugMaker(str: string) {
 }
 export function removeSlug(str: string) {
   return str.replace(/-/g, " ");
+}
+
+//function for metatags
+
+interface MetadataProps {
+  title: string;
+  description: string;
+  url: string;
+  image?: string;
+  keywords?: string;
+}
+
+export function generatePageMetadata({
+  title,
+  description,
+  url,
+  image = "/ogImage.jpg", // Default image if none is provided
+  keywords = "Tangkhul lyrics, Tangkhul song lyrics, Tangkhul Laa, Tangkhul music",
+}: MetadataProps): Metadata {
+  return {
+    title,
+    description,
+    metadataBase: new URL("https://tangkhullyrics.com/"),
+
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "Tangkhul Lyrics",
+      images: [
+        {
+          url: image ?? "/ogImage.jpg",
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image ?? "/ogImage.jpg"],
+      site: "@TangkhulLyrics",
+    },
+
+    alternates: {
+      canonical: url,
+    },
+
+    keywords,
+  };
 }
 
 // Function to calculate similarity percentage (Levenshtein Distance)
