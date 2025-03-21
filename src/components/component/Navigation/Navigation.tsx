@@ -24,9 +24,9 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
       if (query.trim()) {
         const filtered = lyrics.filter(
           (lyric) =>
-            lyric.title.toLowerCase().includes(query.toLowerCase()) ||
-            lyric.lyrics.toLowerCase().includes(query.toLowerCase()) ||
-            lyric.artistId?.name.toLowerCase().includes(query.toLowerCase())
+            lyric.title?.toLowerCase().includes(query?.toLowerCase()) ||
+            lyric.lyrics?.toLowerCase().includes(query?.toLowerCase()) ||
+            lyric.artistId?.name?.toLowerCase().includes(query?.toLowerCase())
         );
         setFilteredLyrics(filtered);
       } else {
@@ -52,7 +52,10 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const trimmedQuery = searchQuery.trim().toLowerCase().replace(/\s+/g, "-"); // Normalize case
+    const trimmedQuery = searchQuery
+      .trim()
+      ?.toLowerCase()
+      ?.replace(/\s+/g, "-"); // Normalize case
 
     if (trimmedQuery) {
       router.push(`/search/${encodeURIComponent(trimmedQuery)}`);

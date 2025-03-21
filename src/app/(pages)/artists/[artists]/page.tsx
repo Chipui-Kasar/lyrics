@@ -15,7 +15,7 @@ const fetchFeaturedLyrics = async (artistName: string) => {
 export const generateStaticParams = async () => {
   const artists = await getAllArtists();
   return artists.map((artist: IArtists) => ({
-    artists: artist.name.toLowerCase(), // Ensure consistency in URL
+    artists: artist.name?.toLowerCase(), // Ensure consistency in URL
   }));
 };
 
@@ -38,7 +38,7 @@ export async function generateMetadata({
   return generatePageMetadata({
     title: `${artistData.name} - Tangkhul Song Lyrics`,
     description: `Explore all song lyrics by ${artistData.name} on Tangkhul Lyrics.`,
-    url: `https://tangkhullyrics.com/artists/${artistData.name.toLowerCase()}`,
+    url: `https://tangkhullyrics.com/artists/${artistData.name?.toLowerCase()}`,
     keywords: `${artistData.name}, Tangkhul songs, Tangkhul lyrics, ${artistData.name} lyrics`,
   });
 }

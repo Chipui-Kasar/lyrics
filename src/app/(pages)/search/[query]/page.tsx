@@ -16,7 +16,9 @@ export const generateStaticParams = async () => {
   return popularQueries
     .filter((lyric: ILyrics) => lyric.lyrics) // Ensure lyrics exist
     .map((lyric: ILyrics) => ({
-      query: encodeURIComponent(lyric.title.toLowerCase().replace(/\s+/g, "-")), // Ensure URL-safe slugs
+      query: encodeURIComponent(
+        lyric.title?.toLowerCase()?.replace(/\s+/g, "-")
+      ), // Ensure URL-safe slugs
     }));
 };
 
