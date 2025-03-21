@@ -1,13 +1,38 @@
 import mongoose from "mongoose";
 
-export const connectMongoDB = async () => {
-  if (mongoose.connection.readyState >= 1) {
+let connectionPromise: Promise<typeof mongoose> | null = null;
+
+export const connectMongoDB = async (admin = false) => {
+  const uri = admin ? process.env.MONGODB_ADMIN_URI! : process.env.MONGODB_URI!;
+
+  if (mongoose.connection.readyState >= 1 && !admin) {
     return; // Already connected
   }
-  try {
-    await mongoose.connect(process.env.MONGODB_URI!);
-    console.log("✅ Connected to MongoDB");
-  } catch (error) {
-    console.error("❌ MongoDB Connection Error:", error);
+
+  if (admin) {
+    if (connectionPromise) {
+      await connectionPromise; // Wait for any ongoing connection attempt to complete
+    }
+
+    await mongoose.disconnect();
   }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(uri)
+      .then((conn) => {
+        console.log(`✅ Connected to MongoDB (${admin ? "admin" : "user"})`);
+        return conn;
+      })
+      .catch((error) => {
+        console.error(
+          `❌ MongoDB Connection Error (${admin ? "admin" : "user"}):`,
+          error
+        );
+        connectionPromise = null; // Reset on failure
+        throw error;
+      });
+  }
+
+  return connectionPromise;
 };

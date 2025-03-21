@@ -7,6 +7,7 @@ import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
 import PageLoader from "@/components/component/Spinner/Spinner";
 import { getLyrics } from "@/service/allartists";
 import { ILyrics } from "@/models/IObjects";
+import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
 // const ico = require("../../public/tangkhullyrics.ico");
 
 const inter = Inter({ subsets: ["latin"] });
@@ -61,17 +62,19 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
-        <DarkTheme />
-        <header>
-          <Navigation lyrics={lyrics} />
-        </header>
-        <div className="p-4">
-          <PageLoader />
-          {children}
-        </div>
-        <footer>
-          <Footer />
-        </footer>
+        <SessionProviderWrapper>
+          <DarkTheme />
+          <header>
+            <Navigation lyrics={lyrics} />
+          </header>
+          <div className="p-4">
+            <PageLoader />
+            {children}
+          </div>
+          <footer>
+            <Footer />
+          </footer>
+        </SessionProviderWrapper>
       </body>
     </html>
   );

@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
     await connectMongoDB();
 
     // Find artist by name
-    const artist = await Artist.findOne({ name: artistName });
+    const artist = await Artist.findOne({
+      name: artistName.replace(/-/g, " "),
+    });
 
     if (!artist) {
       return NextResponse.json({ error: "Artist not found" }, { status: 404 });

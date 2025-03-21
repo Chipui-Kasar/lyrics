@@ -120,7 +120,29 @@ export const createArtist = async () => {};
 export const updateArtist = async () => {};
 export const deleteArtist = async () => {};
 
-export const createLyrics = async () => {};
+export const createLyrics = async (lyricsData: {
+  title: string;
+  artistId: string;
+  album: string;
+  releaseYear: number;
+  lyrics: string;
+  streamingLinks?: { youtube: string; spotify: string };
+}) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(lyricsData),
+    });
+    return res.ok ? await res.json() : null;
+  } catch (error) {
+    console.error("Error creating lyrics:", error);
+    return null;
+  }
+};
 export const updateLyrics = async () => {};
 export const deleteLyrics = async () => {};
 

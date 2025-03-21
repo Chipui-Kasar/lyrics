@@ -3,9 +3,15 @@ import AddArtists from "@/components/component/Admin/Artists/AddArtists";
 import AddNewLyrics from "@/components/component/Admin/Lyrics/AddLyrics";
 import { IArtists } from "@/models/IObjects";
 import React, { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import AdminLogin from "./signin/page";
+import { LogOutIcon } from "lucide-react";
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("lyrics");
+  const { data: session } = useSession();
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -19,10 +25,20 @@ const AdminPage = () => {
       .then((data) => setArtists(data))
       .catch((err) => console.error("Failed to fetch artists:", err));
   }, []);
-
+  if (!session) {
+    return <AdminLogin />;
+  }
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <div className="p-6">
+        <Button
+          onClick={() => signOut()}
+          className="flex items-center gap-2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-600 transition-all"
+        >
+          <LogOutIcon className="h-5 w-5" />
+          Sign Out
+        </Button>
+
         <h1 className="text-xl font-bold mb-4">Artists List</h1>
         <table className="w-full border border-gray-300">
           <thead>

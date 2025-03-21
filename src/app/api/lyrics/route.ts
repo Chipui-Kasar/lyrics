@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Lyrics } from "@/models/model";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function POST(req: Request) {
   const { title, artistId, album, releaseYear, lyrics, streamingLinks } =
     await req.json();
-  await connectMongoDB();
+  await connectMongoDB(true); // Use admin access
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   await Lyrics.create({
     title,
     artistId,
