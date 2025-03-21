@@ -15,23 +15,59 @@ export async function GET(req: Request) {
   await connectMongoDB();
 
   try {
-    const lyrics = await Lyrics.find(
-      { $text: { $search: query, $caseSensitive: false } },
-      { score: { $meta: "textScore" } }
-    )
-      .sort({ score: { $meta: "textScore" } })
-      .limit(10)
-      .populate("artistId", "name");
+    // Fuzzy search using MongoDB Atlas Search (if using MongoDB Atlas)
+    const lyrics = await Lyrics.aggregate([
+      {
+        $search: {
+          index: "default", // Ensure this matches your search index name
+          text: {
+            query,
+            path: ["lyrics", "title"], // Fields to search in
+            fuzzy: {
+              maxEdits: 2,
+              prefixLength: 2,
+            },
+          },
+        },
+      },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "artists", // Ensure this matches your artists collection name
+          localField: "artistId",
+          foreignField: "_id",
+          as: "artist",
+        },
+      },
+      { $unwind: "$artist" },
+      {
+        $project: {
+          lyrics: 1,
+          title: 1, // ✅ Include the song title
+          "artistId.name": "$artist.name", // ✅ Include the artist ID
+          score: { $meta: "searchScore" },
+        },
+      },
+    ]);
 
-    const artists = await Artist.find(
-      { $text: { $search: query, $caseSensitive: false } },
-      { score: { $meta: "textScore" } }
-    )
-      .sort({ score: { $meta: "textScore" } })
-      .limit(10);
+    const artists = await Artist.aggregate([
+      {
+        $search: {
+          index: "default",
+          text: {
+            query,
+            path: "name",
+            fuzzy: { maxEdits: 2, prefixLength: 2 },
+          },
+        },
+      },
+      { $limit: 10 },
+      { $project: { name: 1, score: { $meta: "searchScore" } } },
+    ]);
 
     return NextResponse.json({ lyrics, artists }, { status: 200 });
   } catch (error) {
+    console.error("Search Error:", error);
     return NextResponse.json({ error: "Failed to search" }, { status: 500 });
   }
 }

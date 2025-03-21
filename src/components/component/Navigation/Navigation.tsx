@@ -51,8 +51,11 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+
+    const trimmedQuery = searchQuery.trim().toLowerCase().replace(/\s+/g, "-"); // Normalize case
+
+    if (trimmedQuery) {
+      router.push(`/search/${encodeURIComponent(trimmedQuery)}`);
     }
   };
 

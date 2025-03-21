@@ -5,15 +5,20 @@ import {
   getSingleArtistWithSongCount,
 } from "@/service/allartists";
 
+// Fetch lyrics for a single artist
 const fetchFeaturedLyrics = async (artistName: string) => {
   return await getSingleArtistWithSongCount(artistName);
 };
 
+// ✅ Pre-generate static paths for all artists
 export const generateStaticParams = async () => {
-  const posts = await getAllArtists();
-  return posts.map((post: IArtists) => ({ artists: post.name }));
+  const artists = await getAllArtists();
+  return artists.map((artist: IArtists) => ({
+    artists: artist.name.toLowerCase(), // Ensure consistency in URL
+  }));
 };
 
+// ✅ Artist page (server component)
 export default async function ArtistPage({
   params,
 }: {

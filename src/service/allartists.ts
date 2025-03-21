@@ -116,6 +116,22 @@ export const getSingleArtistWithSongCount = async (artistName: string) => {
   }
 };
 
+export const searchLyrics = async (query: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/search?query=${query}`,
+      {
+        next: { revalidate: 60 },
+        // cache: "force-cache",
+      }
+    );
+    return res.ok ? await res.json() : [];
+  } catch (error) {
+    console.error("Error fetching artists:", error);
+    return [];
+  }
+};
+
 export const createArtist = async () => {};
 export const updateArtist = async () => {};
 export const deleteArtist = async () => {};
