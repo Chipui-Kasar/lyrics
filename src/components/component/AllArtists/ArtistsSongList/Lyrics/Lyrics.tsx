@@ -1,11 +1,13 @@
+import NotFound from "@/app/not-found";
 import { Button } from "@/components/ui/button";
 import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
 
 const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
+  if (!lyrics._id) return <NotFound />;
   const escapeApostrophe = (text: string) => {
-    return text.replace(/'/g, "&apos;");
+    return text?.replace(/'/g, "&apos;");
   };
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background">
@@ -31,7 +33,7 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
             <div
               className="prose text-muted-foreground"
               dangerouslySetInnerHTML={{
-                __html: lyrics.lyrics.replace(/\n/g, "<br/>"),
+                __html: lyrics.lyrics?.replace(/\n/g, "<br/>"),
               }}
             ></div>
           </div>
@@ -50,7 +52,7 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
             <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
               <div className="flex items-center justify-between">
                 <span>Artist:</span>
-                <span>{lyrics.artistId.name}</span>
+                <span>{lyrics.artistId?.name}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Album:</span>
@@ -65,8 +67,8 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
             <div className="mt-4">
               <Link
                 href={
-                  lyrics.streamingLinks?.spotify ||
-                  lyrics.streamingLinks?.youtube
+                  lyrics.streamingLinks?.youtube ||
+                  lyrics.streamingLinks?.spotify
                 }
                 className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 prefetch={true}

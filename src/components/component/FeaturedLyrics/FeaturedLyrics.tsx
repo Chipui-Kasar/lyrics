@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "../../ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import { ILyrics } from "@/models/IObjects";
+import { slugMaker } from "@/lib/utils";
 
 interface FeaturedLyricsProps {
   lyrics: ILyrics[];
@@ -19,9 +20,9 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
       <div className="mt-6 grid gap-4">
         {lyrics.map((lyric, key) => (
           <Link
-            href={`/artists/${
-              lyric.artistId?.name ?? "unknown"
-            }/lyrics/${lyric.title.replace(/'/g, "&apos;")}`}
+            href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}~${slugMaker(
+              lyric.artistId?.name
+            )}`}
             prefetch={true}
             className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
             key={key}

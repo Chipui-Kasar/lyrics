@@ -6,28 +6,29 @@
 import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
-import { notFound } from "next/navigation";
 
-const fetchSingleLyrics = async (artistName: string, songTitle: string) => {
-  return await getSingleLyrics(artistName, songTitle);
+const fetchSingleLyrics = async (id: string, title: string, artist: string) => {
+  return await getSingleLyrics(id, title, artist);
 };
 
 export async function generateStaticParams() {
   const posts = await getLyrics();
 
   return posts.map((post: ILyrics) => ({
-    artists: post.artistId.name,
-    songTitle: post.title,
+    id: post._id,
+    title: post.title,
+    artist: post.artistId?.name,
   }));
 }
 
 export default async function SongDetailsPage({
   params,
 }: {
-  params: { artists: string; songTitle: string };
+  params: { lyricsID: string; "title~artist": string };
 }) {
-  const songLyrics = await fetchSingleLyrics(params.artists, params.songTitle);
-  if (!songLyrics) return notFound();
+  const [title, artist] = params["title~artist"].split("~");
+  const id = params.lyricsID;
+  const songLyrics = await fetchSingleLyrics(id, title, artist);
 
   return <SongDetails songLyrics={songLyrics} />;
 }

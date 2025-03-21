@@ -1,7 +1,7 @@
-import { connectMongoDB } from "@/lib/mongodb";
 import { Lyrics } from "@/models/model";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
+import { connectMongoDB } from "@/lib/mongodb";
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,9 +19,7 @@ export async function GET(req: NextRequest) {
     const artistObjectIds = artistIds.map(
       (id) => new mongoose.Types.ObjectId(id)
     );
-
     await connectMongoDB();
-
     const lyricsCounts = await Lyrics.aggregate([
       { $match: { artistId: { $in: artistObjectIds } } },
       { $group: { _id: "$artistId", count: { $sum: 1 } } },

@@ -27,6 +27,8 @@
     --ring: 221.54deg 17.33% 14.71%;
     --radius: 0.5rem;
     --border-error: 0 72% 51%;
+    --highlight-yellow: 48.6 100% 60%;
+    --highlight-green: 120 100% 50%;
   }
 
   .dark {
@@ -50,11 +52,12 @@
     --input: 210 50% 40%;
     --ring: 180deg 100% 94.51%;
     --radius: 0rem;
+    --border-error: 0 98% 60%;
+    --highlight-yellow: 48.6 100% 60%;
+    --highlight-green: 120 100% 50%;
   }
 }
-.border-error {
-  border-color: hsl(var(--border-error));
-}
+
 .text-truncate-2-lines {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -64,9 +67,7 @@
   -webkit-box-orient: vertical;
   padding: 4px 7px;
 }
-.bg-yellow-200 {
-  background-color: hsl(48.6 100% 80%);
-}
+
 @layer base {
   * {
     @apply border-border;

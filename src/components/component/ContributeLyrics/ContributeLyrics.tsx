@@ -74,11 +74,11 @@ const ContributeLyrics = () => {
               id="title"
               placeholder="Enter the song title"
               value={songTitle}
-              className={
+              className={`border ${
                 submitStatus === "Please fill all the required fields"
-                  ? "border-error"
+                  ? "border-[hsl(var(--border-error))]"
                   : ""
-              }
+              }`}
               required
               onChange={(e) => setSongTitle(e.target.value)}
             />
@@ -89,11 +89,11 @@ const ContributeLyrics = () => {
               id="artist"
               placeholder="Enter the artist name"
               value={artistsName}
-              className={
+              className={`border ${
                 submitStatus === "Please fill all the required fields"
-                  ? "border-error"
+                  ? "border-[hsl(var(--border-error))]"
                   : ""
-              }
+              }`}
               required
               onChange={(e) => setArtistsName(e.target.value)}
             />
@@ -107,15 +107,17 @@ const ContributeLyrics = () => {
               rows={8}
               required
               value={lyrics}
-              className={
+              className={`border ${
                 submitStatus === "Please fill all the required fields"
-                  ? "border-error"
+                  ? "border-[hsl(var(--border-error))]"
                   : ""
-              }
+              }`}
               onChange={(e) => setLyrics(e.target.value)}
             />
           </div>
-          <p className="text-sm text-error">{submitStatus}</p>
+          <p className="text-sm text-[hsl(var(--border-error))]">
+            {submitStatus}
+          </p>
           <div className="flex justify-end">
             <Button onSubmit={submitLyrics} onClick={submitLyrics}>
               Submit

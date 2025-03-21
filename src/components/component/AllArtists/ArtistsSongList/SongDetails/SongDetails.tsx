@@ -7,8 +7,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ILyrics } from "@/models/IObjects";
+import NotFound from "@/app/not-found";
 
 export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
+  if (!songLyrics._id) return <NotFound />;
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="flex-1 py-12">
@@ -24,7 +26,7 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold">{songLyrics.title}</h1>
               <p className="text-muted-foreground">
-                {songLyrics.artistId.name}
+                {songLyrics.artistId?.name}
               </p>
             </div>
             <div className="mt-6 flex gap-4">
@@ -33,10 +35,10 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
                 Share
               </Button>
               <Link
-                href={`/artists/${songLyrics.artistId.name.replace(
+                href={`/artists/${songLyrics.artistId?.name.replace(
                   /'/g,
                   "&apos;"
-                )}/lyrics/${songLyrics.title.replace(/'/g, "&apos;")}`}
+                )}/lyrics/${songLyrics.title?.replace(/'/g, "&apos;")}`}
               >
                 <Button>View Lyrics</Button>
               </Link>
@@ -49,7 +51,7 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
                 <div>Release Year:</div>
                 <div>{songLyrics.releaseYear}</div>
                 <div>Songwriter:</div>
-                <div>{songLyrics.artistId.name}</div>
+                <div>{songLyrics.artistId?.name}</div>
               </div>
             </div>
             <div>
@@ -57,7 +59,7 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
               <p
                 className="text-sm text-muted-foreground"
                 dangerouslySetInnerHTML={{
-                  __html: songLyrics.lyrics.replace(/\n/g, "<br/>"),
+                  __html: songLyrics.lyrics?.replace(/\n/g, "<br/>"),
                 }}
               ></p>
             </div>

@@ -10,6 +10,7 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { ILyrics } from "@/models/IObjects";
+import { slugMaker } from "@/lib/utils";
 
 const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
   return (
@@ -31,9 +32,9 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
                   <tr className="border-b hover:bg-muted/20" key={key}>
                     <td className="py-3 px-4 text-left">
                       <Link
-                        href={`/artists/${
-                          lyric.artistId.name
-                        }/lyrics/${lyric.title.replace(/ /g, "-")}`}
+                        href={`/lyrics/${lyric._id}/${slugMaker(
+                          lyric.title
+                        )}-${slugMaker(lyric.artistId?.name)}`}
                         className="font-medium hover:underline"
                         prefetch={true}
                       >

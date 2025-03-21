@@ -19,6 +19,7 @@ const lyricsSchema = new Schema({
   lyrics: { type: String, required: true },
   streamingLinks: { type: Object, default: {} },
   thumbnail: String,
+  contributedBy: String,
 });
 lyricsSchema.index({ title: "text", lyrics: "text" });
 const Lyrics = mongoose.models.Lyrics || mongoose.model("Lyrics", lyricsSchema);

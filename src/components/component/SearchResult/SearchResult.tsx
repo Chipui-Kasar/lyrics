@@ -16,8 +16,6 @@ interface SearchResultProps {
   lyrics: ILyrics[];
 }
 const SearchResult = ({ params, lyrics }: SearchResultProps) => {
-  console.log(lyrics);
-
   return (
     <div className="container mx-auto py-12">
       <div className="flex flex-wrap items-center justify-between mb-8 px-4">

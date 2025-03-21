@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
 import { debounce } from "lodash";
 import { ILyrics } from "@/models/IObjects";
+import { slugMaker } from "@/lib/utils";
 
 interface NavigationProps {
   lyrics: ILyrics[];
@@ -40,6 +41,10 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
     filterLyrics(searchQuery);
   }, [searchQuery, filterLyrics]);
 
+  //clear search on route change
+  useEffect(() => {
+    setSearchQuery("");
+  }, [pathname]);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
@@ -51,8 +56,8 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
     }
   };
 
-  const handleResultClick = (slug: string) => {
-    router.push(`/search?query=${slug}`);
+  const handleResultClick = (id: string, title: string, artist: string) => {
+    router.push(`/lyrics/${id}/${slugMaker(title)}-${slugMaker(artist)}`);
     setSearchQuery(""); // Clear search after selection
     setFilteredLyrics([]); // Hide results
   };
@@ -99,13 +104,20 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
                   return (
                     <li
                       key={lyric._id}
-                      onClick={() => handleResultClick(lyric.title)}
+                      onClick={() =>
+                        handleResultClick(
+                          lyric._id,
+                          lyric.title,
+                          lyric.artistId?.name
+                        )
+                      }
+                      title={lyric.lyrics}
                       className="cursor-pointer hover:bg-gray-100 transition text-sm text-truncate-2-lines"
                       dangerouslySetInnerHTML={{
                         __html: matchingLine.replace(
                           regex,
                           (match) =>
-                            `<span class="bg-yellow-200">${match}</span>`
+                            `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
                         ),
                       }}
                     />

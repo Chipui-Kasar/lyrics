@@ -73,8 +73,8 @@ export default function Contact() {
         <div
           className={`${
             submitStatus === "Sent successfully"
-              ? "bg-green-100 text-green-700"
-              : "bg-error text-error"
+              ? "text-[hsl(var(--highlight-green)]"
+              : "text-[hsl(var(--border-error))]"
           } p-2 mt-4 rounded-md text-center`}
         >
           {submitStatus}
@@ -94,11 +94,11 @@ export default function Contact() {
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className={
+              className={`border ${
                 submitStatus === "Please fill all the required fields"
-                  ? "border-error"
+                  ? "border-[hsl(var(--border-error))]"
                   : ""
-              }
+              }`}
             />
           </div>
         </div>
@@ -117,11 +117,11 @@ export default function Contact() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={
+              className={`border ${
                 submitStatus === "Please fill all the required fields"
-                  ? "border-error"
+                  ? "border-[hsl(var(--border-error))]"
                   : ""
-              }
+              }`}
             />
           </div>
         </div>
@@ -155,11 +155,11 @@ export default function Contact() {
               rows={8}
               required
               value={message}
-              className={
+              className={`border ${
                 submitStatus === "Please fill all the required fields"
-                  ? "border-error"
+                  ? "border-[hsl(var(--border-error))]"
                   : ""
-              }
+              }`}
               onChange={(e) => setMessage(e.target.value)}
             />
           </div>

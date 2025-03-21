@@ -24,4 +24,5 @@ export interface ILyrics {
   };
   thumbnail: string;
   _id: string;
+  contributedBy: string;
 }

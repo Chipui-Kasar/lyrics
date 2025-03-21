@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Artist, Lyrics } from "@/models/model";
+import { Lyrics } from "@/models/model";
 
 export async function POST(req: Request) {
   const { title, artistId, album, releaseYear, lyrics, streamingLinks } =

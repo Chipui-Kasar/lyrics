@@ -3,8 +3,6 @@ import { Artist, Lyrics } from "@/models/model";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  await connectMongoDB();
-
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("query");
 
@@ -14,6 +12,7 @@ export async function GET(req: Request) {
       { status: 400 }
     );
   }
+  await connectMongoDB();
 
   try {
     const lyrics = await Lyrics.find(

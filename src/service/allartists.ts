@@ -12,16 +12,13 @@ export const getLyrics = async () => {
   }
 };
 export const getSingleLyrics = async (
-  artistName: string,
-  songTitle: string
+  id: string,
+  title: string,
+  artist: string
 ) => {
   try {
     const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/api/lyrics/author/singleLyrics?artistName=${encodeURIComponent(
-        artistName
-      )}&songTitle=${encodeURIComponent(songTitle)}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?id=${id}&title=${title}&artist=${artist}`,
       { cache: "force-cache" }
     );
     return res.ok ? await res.json() : [];
