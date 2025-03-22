@@ -9,7 +9,7 @@ export interface IArtists {
   village: string;
   image: string;
   _id: string;
-  songCount: number;
+  songCount?: number;
 }
 
 export interface ILyrics {

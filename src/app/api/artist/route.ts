@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Artist } from "@/models/model";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function POST(req: Request) {
   const { name, genre, socialLinks, village } = await req.json();
-  await connectMongoDB();
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  await connectMongoDB(true);
   await Artist.create({ name, genre, socialLinks, village });
   return NextResponse.json(
     { message: "Artist created successfully" },
@@ -15,7 +21,7 @@ export async function POST(req: Request) {
 //get all artists
 export async function GET() {
   await connectMongoDB();
-  const artists = await Artist.find();
+  const artists = await Artist.find().sort({ name: "asc" });
   return NextResponse.json(artists);
 }
 export async function DELETE(req: NextRequest) {

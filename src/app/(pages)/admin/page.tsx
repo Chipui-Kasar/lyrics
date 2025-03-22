@@ -3,11 +3,11 @@ import AddArtists from "@/components/component/Admin/Artists/AddArtists";
 import AddNewLyrics from "@/components/component/Admin/Lyrics/AddLyrics";
 import { IArtists } from "@/models/IObjects";
 import React, { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import AdminLogin from "./signin/page";
 import { LogOutIcon } from "lucide-react";
+import { getAllArtists } from "@/service/allartists";
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("lyrics");
@@ -20,10 +20,7 @@ const AdminPage = () => {
   const [artists, setArtists] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`)
-      .then((res) => res.json())
-      .then((data) => setArtists(data))
-      .catch((err) => console.error("Failed to fetch artists:", err));
+    getAllArtists().then((data) => setArtists(data));
   }, []);
   if (!session) {
     return <AdminLogin />;
@@ -86,7 +83,7 @@ const AdminPage = () => {
           )}
           {activeTab === "tab2" && (
             <div>
-              <AddNewLyrics />
+              <AddNewLyrics artists={artists} />
             </div>
           )}
         </div>

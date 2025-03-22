@@ -48,7 +48,7 @@ const AddNew = () => {
           )}
           {activeTab === "tab2" && (
             <div>
-              <AddNewLyrics />
+              <AddNewLyrics artists={artists} />
             </div>
           )}
         </div>

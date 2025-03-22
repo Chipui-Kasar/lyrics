@@ -1,20 +1,24 @@
 import { Button } from "@/components/ui/button";
+import { Dropdown } from "@/components/ui/dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { IArtists } from "@/models/IObjects";
 import { createLyrics } from "@/service/allartists";
-import React from "react";
+import React, { useState } from "react";
 
-const AddNewLyrics = () => {
-  const [formData, setFormData] = React.useState({
+const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
+  const [formData, setFormData] = useState({
     title: "",
     artistId: "",
     album: "",
-    releaseYear: 0,
+    releaseYear: new Date().getFullYear(),
     streamingLinks: {
       youtube: "",
       spotify: "",
     },
+    contributedBy: "",
+    thumbnail: "",
     lyrics: "",
   });
 
@@ -73,9 +77,11 @@ const AddNewLyrics = () => {
           title: "",
           artistId: "",
           album: "",
-          releaseYear: 0,
+          releaseYear: new Date().getFullYear(),
           streamingLinks: { youtube: "", spotify: "" },
           lyrics: "",
+          thumbnail: "",
+          contributedBy: "",
         });
       } else {
         alert("Failed to add lyrics.");
@@ -84,6 +90,13 @@ const AddNewLyrics = () => {
       console.error("Error submitting lyrics:", error);
       alert("An error occurred while submitting the lyrics.");
     }
+  };
+
+  const generateDropdownOptions = (artists: IArtists[]) => {
+    return artists.map((artist) => ({
+      value: artist._id,
+      label: artist.name,
+    }));
   };
 
   return (
@@ -114,6 +127,14 @@ const AddNewLyrics = () => {
               placeholder="Enter the artist name"
               value={formData.artistId}
               onChange={handleChange}
+              disabled
+            />
+            <Dropdown
+              options={generateDropdownOptions(artists)}
+              value={formData.artistId}
+              onChange={(e) =>
+                setFormData({ ...formData, artistId: e.target.value })
+              }
             />
           </div>
           <div className="grid gap-2">
@@ -156,6 +177,17 @@ const AddNewLyrics = () => {
               value={formData.streamingLinks.spotify}
               onChange={handleStreamingLinksChange}
               className="mb-2"
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="contributedBy">Contributed By</Label>
+            <Input
+              id="contributedBy"
+              name="contributedBy"
+              type="text"
+              placeholder="Contributed By"
+              value={formData.contributedBy}
+              onChange={handleChange}
             />
           </div>
 
