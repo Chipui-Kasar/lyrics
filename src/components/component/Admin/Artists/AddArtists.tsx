@@ -101,24 +101,24 @@ const AddArtists = () => {
           <div className="grid gap-2">
             <Label htmlFor="socialLinks">Social Links</Label>
             <Input
-              id="socialLinks.facebook"
-              name="socialLinks.facebook"
+              id="facebook"
+              name="facebook"
               placeholder="Facebook"
               className="mb-2"
               value={formData.socialLinks.facebook}
               onChange={handleSocialLinksChange}
             />
             <Input
-              id="socialLinks.instagram"
-              name="socialLinks.instagram"
+              id="instagram"
+              name="instagram"
               placeholder="Instagram"
               className="mb-2"
               value={formData.socialLinks.instagram}
               onChange={handleSocialLinksChange}
             />
             <Input
-              id="socialLinks.youtube"
-              name="socialLinks.youtube"
+              id="youtube"
+              name="youtube"
               placeholder="YouTube"
               className="mb-2"
               value={formData.socialLinks.youtube}
