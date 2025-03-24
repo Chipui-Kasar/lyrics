@@ -46,7 +46,7 @@ const AdminPage = () => {
             </tr>
           </thead>
           <tbody>
-            {artists.map((artist: IArtists) => (
+            {artists.slice(0, 2).map((artist: IArtists) => (
               <tr key={artist._id} className="border-b">
                 <td className="border p-2">{artist.name}</td>
                 <td className="border p-2">{artist.genre.join(", ")}</td>

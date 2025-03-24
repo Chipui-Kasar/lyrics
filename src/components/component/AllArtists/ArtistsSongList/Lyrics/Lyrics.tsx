@@ -1,5 +1,7 @@
+"use client";
 import NotFound from "@/app/not-found";
 import { Button } from "@/components/ui/button";
+import { YouTubePlayer } from "@/components/ui/video";
 import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +10,21 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
   if (!lyrics._id) return <NotFound />;
   const escapeApostrophe = (text: string) => {
     return text?.replace(/'/g, "&apos;");
+  };
+  const handleShare = async () => {
+    if (typeof window !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: lyrics.title,
+          text: `Check out the song "${lyrics.title}" by ${lyrics.artistId?.name}!`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      alert("Sharing is not supported on this browser.");
+    }
   };
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background">
@@ -25,11 +42,16 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
             </div>
           </div>
           <div className="flex flex-wrap w-full items-start gap-6">
-            <Video
-              width="200"
-              height="200"
-              className="aspect-square overflow-hidden rounded-lg object-cover"
-            />
+            {lyrics.streamingLinks.youtube !== "" ? (
+              <YouTubePlayer videoUrl={lyrics.streamingLinks.youtube} />
+            ) : (
+              <Video
+                width="200"
+                height="200"
+                className="aspect-square overflow-hidden rounded-lg object-cover"
+              />
+            )}
+
             <div
               className="prose text-muted-foreground"
               dangerouslySetInnerHTML={{
@@ -44,7 +66,7 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
               <div className="text-sm font-medium text-muted-foreground">
                 Song Details
               </div>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleShare}>
                 <ShareIcon className="h-5 w-5" />
                 <span className="sr-only">Share</span>
               </Button>

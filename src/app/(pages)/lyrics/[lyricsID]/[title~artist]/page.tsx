@@ -27,7 +27,7 @@ export async function generateMetadata({
     description: `Read the lyrics of '${lyric.title}' by ${lyric.artistId?.name}.`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${lyric.title}~${lyric.artistId?.name}`,
     image: "/ogImage.jpg", // ✅ Use a valid image
-    keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa`,
+    keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, ${lyric.title} lyrics, ${lyric.artistId?.name} lyrics`,
   });
 }
 
