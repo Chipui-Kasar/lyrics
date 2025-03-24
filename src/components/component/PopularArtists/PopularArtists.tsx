@@ -27,7 +27,8 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
               width={64}
               height={64}
               alt={artist.name}
-              className="h-16 w-16 rounded-full object-cover"
+              className="h-16 w-16 object-cover"
+              style={{ borderRadius: "50%" }}
             />
             <div className="text-center">
               <h3 className="text-sm font-medium">{artist.name}</h3>

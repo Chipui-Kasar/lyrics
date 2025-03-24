@@ -19,7 +19,7 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
         <div className="container mx-auto grid grid-cols-1 gap-8 px-4 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
           <div className="flex flex-col items-center justify-center">
             <Image
-              src={songLyrics.thumbnail || "/placeholder.svg"}
+              src={songLyrics.artistId?.image || "/placeholder.svg"}
               width={400}
               height={400}
               alt="Album Cover"
