@@ -3,11 +3,13 @@
  * @see https://v0.dev/t/kqDlEjkR9OG
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ILyrics } from "@/models/IObjects";
 import NotFound from "@/app/not-found";
+import { handleShare, slugMaker } from "@/lib/utils";
 
 export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
   if (!songLyrics._id) return <NotFound />;
@@ -30,15 +32,15 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
               </p>
             </div>
             <div className="mt-6 flex gap-4">
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => handleShare(songLyrics)}>
                 <ShareIcon className="mr-2 h-4 w-4" />
                 Share
               </Button>
               <Link
-                href={`/artists/${songLyrics.artistId?.name.replace(
-                  /'/g,
-                  "&apos;"
-                )}/lyrics/${songLyrics.title?.replace(/'/g, "&apos;")}`}
+                href={`/lyrics/${songLyrics._id}/${slugMaker(
+                  songLyrics.title
+                )}~${slugMaker(songLyrics.artistId?.name)}`}
+                prefetch={true}
               >
                 <Button>View Lyrics</Button>
               </Link>
@@ -52,6 +54,10 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
                 <div>{songLyrics.releaseYear}</div>
                 <div>Songwriter:</div>
                 <div>{songLyrics.artistId?.name}</div>
+                <div>Album:</div>
+                <div>{songLyrics.album}</div>
+                <div>Contributed By:</div>
+                <div>{songLyrics.contributedBy}</div>
               </div>
             </div>
             <div>

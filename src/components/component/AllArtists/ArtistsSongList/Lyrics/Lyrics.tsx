@@ -2,6 +2,7 @@
 import NotFound from "@/app/not-found";
 import { Button } from "@/components/ui/button";
 import { YouTubePlayer } from "@/components/ui/video";
+import { handleShare } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
@@ -11,21 +12,7 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
   const escapeApostrophe = (text: string) => {
     return text?.replace(/'/g, "&apos;");
   };
-  const handleShare = async () => {
-    if (typeof window !== "undefined" && navigator.share) {
-      try {
-        await navigator.share({
-          title: lyrics.title,
-          text: `Check out the song "${lyrics.title}" by ${lyrics.artistId?.name}!`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    } else {
-      alert("Sharing is not supported on this browser.");
-    }
-  };
+
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background">
       <main className="container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
@@ -66,7 +53,11 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
               <div className="text-sm font-medium text-muted-foreground">
                 Song Details
               </div>
-              <Button variant="ghost" size="icon" onClick={handleShare}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleShare(lyrics)}
+              >
                 <ShareIcon className="h-5 w-5" />
                 <span className="sr-only">Share</span>
               </Button>

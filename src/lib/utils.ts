@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Metadata } from "next";
+import { ILyrics } from "@/models/IObjects";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -121,4 +122,20 @@ export const highlightFuzzyMatch = (text: string, query: string) => {
   });
 
   return highlightedWords.join(" "); // Join words back
+};
+
+export const handleShare = async (lyrics: ILyrics) => {
+  if (typeof window !== "undefined" && navigator.share) {
+    try {
+      await navigator.share({
+        title: lyrics.title,
+        text: `Check out the song "${lyrics.title}" by ${lyrics.artistId?.name}!`,
+        url: window.location.href,
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  } else {
+    alert("Sharing is not supported on this browser.");
+  }
 };
