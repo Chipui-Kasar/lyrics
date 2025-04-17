@@ -23,6 +23,7 @@ interface MetadataProps {
   url: string;
   image?: string;
   keywords?: string;
+  robots?: string;
 }
 
 export function generatePageMetadata({
@@ -31,6 +32,7 @@ export function generatePageMetadata({
   url,
   image = "/ogImage.jpg", // Default image if none is provided
   keywords = "Tangkhul lyrics, Tangkhul song lyrics, Tangkhul Laa, Tangkhul music",
+  robots = "index, follow",
 }: MetadataProps): Metadata {
   return {
     title,
@@ -65,6 +67,7 @@ export function generatePageMetadata({
     },
 
     keywords,
+    robots,
   };
 }
 
