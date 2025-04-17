@@ -30,7 +30,7 @@ const PageLoader = () => {
   useEffect(() => {
     // Trigger loader on route change
     setLoading(true);
-    const timeout = setTimeout(() => setLoading(false), 800);
+    const timeout = setTimeout(() => setLoading(false), 100);
 
     return () => clearTimeout(timeout);
   }, [pathname]);

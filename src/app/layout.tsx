@@ -67,7 +67,7 @@ export default async function RootLayout({
           <header>
             <Navigation lyrics={lyrics} />
           </header>
-          <div className="p-4">
+          <div>
             <PageLoader />
             {children}
           </div>

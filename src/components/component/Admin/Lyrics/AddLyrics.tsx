@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dropdown } from "@/components/ui/dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RichTextEditor } from "@/components/ui/richTextEditor";
 import { Textarea } from "@/components/ui/textarea";
 import { IArtists } from "@/models/IObjects";
 import { createLyrics } from "@/service/allartists";
@@ -27,6 +28,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: name === "releaseYear" ? Number(value) || 0 : value, // ✅ Convert to number
@@ -100,7 +102,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
   };
 
   return (
-    <section className="container m-auto">
+    <section className="container">
       <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <h2 className="text-2xl font-bold">Add new lyrics</h2>
         <p className="mt-2 text-muted-foreground">
@@ -194,13 +196,16 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           {/* ✅ Lyrics Textarea */}
           <div className="grid gap-2">
             <Label htmlFor="lyrics">Lyrics</Label>
-            <Textarea
-              id="lyrics"
-              name="lyrics"
-              placeholder="Enter the song lyrics"
-              rows={6}
-              value={formData.lyrics}
-              onChange={handleChange}
+            <RichTextEditor
+              onChange={
+                ({ target }) =>
+                  handleChange({
+                    target: {
+                      name: "lyrics",
+                      value: target.value,
+                    },
+                  } as React.ChangeEvent<HTMLTextAreaElement>) // ⛔️ Fake cast, not ideal but works
+              }
             />
           </div>
 

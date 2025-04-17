@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createArtist } from "@/service/allartists";
-import React, { useState } from "react";
+import { IArtists } from "@/models/IObjects";
+import { createArtist, getAllArtists } from "@/service/allartists";
+import React, { useEffect, useState } from "react";
 
 const AddArtists = () => {
   const [formData, setFormData] = useState({
@@ -70,8 +71,14 @@ const AddArtists = () => {
       alert("An error occurred while submitting the artist.");
     }
   };
+
+  const [artists, setArtists] = useState([]);
+
+  useEffect(() => {
+    getAllArtists().then((data) => setArtists(data));
+  }, []);
   return (
-    <section className="container m-auto ">
+    <section className="container">
       <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <h2 className="text-2xl font-bold">Add new artist</h2>
         <p className="mt-2 text-muted-foreground">
@@ -140,6 +147,24 @@ const AddArtists = () => {
           </div>
         </form>
       </div>
+
+      <h1 className="text-xl font-bold mb-4 mt-4">Artists List</h1>
+      <table className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border p-2">Name</th>
+            <th className="border p-2">Genre</th>
+          </tr>
+        </thead>
+        <tbody>
+          {artists.map((artist: IArtists) => (
+            <tr key={artist._id} className="border-b">
+              <td className="border p-2">{artist.name}</td>
+              <td className="border p-2">{artist.genre.join(", ")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   );
 };

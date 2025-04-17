@@ -18,6 +18,7 @@ const Dropdown = React.forwardRef<HTMLSelectElement, DropdownProps>(
         ref={ref}
         {...props}
       >
+        <option value="">Select an artist</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

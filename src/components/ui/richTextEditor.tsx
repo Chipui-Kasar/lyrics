@@ -1,21 +1,22 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface RichTextEditor
+export interface RichTextEditorProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
-  onChange?: (value: string) => void;
+  name?: string;
+  onChange?: (event: { target: { name?: string; value: string } }) => void;
 }
 
-const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditor>(
-  ({ className, onChange, ...props }, ref) => {
+const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorProps>(
+  ({ className, onChange, name, ...props }, ref) => {
     const handleInput = (event: React.FormEvent<HTMLDivElement>) => {
-      onChange?.(event.currentTarget.innerHTML);
+      const value = event.currentTarget.innerHTML;
+      onChange?.({ target: { name, value } });
     };
 
     const handleCommand = (command: string) => {
       document.execCommand(command, false, "");
     };
-
     return (
       <div>
         <div className="toolbar mb-4 flex gap-2 p-2 rounded-lg shadow-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800">
