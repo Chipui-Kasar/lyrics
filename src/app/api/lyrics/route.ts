@@ -5,26 +5,34 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export async function POST(req: Request) {
-  const { title, artistId, album, releaseYear, lyrics, streamingLinks } =
-    await req.json();
-  await connectMongoDB(true); // Use admin access
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const { title, artistId, album, releaseYear, lyrics, streamingLinks } =
+      await req.json();
+    await connectMongoDB(true); // Use admin access
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  await Lyrics.create({
-    title,
-    artistId,
-    album,
-    releaseYear,
-    lyrics,
-    streamingLinks,
-  });
-  return NextResponse.json(
-    { message: "Lyrics created successfully" },
-    { status: 201 }
-  );
+    await Lyrics.create({
+      title,
+      artistId,
+      album,
+      releaseYear,
+      lyrics,
+      streamingLinks,
+    });
+    return NextResponse.json(
+      { message: "Lyrics created successfully" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating lyrics:", error);
+    return NextResponse.json(
+      { error: "Error creating lyrics:", details: (error as Error).message },
+      { status: 500 }
+    );
+  }
 }
 export async function GET(req: NextRequest) {
   try {
