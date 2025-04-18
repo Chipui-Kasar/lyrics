@@ -26,7 +26,7 @@ export async function generateMetadata({
     title: `${lyric.title} by ${lyric.artistId?.name}`,
     description: `Read the lyrics of '${lyric.title}' by ${lyric.artistId?.name}.`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${lyric.title}~${lyric.artistId?.name}`,
-    image: `${lyric.thumbnail ?? lyric.artistId.image ?? "/ogImage.jpg"}`, // ✅ Use a valid image
+    image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`, // ✅ Use a valid image
     keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, ${lyric.title} lyrics, ${lyric.artistId?.name} lyrics`,
   });
 }

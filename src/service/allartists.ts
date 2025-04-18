@@ -44,10 +44,13 @@ export const getFeaturedLyrics = async () => {
 };
 export const getTopLyrics = async () => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
-      next: { revalidate: 60 },
-      // cache: "force-cache",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=13&sort=view`,
+      {
+        next: { revalidate: 60 },
+        // cache: "force-cache",
+      }
+    );
     return res.ok ? await res.json() : [];
   } catch (error) {
     console.error("Error fetching top lyrics:", error);

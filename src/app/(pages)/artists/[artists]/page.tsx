@@ -1,6 +1,6 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
 import { generatePageMetadata } from "@/lib/utils";
-import { IArtists } from "@/models/IObjects";
+import { IArtists, ILyrics } from "@/models/IObjects";
 import {
   getAllArtists,
   getSingleArtistWithSongCount,
@@ -25,21 +25,22 @@ export async function generateMetadata({
 }: {
   params: { artists: string };
 }) {
-  const artistData = await fetchFeaturedLyrics(params.artists);
+  const artistData: ILyrics[] = await fetchFeaturedLyrics(params.artists);
 
-  if (!artistData) {
+  if (artistData.length === 0) {
     return generatePageMetadata({
-      title: "Artist Not Found - Tangkhul Lyrics",
-      description: "The artist you are looking for is not available.",
+      title: "Artist Lyrics Not Found - Tangkhul Lyrics",
+      description:
+        "The artist doesn't have any lyrics available. Try another artist.",
       url: `https://tangkhullyrics.com/artists/not-found`,
     });
   }
 
   return generatePageMetadata({
-    title: `${artistData.name} - Tangkhul Song Lyrics`,
-    description: `Explore all song lyrics by ${artistData.name} on Tangkhul Lyrics.`,
-    url: `https://tangkhullyrics.com/artists/${artistData.name?.toLowerCase()}`,
-    keywords: `${artistData.name}, Tangkhul songs, Tangkhul lyrics, ${artistData.name} lyrics`,
+    title: `${artistData[0].artistId?.name} - Tangkhul Song Lyrics`,
+    description: `Explore all song lyrics by ${artistData[0].artistId?.name} on Tangkhul Lyrics.`,
+    url: `https://tangkhullyrics.com/artists/${artistData[0].artistId?.name?.toLowerCase()}`,
+    keywords: `${artistData[0].artistId?.name}, Tangkhul songs, Tangkhul lyrics, ${artistData[0].artistId?.name} lyrics`,
   });
 }
 

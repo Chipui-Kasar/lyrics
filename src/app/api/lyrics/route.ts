@@ -6,22 +6,17 @@ import { authOptions } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const { title, artistId, album, releaseYear, lyrics, streamingLinks } =
-      await req.json();
-    await connectMongoDB(true); // Use admin access
+    const data = await req.json();
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await Lyrics.create({
-      title,
-      artistId,
-      album,
-      releaseYear,
-      lyrics,
-      streamingLinks,
-    });
+    await connectMongoDB(true); // Admin access
+
+    const { _id, ...rest } = data;
+    await Lyrics.create(_id ? { _id, ...rest } : rest);
     return NextResponse.json(
       { message: "Lyrics created successfully" },
       { status: 201 }
@@ -29,30 +24,45 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating lyrics:", error);
     return NextResponse.json(
-      { error: "Error creating lyrics:", details: (error as Error).message },
+      {
+        error: "Error creating lyrics",
+        details: (error as Error).message,
+      },
       { status: 500 }
     );
   }
 }
+
 export async function GET(req: NextRequest) {
   try {
     await connectMongoDB();
 
-    // Extract 'limit' from query params and convert it to a number (default to 10)
     const url = new URL(req.url);
-    const limit = Number(url.searchParams.get("limit"));
+    const limitParam = url.searchParams.get("limit");
+    const sortParam = url.searchParams.get("sort");
 
-    // Fetch lyrics with a limit
+    const limit = limitParam ? Number(limitParam) : undefined;
+    const sort =
+      sortParam === "view" || sortParam === "releaseYear"
+        ? sortParam
+        : undefined;
+
+    // Build query
     const query = Lyrics.find().populate("artistId", "name image");
+
+    if (sort) {
+      query.sort({ [sort]: -1 }); // sort descending
+    }
+
     if (limit) {
       query.limit(limit);
     }
-    const lyrics = await query.exec();
 
+    const lyrics = await query.exec();
     return NextResponse.json(lyrics);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch lyrics" },
+      { error: "Failed to fetch lyrics", details: (error as Error).message },
       { status: 500 }
     );
   }

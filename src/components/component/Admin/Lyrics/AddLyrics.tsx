@@ -3,10 +3,10 @@ import { Dropdown } from "@/components/ui/dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/richTextEditor";
-import { Textarea } from "@/components/ui/textarea";
 import { IArtists } from "@/models/IObjects";
 import { createLyrics } from "@/service/allartists";
 import React, { useState } from "react";
+// import { ObjectId } from "mongodb";
 
 const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
   const [formData, setFormData] = useState({
@@ -21,6 +21,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     contributedBy: "",
     thumbnail: "",
     lyrics: "",
+    _id: "",
   });
 
   // ✅ Handle text inputs
@@ -84,6 +85,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           lyrics: "",
           thumbnail: "",
           contributedBy: "",
+          _id: "",
         });
       } else {
         alert("Failed to add lyrics.");
@@ -206,6 +208,16 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                     },
                   } as React.ChangeEvent<HTMLTextAreaElement>) // ⛔️ Fake cast, not ideal but works
               }
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="_id">Song ID (Deleted Song ID)</Label>
+            <Input
+              id="_id"
+              name="_id"
+              placeholder="Enter the song ID"
+              value={formData._id}
+              onChange={handleChange}
             />
           </div>
 

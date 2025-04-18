@@ -34,7 +34,7 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
                       <Link
                         href={`/lyrics/${lyric._id}/${slugMaker(
                           lyric.title
-                        )}-${slugMaker(lyric.artistId?.name)}`}
+                        )}~${slugMaker(lyric.artistId?.name)}`}
                         className="font-medium hover:underline"
                         prefetch={true}
                       >
