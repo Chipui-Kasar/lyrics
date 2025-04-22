@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     await connectMongoDB(true); // Admin access
 
     const { _id, ...rest } = data;
-    await Lyrics.create(_id ? { _id, ...rest } : rest);
+    await Lyrics.create(_id !== "" ? { _id, ...rest } : { ...rest });
     return NextResponse.json(
       { message: "Lyrics created successfully" },
       { status: 201 }
