@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 
     const limit = limitParam ? Number(limitParam) : undefined;
     const sort =
-      sortParam === "view" || sortParam === "releaseYear"
+      sortParam === "created" || sortParam === "releaseYear"
         ? sortParam
         : undefined;
 

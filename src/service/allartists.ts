@@ -2,9 +2,12 @@ import { IArtists } from "@/models/IObjects";
 
 export const getLyrics = async () => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
-      cache: "force-cache",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=createdAt`,
+      {
+        cache: "force-cache",
+      }
+    );
     return res.ok ? await res.json() : [];
   } catch (error) {
     console.error("Error fetching lyrics:", error);
@@ -42,10 +45,11 @@ export const getFeaturedLyrics = async () => {
     return [];
   }
 };
-export const getTopLyrics = async () => {
+export const getTopLyrics = async (limit?: number) => {
+  const query = `?sort=created${limit ? `&limit=${limit}` : ""}`;
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=13&sort=view`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics${query}`,
       {
         next: { revalidate: 60 },
         // cache: "force-cache",

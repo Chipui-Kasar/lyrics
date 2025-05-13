@@ -8,7 +8,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lyrics = await getLyrics();
   const artists = await getAllArtists();
 
-  const staticPages = ["/", "/about", "/contact", "/allartists", "/contribute"];
+  const staticPages = [
+    "/",
+    "/about",
+    "/contact",
+    "/lyrics",
+    "/allartists",
+    "/contribute",
+  ];
 
   const lyricPages = lyrics.flatMap((lyric: any) => [
     `/lyrics/${lyric._id}/${slugMaker(lyric.title)}~${slugMaker(

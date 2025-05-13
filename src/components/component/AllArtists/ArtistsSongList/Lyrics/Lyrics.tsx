@@ -67,7 +67,7 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
                 <span>Artist:</span>
                 <span>{lyrics.artistId?.name}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
                 <span>Album:</span>
                 <span>{lyrics.album}</span>
               </div>

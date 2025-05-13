@@ -23,7 +23,7 @@ export async function generateMetadata({
   }
 
   return generatePageMetadata({
-    title: `${lyric.title} by ${lyric.artistId?.name}`,
+    title: `${lyric.title} by ${lyric.artistId?.name} | ${lyric?.album}`,
     description: `Read the lyrics of '${lyric.title}' by ${lyric.artistId?.name}.`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${lyric.title}~${lyric.artistId?.name}`,
     image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`, // ✅ Use a valid image

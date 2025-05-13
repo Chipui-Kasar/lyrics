@@ -14,7 +14,7 @@ const fetchHomeData = async () => {
   return await Promise.all([
     getArtistsWithSongCount(),
     getFeaturedLyrics(),
-    getTopLyrics(),
+    getTopLyrics(13),
   ]);
 };
 
