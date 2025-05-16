@@ -35,23 +35,18 @@ export async function POST(req: Request) {
 
 export async function GET(req: NextRequest) {
   try {
-    await connectMongoDB();
-
     const url = new URL(req.url);
     const limitParam = url.searchParams.get("limit");
     const sortParam = url.searchParams.get("sort");
 
     const limit = limitParam ? Number(limitParam) : undefined;
-    const sort =
-      sortParam === "created" || sortParam === "releaseYear"
-        ? sortParam
-        : undefined;
-
+    const sort = sortParam ? sortParam : undefined;
+    await connectMongoDB();
     // Build query
     const query = Lyrics.find().populate("artistId", "name image");
 
     if (sort) {
-      query.sort({ [sort]: -1 }); // sort descending
+      query.sort({ [sort]: 1 }); // sort descending
     }
 
     if (limit) {
@@ -88,6 +83,26 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to delete lyrics" },
+      { status: 500 }
+    );
+  }
+}
+
+//update
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { _id, ...rest } = await req.json();
+    await connectMongoDB(true); // Admin access
+    await Lyrics.findByIdAndUpdate(_id, rest);
+    return NextResponse.json({ message: "Lyrics updated successfully" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to update lyrics" },
       { status: 500 }
     );
   }

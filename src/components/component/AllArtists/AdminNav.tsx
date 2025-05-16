@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { signOut } from "next-auth/react";
 
 interface NavItem {
   title: string;
@@ -50,7 +51,7 @@ export default function AdminPanel() {
         <main className="flex-1">
           <div className="flex h-14 items-center border-b bg-background px-4 md:px-6">
             <div className="ml-auto">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => signOut()}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </Button>

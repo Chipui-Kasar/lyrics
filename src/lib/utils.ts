@@ -142,3 +142,26 @@ export const handleShare = async (lyrics: ILyrics) => {
     alert("Sharing is not supported on this browser.");
   }
 };
+
+/**
+ * Removes all custom CSS (inline styles, class, id) and duplicates from an HTML string.
+ * @param html - The input HTML string.
+ * @returns {string} Cleaned HTML string without custom CSS or duplicate elements.
+ */
+export const sanitizeAndDeduplicateHTML = (html: string): string => {
+  if (typeof window === "undefined") return html; // skip during SSR
+
+  if (!html) return "";
+
+  const wrapper: HTMLDivElement = document.createElement("div");
+  wrapper.innerHTML = html.replace(/\n/g, "<br/>");
+
+  const elements = wrapper.querySelectorAll<HTMLElement>("*");
+  elements.forEach((el) => {
+    el.removeAttribute("style");
+    el.removeAttribute("class");
+    el.removeAttribute("id");
+  });
+
+  return wrapper.innerHTML.trim();
+};
