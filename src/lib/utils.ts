@@ -149,15 +149,15 @@ export const handleShare = async (lyrics: ILyrics) => {
  * @returns {string} Cleaned HTML string without custom CSS or duplicate elements.
  */
 export const sanitizeAndDeduplicateHTML = (html: string): string => {
+  if (typeof window === "undefined") return html; // skip during SSR
+
   if (!html) return "";
 
   const wrapper: HTMLDivElement = document.createElement("div");
   wrapper.innerHTML = html.replace(/\n/g, "<br/>");
 
-  // Step 1: Remove style, class, and id attributes
-  const elements: NodeListOf<HTMLElement> =
-    wrapper.querySelectorAll<HTMLElement>("*");
-  elements.forEach((el: HTMLElement) => {
+  const elements = wrapper.querySelectorAll<HTMLElement>("*");
+  elements.forEach((el) => {
     el.removeAttribute("style");
     el.removeAttribute("class");
     el.removeAttribute("id");
