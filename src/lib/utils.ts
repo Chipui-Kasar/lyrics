@@ -142,3 +142,26 @@ export const handleShare = async (lyrics: ILyrics) => {
     alert("Sharing is not supported on this browser.");
   }
 };
+
+/**
+ * Removes all custom CSS (inline styles, class, id) and duplicates from an HTML string.
+ * @param html - The input HTML string.
+ * @returns {string} Cleaned HTML string without custom CSS or duplicate elements.
+ */
+export const sanitizeAndDeduplicateHTML = (html: string): string => {
+  if (!html) return "";
+
+  const wrapper: HTMLDivElement = document.createElement("div");
+  wrapper.innerHTML = html.replace(/\n/g, "<br/>");
+
+  // Step 1: Remove style, class, and id attributes
+  const elements: NodeListOf<HTMLElement> =
+    wrapper.querySelectorAll<HTMLElement>("*");
+  elements.forEach((el: HTMLElement) => {
+    el.removeAttribute("style");
+    el.removeAttribute("class");
+    el.removeAttribute("id");
+  });
+
+  return wrapper.innerHTML.trim();
+};

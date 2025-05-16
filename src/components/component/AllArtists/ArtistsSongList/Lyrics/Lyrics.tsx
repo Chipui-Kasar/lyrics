@@ -2,7 +2,7 @@
 import NotFound from "@/app/not-found";
 import { Button } from "@/components/ui/button";
 import { YouTubePlayer } from "@/components/ui/video";
-import { handleShare } from "@/lib/utils";
+import { handleShare, sanitizeAndDeduplicateHTML } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
@@ -42,7 +42,7 @@ const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
             <div
               className="prose text-muted-foreground"
               dangerouslySetInnerHTML={{
-                __html: lyrics.lyrics?.replace(/\n/g, "<br/>"),
+                __html: sanitizeAndDeduplicateHTML(lyrics.lyrics || ""),
               }}
             ></div>
           </div>

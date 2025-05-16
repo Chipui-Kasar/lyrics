@@ -2,11 +2,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { IArtists } from "@/models/IObjects";
-import { createArtist, getAllArtists } from "@/service/allartists";
+import {
+  createArtist,
+  // deleteArtist,
+  getAllArtists,
+  updateArtist,
+} from "@/service/allartists";
 import React, { useEffect, useState } from "react";
 
 const AddArtists = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    genre: string[];
+    socialLinks: { facebook: string; instagram: string; youtube: string };
+    image: string;
+    village: string;
+    _id?: string;
+  }>({
     name: "",
     genre: [],
     socialLinks: { facebook: "", instagram: "", youtube: "" },
@@ -53,9 +65,11 @@ const AddArtists = () => {
     };
 
     try {
-      const response = await createArtist(formattedData);
+      const response = formattedData._id
+        ? await updateArtist({ ...formattedData, _id: formattedData._id || "" })
+        : await createArtist(formattedData);
       if (response) {
-        alert("Artist added successfully!");
+        alert(`${formattedData._id ? "Updated" : "Added"} successfully!`);
         setFormData({
           name: "",
           genre: [],
@@ -63,6 +77,7 @@ const AddArtists = () => {
           image: "",
           village: "",
         });
+        loadArtists();
       } else {
         alert("Failed to add artist.");
       }
@@ -75,8 +90,27 @@ const AddArtists = () => {
   const [artists, setArtists] = useState([]);
 
   useEffect(() => {
-    getAllArtists().then((data) => setArtists(data));
+    loadArtists();
   }, []);
+  const loadArtists = async () => {
+    const data = await getAllArtists();
+    setArtists(data);
+  };
+
+  const handleEdit = (artist: IArtists) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setFormData(artist);
+  };
+  // const handleDelete = async (artistId: string) => {
+  //   try {
+  //     await deleteArtist(artistId);
+  //     loadArtists();
+  //     alert("Artist deleted successfully!");
+  //   } catch (error) {
+  //     console.error("Error deleting artist:", error);
+  //   }
+  // };
+
   return (
     <section className="container">
       <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
@@ -152,15 +186,24 @@ const AddArtists = () => {
       <table className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <thead>
           <tr className="bg-gray-200">
+            <th className="border p-2">ID</th>
             <th className="border p-2">Name</th>
             <th className="border p-2">Genre</th>
+            <th className="border p-2">Village</th>
+            <th className="border p-2">Action</th>
           </tr>
         </thead>
         <tbody>
           {artists.map((artist: IArtists) => (
             <tr key={artist._id} className="border-b">
+              <td className="border p-2">{artist._id}</td>
               <td className="border p-2">{artist.name}</td>
               <td className="border p-2">{artist.genre.join(", ")}</td>
+              <td className="border p-2">{artist.village}</td>
+              <td className="border p-2">
+                <Button onClick={() => handleEdit(artist)}>Edit</Button>
+                {/* <Button onClick={() => handleDelete(artist._id)}>Delete</Button> */}
+              </td>
             </tr>
           ))}
         </tbody>

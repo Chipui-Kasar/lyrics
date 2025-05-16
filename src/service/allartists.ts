@@ -1,10 +1,11 @@
-import { IArtists } from "@/models/IObjects";
+import { IArtists, ILyrics } from "@/models/IObjects";
 
 export const getLyrics = async () => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=createdAt`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`,
       {
+        // next: { revalidate: 60 },
         cache: "force-cache",
       }
     );
@@ -36,7 +37,6 @@ export const getFeaturedLyrics = async () => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2`,
       {
         next: { revalidate: 60 },
-        // cache: "force-cache",
       }
     );
     return res.ok ? await res.json() : [];
@@ -52,7 +52,6 @@ export const getTopLyrics = async (limit?: number) => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics${query}`,
       {
         next: { revalidate: 60 },
-        // cache: "force-cache",
       }
     );
     return res.ok ? await res.json() : [];
@@ -65,7 +64,6 @@ export const getAllArtists = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
       next: { revalidate: 60 },
-      // cache: "force-cache",
     });
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -77,7 +75,6 @@ export const getArtistsWithSongCount = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
       next: { revalidate: 60 },
-      // cache: "force-cache",
     });
 
     if (!res.ok) return [];
@@ -113,7 +110,6 @@ export const getSingleArtistWithSongCount = async (artistName: string) => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/lyrics?artistName=${artistName}`,
       {
         next: { revalidate: 60 },
-        // cache: "force-cache",
       }
     );
     return res.ok ? await res.json() : [];
@@ -129,7 +125,6 @@ export const searchLyrics = async (query: string) => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/search?query=${query}`,
       {
         next: { revalidate: 60 },
-        // cache: "force-cache",
       }
     );
     return res.ok ? await res.json() : [];
@@ -139,16 +134,19 @@ export const searchLyrics = async (query: string) => {
   }
 };
 
-export const createArtist = async (artistData: {
-  name: string;
-  genre: string[];
-  socialLinks: { facebook: string; youtube: string; instagram: string };
-  image: string;
-  village: string;
-}) => {
+export const createArtist = async (
+  artistData: {
+    name: string;
+    genre: string[];
+    socialLinks: { facebook: string; youtube: string; instagram: string };
+    image: string;
+    village: string;
+  },
+  method?: string
+) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
-      method: "POST",
+      method: method || "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -161,8 +159,39 @@ export const createArtist = async (artistData: {
     return null;
   }
 };
-export const updateArtist = async () => {};
-export const deleteArtist = async () => {};
+export const updateArtist = async (artistData: IArtists) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(artistData),
+    });
+
+    return res.ok ? await res.json() : null;
+  } catch (error) {
+    console.error("Error updating artist:", error);
+    return null;
+  }
+};
+
+export const deleteArtist = async (id: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/artist?id=${id}`,
+      {
+        method: "DELETE",
+        credentials: "include", // only if you're using sessions/cookies
+      }
+    );
+    return res.ok ? await res.json() : null;
+  } catch (error) {
+    console.error("Error deleting artist:", error);
+    return null;
+  }
+};
 
 export const createLyrics = async (lyricsData: {
   title: string;
@@ -187,7 +216,22 @@ export const createLyrics = async (lyricsData: {
     return null;
   }
 };
-export const updateLyrics = async () => {};
+export const updateLyrics = async (lyricsData: ILyrics) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lyrics`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(lyricsData),
+    });
+    return res.ok ? await res.json() : null;
+  } catch (error) {
+    console.error("Error updating lyrics:", error);
+    return null;
+  }
+};
 export const deleteLyrics = async () => {};
 
 export const getLyricsCount = async () => {};
