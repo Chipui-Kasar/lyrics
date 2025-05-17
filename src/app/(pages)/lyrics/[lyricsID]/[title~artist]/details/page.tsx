@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
-import { generatePageMetadata } from "@/lib/utils";
+import { generatePageMetadata, slugMaker } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
 export const revalidate = 604800;
@@ -29,7 +29,9 @@ export async function generateMetadata(props: {
   return generatePageMetadata({
     title: `${lyric.title} by ${lyric.artistId?.name}`,
     description: `Read the lyrics of '${lyric.title}' by ${lyric.artistId?.name}.`,
-    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${lyric.title}~${lyric.artistId?.name}/details`,
+    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
+      lyric.title
+    )}~${slugMaker(lyric.artistId?.name)}/details`,
     image: `${lyric.thumbnail ?? lyric.artistId.image ?? "/ogImage.jpg"}`, // ✅ Use a valid image
     keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa`,
   });
@@ -41,7 +43,9 @@ export async function generateStaticParams() {
 
   return posts.map((post: ILyrics) => ({
     lyricsID: post._id, // ✅ Matches route param
-    "title~artist": `${post.title}~${post.artistId?.name}`, // ✅ Matches dynamic segment
+    "title~artist": `${slugMaker(post.title)}~${slugMaker(
+      post.artistId?.name
+    )}`, // ✅ Matches dynamic segment
   }));
 }
 
