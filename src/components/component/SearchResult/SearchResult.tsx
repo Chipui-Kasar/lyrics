@@ -5,7 +5,7 @@ import {
   removeSlug,
 } from "@/lib/utils";
 import { IArtists, ILyrics } from "@/models/IObjects";
-import { ArrowRightIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
