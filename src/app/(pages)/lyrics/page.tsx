@@ -1,7 +1,7 @@
 import AllLyrics from "@/components/component/AllLyrics/AllLyrics";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics } from "@/service/allartists";
-
+export const revalidate = 1800;
 // ✅ Fetch all data in parallel
 const fetchHomeData = async () => {
   return await Promise.all([getLyrics()]);

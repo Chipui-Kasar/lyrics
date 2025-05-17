@@ -7,13 +7,12 @@ import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongD
 import { generatePageMetadata } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
-
+export const revalidate = 604800;
 // 🔹 Generate Metadata Dynamically
-export async function generateMetadata({
-  params,
-}: {
-  params: { lyricsID: string; "title~artist": string };
+export async function generateMetadata(props: {
+  params: Promise<{ lyricsID: string; "title~artist": string }>;
 }) {
+  const params = await props.params;
   const [title, artist] = params["title~artist"].split("~"); // Split the title and artist
   const lyricsID = params.lyricsID;
 
@@ -47,11 +46,10 @@ export async function generateStaticParams() {
 }
 
 // 🔹 Page Component
-export default async function SongDetailsPage({
-  params,
-}: {
-  params: { lyricsID: string; "title~artist": string };
+export default async function SongDetailsPage(props: {
+  params: Promise<{ lyricsID: string; "title~artist": string }>;
 }) {
+  const params = await props.params;
   const [title, artist] = params["title~artist"].split("~");
   const lyricsID = params.lyricsID;
 

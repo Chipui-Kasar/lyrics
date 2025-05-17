@@ -1,6 +1,6 @@
 import ContributeLyrics from "@/components/component/ContributeLyrics/ContributeLyrics";
 import { generatePageMetadata } from "@/lib/utils";
-
+export const dynamic = "force-static";
 // ✅ Generate Metadata for SEO
 export async function generateMetadata() {
   return generatePageMetadata({

@@ -5,7 +5,7 @@ import {
   getAllArtists,
   getSingleArtistWithSongCount,
 } from "@/service/allartists";
-
+export const revalidate = 604800;
 // ✅ Fetch lyrics for a single artist
 const fetchFeaturedLyrics = async (artistName: string) => {
   return await getSingleArtistWithSongCount(artistName);
@@ -20,11 +20,10 @@ export const generateStaticParams = async () => {
 };
 
 // ✅ Generate Metadata for SEO
-export async function generateMetadata({
-  params,
-}: {
-  params: { artists: string };
+export async function generateMetadata(props: {
+  params: Promise<{ artists: string }>;
 }) {
+  const params = await props.params;
   const artistData: ILyrics[] = await fetchFeaturedLyrics(params.artists);
 
   if (artistData.length === 0) {
@@ -45,11 +44,10 @@ export async function generateMetadata({
 }
 
 // ✅ Artist page (server component)
-export default async function ArtistPage({
-  params,
-}: {
-  params: { artists: string };
+export default async function ArtistPage(props: {
+  params: Promise<{ artists: string }>;
 }) {
+  const params = await props.params;
   const lyrics = await fetchFeaturedLyrics(params.artists);
   return <ArtistsSongLists lyrics={lyrics} />;
 }

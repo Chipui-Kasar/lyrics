@@ -3,10 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Music2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { debounce } from "lodash";
 import { ILyrics } from "@/models/IObjects";
-import { slugMaker } from "@/lib/utils";
+import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
+import Form from "next/form";
 
 interface NavigationProps {
   lyrics: ILyrics[];
@@ -17,23 +18,37 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
   const [filteredLyrics, setFilteredLyrics] = useState<ILyrics[]>([]);
   const router = useRouter();
   const pathname = usePathname();
-
+  const searchIndex = useMemo(
+    () =>
+      lyrics.map((lyric) => ({
+        ...lyric,
+        _search: [
+          lyric.title || "",
+          lyric.album || "",
+          lyric.lyrics || "",
+          lyric.artistId?.name || "",
+        ]
+          .join(" ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLowerCase(),
+      })),
+    [lyrics]
+  );
   // Function to filter lyrics
   const filterLyrics = useCallback(
     debounce((query: string) => {
       if (query.trim()) {
-        const filtered = lyrics.filter(
-          (lyric) =>
-            lyric.title?.toLowerCase().includes(query?.toLowerCase()) ||
-            lyric.lyrics?.toLowerCase().includes(query?.toLowerCase()) ||
-            lyric.artistId?.name?.toLowerCase().includes(query?.toLowerCase())
-        );
+        const q = query.toLowerCase();
+        const filtered = searchIndex
+          .filter((lyric) => lyric._search.includes(q))
+          .slice(0, 10);
         setFilteredLyrics(filtered);
       } else {
         setFilteredLyrics([]);
       }
-    }, 300),
-    [lyrics]
+    }, 200),
+    [searchIndex]
   );
 
   // Update filtered results when searchQuery changes
@@ -47,19 +62,6 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
   }, [pathname]);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const trimmedQuery = searchQuery
-      .trim()
-      ?.toLowerCase()
-      ?.replace(/\s+/g, "-"); // Normalize case
-
-    if (trimmedQuery) {
-      router.push(`/search/${encodeURIComponent(trimmedQuery)}`);
-    }
   };
 
   const handleResultClick = (id: string, title: string, artist: string) => {
@@ -86,7 +88,7 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
         {/* Search Bar (Hidden on /contribute) */}
         {pathname !== "/contribute" && (
           <div className="relative flex-1 w-full md:max-w-[400px]">
-            <form onSubmit={handleSubmit} className="relative">
+            <Form action="/search" className="relative">
               <Input
                 type="search"
                 placeholder="Search for lyrics..."
@@ -94,9 +96,10 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
                 className="w-full rounded-full bg-muted pl-8 pr-4 focus:bg-background bg-gradient-to-r from-[#79095c33] to-[#001fff29]"
                 onChange={handleSearchChange}
                 value={searchQuery}
+                name="query"
               />
               <SearchIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            </form>
+            </Form>
 
             {/* Search Results Dropdown */}
             {filteredLyrics.length > 0 && (
@@ -120,7 +123,9 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
                       title={lyric.lyrics}
                       className="cursor-pointer hover:bg-gray-100 transition text-sm text-truncate-2-lines"
                       dangerouslySetInnerHTML={{
-                        __html: matchingLine.replace(
+                        __html: sanitizeAndDeduplicateHTML(
+                          matchingLine
+                        ).replace(
                           regex,
                           (match) =>
                             `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
