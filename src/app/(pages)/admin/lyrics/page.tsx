@@ -1,6 +1,6 @@
 "use client";
 import AddNewLyrics from "@/components/component/Admin/Lyrics/AddLyrics";
-import { Sidebar } from "@/components/component/AllArtists/AdminNav";
+import { Sidebar } from "@/components/component/Admin/Navigation/AdminNav";
 import React, { useEffect, useState } from "react";
 
 const AddLyrics = () => {

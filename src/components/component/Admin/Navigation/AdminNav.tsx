@@ -1,5 +1,4 @@
 "use client";
-
 import type * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,7 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { signOut } from "next-auth/react";
-
+export const dynamic = "force-static";
 interface NavItem {
   title: string;
   href: string;

@@ -2,7 +2,7 @@
 import React from "react";
 import { useSession } from "next-auth/react";
 import AdminLogin from "./signin/page";
-import AdminNavigation from "@/components/component/AllArtists/AdminNav";
+import AdminNavigation from "@/components/component/Admin/Navigation/AdminNav";
 
 const AdminPage = () => {
   const { data: session } = useSession();

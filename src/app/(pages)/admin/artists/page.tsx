@@ -1,6 +1,6 @@
 "use client";
 import AddArtists from "@/components/component/Admin/Artists/AddArtists";
-import { Sidebar } from "@/components/component/AllArtists/AdminNav";
+import { Sidebar } from "@/components/component/Admin/Navigation/AdminNav";
 import React from "react";
 
 const AddLyrics = () => {
