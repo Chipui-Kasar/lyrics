@@ -88,9 +88,13 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
         {/* Search Bar (Hidden on /contribute) */}
         {pathname !== "/contribute" && (
           <div className="relative flex-1 w-full md:max-w-[400px]">
-            <Form action="/search" className="relative">
+            <Form
+              action="/search"
+              className="relative"
+              onSubmit={() => setFilteredLyrics([])}
+            >
               <Input
-                type="search"
+                // type="search"
                 placeholder="Search for lyrics..."
                 aria-label="Search for lyrics"
                 className="w-full rounded-full bg-muted pl-8 pr-4 focus:bg-background bg-gradient-to-r from-[#79095c33] to-[#001fff29]"

@@ -6,7 +6,7 @@ export const getLyrics = async () => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`,
       {
         // next: { revalidate: 60 },
-        cache: "force-cache",
+        next: { revalidate: 604800 },
       }
     );
     return res.ok ? await res.json() : [];
@@ -23,7 +23,7 @@ export const getSingleLyrics = async (
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?id=${id}&title=${title}&artist=${artist}`,
-      { cache: "force-cache" }
+      { next: { revalidate: 3600 } }
     );
     return res.ok ? await res.json() : [];
   } catch (error) {

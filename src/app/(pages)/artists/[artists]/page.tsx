@@ -5,11 +5,12 @@ import {
   getAllArtists,
   getSingleArtistWithSongCount,
 } from "@/service/allartists";
+import { cache } from "react";
 export const revalidate = 604800;
 // ✅ Fetch lyrics for a single artist
-const fetchFeaturedLyrics = async (artistName: string) => {
+const fetchFeaturedLyrics = cache(async (artistName: string) => {
   return await getSingleArtistWithSongCount(artistName);
-};
+});
 
 // ✅ Pre-generate static paths for all artists
 export const generateStaticParams = async () => {

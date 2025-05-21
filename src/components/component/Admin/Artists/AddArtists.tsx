@@ -125,7 +125,7 @@ const AddArtists = () => {
               id="name"
               name="name"
               placeholder="Enter the artist name"
-              value={formData.name}
+              value={formData.name ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -135,7 +135,7 @@ const AddArtists = () => {
               id="genre"
               name="genre"
               placeholder="Enter the artist genre"
-              value={formData.genre}
+              value={formData.genre ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -146,7 +146,7 @@ const AddArtists = () => {
               name="facebook"
               placeholder="Facebook"
               className="mb-2"
-              value={formData.socialLinks.facebook}
+              value={formData.socialLinks.facebook ?? ""}
               onChange={handleSocialLinksChange}
             />
             <Input
@@ -154,7 +154,7 @@ const AddArtists = () => {
               name="instagram"
               placeholder="Instagram"
               className="mb-2"
-              value={formData.socialLinks.instagram}
+              value={formData.socialLinks.instagram ?? ""}
               onChange={handleSocialLinksChange}
             />
             <Input
@@ -162,7 +162,7 @@ const AddArtists = () => {
               name="youtube"
               placeholder="YouTube"
               className="mb-2"
-              value={formData.socialLinks.youtube}
+              value={formData.socialLinks.youtube ?? ""}
               onChange={handleSocialLinksChange}
             />
           </div>
@@ -172,7 +172,7 @@ const AddArtists = () => {
               id="village"
               name="village"
               placeholder="Enter the artist village name"
-              value={formData.village}
+              value={formData.village ?? ""}
               onChange={handleChange}
             />
           </div>

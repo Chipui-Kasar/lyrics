@@ -27,7 +27,9 @@ export default async function SearchPage({
   const resolvedSearchParams = await searchParams;
   const query = resolvedSearchParams.query?.toString() ?? "";
   const formattedQuery = decodeURIComponent(query);
-  const lyrics = query ? await searchLyrics(formattedQuery) : { lyrics: [] };
+  const lyrics = query
+    ? await searchLyrics(formattedQuery)
+    : await searchLyrics("kaphaning");
 
   return <SearchResult params={query} lyrics={lyrics} />;
 }

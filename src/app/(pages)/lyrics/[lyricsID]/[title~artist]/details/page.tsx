@@ -3,11 +3,24 @@
  * @see https://v0.dev/t/kqDlEjkR9OG
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+import NotFound from "@/app/not-found";
 import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
 import { generatePageMetadata, slugMaker } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
+import { cache } from "react";
 export const revalidate = 604800;
+
+// Cache DB fetches during request lifecycle
+const fetchLyric = cache(
+  async (
+    lyricsID: string,
+    title: string,
+    artist: string
+  ): Promise<ILyrics | null> => {
+    return await getSingleLyrics(lyricsID, title, artist);
+  }
+);
 // 🔹 Generate Metadata Dynamically
 export async function generateMetadata(props: {
   params: Promise<{ lyricsID: string; "title~artist": string }>;
@@ -16,7 +29,7 @@ export async function generateMetadata(props: {
   const [title, artist] = params["title~artist"].split("~"); // Split the title and artist
   const lyricsID = params.lyricsID;
 
-  const lyric = await getSingleLyrics(lyricsID, title, artist);
+  const lyric = await fetchLyric(lyricsID, title, artist);
 
   if (!lyric) {
     return generatePageMetadata({
@@ -57,7 +70,10 @@ export default async function SongDetailsPage(props: {
   const [title, artist] = params["title~artist"].split("~");
   const lyricsID = params.lyricsID;
 
-  const songLyrics = await getSingleLyrics(lyricsID, title, artist);
+  const songLyrics = await fetchLyric(lyricsID, title, artist);
+  if (!songLyrics) {
+    return <NotFound />;
+  }
 
   return <SongDetails songLyrics={songLyrics} />;
 }

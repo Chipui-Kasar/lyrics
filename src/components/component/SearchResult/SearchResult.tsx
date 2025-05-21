@@ -44,7 +44,9 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                 className="text-muted-foreground line-clamp-2"
                 dangerouslySetInnerHTML={{
                   __html: highlightFuzzyMatch(
-                    sanitizeAndDeduplicateHTML(matchingLine).replace(
+                    sanitizeAndDeduplicateHTML(
+                      matchingLine.replace(/<[^>]+>/g, "")
+                    ).replace(
                       regex,
                       (match) =>
                         `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
@@ -89,7 +91,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                   }}
                 />
                 &#39; from{" "}
-                <span
+                <article
                   dangerouslySetInnerHTML={{
                     __html: highlightFuzzyMatch(
                       sanitizeAndDeduplicateHTML(villageLine).replace(
@@ -117,9 +119,9 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
       </div>
       <div className="grid gap-8">
         <div className="grid gap-4 px-4">
-          {lyrics.lyrics.length > 0 ? (
+          {lyrics.lyrics && lyrics.lyrics.length > 0 ? (
             renderLyrics()
-          ) : lyrics.artists.length > 0 ? (
+          ) : lyrics.artists && lyrics.artists.length > 0 ? (
             renderArtists()
           ) : (
             <div className="flex flex-col items-center justify-center py-10 text-center">

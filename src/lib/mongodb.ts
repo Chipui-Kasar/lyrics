@@ -6,23 +6,23 @@ let isAdminConnection = false;
 export const connectMongoDB = async (admin = false) => {
   const uri = admin ? process.env.MONGODB_ADMIN_URI! : process.env.MONGODB_URI!;
 
-  // ✅ Already connected
   if (mongoose.connection.readyState === 1 && connectionPromise) {
+    // Already connected
     if (isAdminConnection) {
-      // ✅ Already connected as admin — always reuse
+      // ✅ Connected as admin → never downgrade to user
       return connectionPromise;
     }
 
-    if (admin && !isAdminConnection) {
-      // 🔁 Upgrade from user → admin
+    if (!isAdminConnection && admin) {
+      // 🔁 Connected as user but request is for admin → upgrade
       await mongoose.disconnect();
     } else {
-      // ✅ Reuse user connection
+      // ✅ Connected as user and request is also for user → reuse
       return connectionPromise;
     }
   }
 
-  // 🔌 Not connected or just disconnected — connect now
+  // Not connected or just disconnected → make new connection
   connectionPromise = mongoose
     .connect(uri)
     .then((conn) => {
