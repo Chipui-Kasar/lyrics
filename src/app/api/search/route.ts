@@ -22,7 +22,7 @@ export async function GET(req: Request) {
           index: "default", // Ensure this matches your search index name
           text: {
             query,
-            path: ["lyrics", "title"], // Fields to search in
+            path: ["lyrics", "title", "album", "artistId.name"], // Fields to search in
             fuzzy: {
               maxEdits: 2,
               prefixLength: 2,
@@ -44,6 +44,7 @@ export async function GET(req: Request) {
         $project: {
           lyrics: 1,
           title: 1, // ✅ Include the song title
+          album: 1,
           "artistId.name": "$artist.name", // ✅ Include the artist ID
           score: { $meta: "searchScore" },
         },
@@ -56,13 +57,20 @@ export async function GET(req: Request) {
           index: "default",
           text: {
             query,
-            path: "name",
+            path: ["name", "village", "genre"],
             fuzzy: { maxEdits: 2, prefixLength: 2 },
           },
         },
       },
       { $limit: 10 },
-      { $project: { name: 1, score: { $meta: "searchScore" } } },
+      {
+        $project: {
+          name: 1,
+          village: 1,
+          genre: 1,
+          score: { $meta: "searchScore" },
+        },
+      },
     ]);
 
     return NextResponse.json({ lyrics, artists }, { status: 200 });

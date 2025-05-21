@@ -1,8 +1,9 @@
 import AllArtitsts from "@/components/component/AllArtists/AllArtitsts";
 import { generatePageMetadata } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
+import { Lyrics } from "@/models/model";
 import { getArtistsWithSongCount } from "@/service/allartists";
-
+export const revalidate = 604800;
 // ✅ Fetch artists with song counts
 const fetchArtistsWithSongCount = async () => {
   return await getArtistsWithSongCount();

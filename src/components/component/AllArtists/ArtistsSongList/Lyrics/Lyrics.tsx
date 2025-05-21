@@ -7,7 +7,7 @@ import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
 
-const Lyrics = async ({ lyrics }: { lyrics: ILyrics }) => {
+const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
   if (!lyrics._id) return <NotFound />;
   const escapeApostrophe = (text: string) => {
     return text?.replace(/'/g, "&apos;");

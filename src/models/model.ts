@@ -13,6 +13,8 @@ const artistSchema = new Schema(
   }
 );
 artistSchema.index({ name: "text" });
+artistSchema.index({ genre: 1 }); // For genre-based queries
+artistSchema.index({ village: 1 }); // For village-based queries
 
 const Artist = mongoose.models.Artist || mongoose.model("Artist", artistSchema);
 
@@ -32,8 +34,12 @@ const lyricsSchema = new Schema(
     timestamps: true,
   }
 );
-lyricsSchema.index({ title: "text", lyrics: "text" });
-lyricsSchema.index({ view: -1 });
+lyricsSchema.index({ title: "text", lyrics: "text" }); // For full-text search
+lyricsSchema.index({ view: -1 }); // For trending lyrics
+lyricsSchema.index({ artistId: 1 }); // For artist-specific queries
+lyricsSchema.index({ title: 1, artistId: 1 }); // For slug-based URL matching
+lyricsSchema.index({ album: 1 }); // For album-based queries
+
 const Lyrics = mongoose.models.Lyrics || mongoose.model("Lyrics", lyricsSchema);
 
 export { Artist, Lyrics };

@@ -198,7 +198,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               id="title"
               name="title"
               placeholder="Enter the song title"
-              value={formData.title}
+              value={formData.title ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -208,13 +208,13 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               id="artistId"
               name="artistId"
               placeholder="Enter the artist name"
-              value={formData.artistId}
+              value={formData.artistId ?? ""}
               onChange={handleChange}
               disabled
             />
             <Dropdown
               options={generateDropdownOptions(artists)}
-              value={formData.artistId}
+              value={formData.artistId ?? ""}
               onChange={(e) =>
                 setFormData({ ...formData, artistId: e.target.value })
               }
@@ -226,7 +226,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               id="album"
               name="album"
               placeholder="Enter the album name"
-              value={formData.album}
+              value={formData.album ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -249,7 +249,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               id="youtube"
               name="youtube"
               placeholder="YouTube"
-              value={formData.streamingLinks.youtube}
+              value={formData.streamingLinks.youtube ?? ""}
               onChange={handleStreamingLinksChange}
               className="mb-2"
             />
@@ -257,7 +257,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               id="spotify"
               name="spotify"
               placeholder="Spotify"
-              value={formData.streamingLinks.spotify}
+              value={formData.streamingLinks.spotify ?? ""}
               onChange={handleStreamingLinksChange}
               className="mb-2"
             />
@@ -269,7 +269,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               name="contributedBy"
               type="text"
               placeholder="Contributed By"
-              value={formData.contributedBy}
+              value={formData.contributedBy ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -279,7 +279,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
             <Label htmlFor="lyrics">Lyrics</Label>
             <RichTextEditor
               name="lyrics"
-              defaultValue={formData.lyrics}
+              defaultValue={formData.lyrics ?? ""}
               onChange={({ target }) =>
                 handleChange({
                   target: { name: "lyrics", value: target.value },
@@ -293,7 +293,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               id="_id"
               name="_id"
               placeholder="Enter the song ID"
-              value={formData._id}
+              value={formData._id ?? ""}
               onChange={handleChange}
             />
           </div>

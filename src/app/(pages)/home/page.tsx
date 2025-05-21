@@ -8,7 +8,7 @@ import {
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
-
+export const revalidate = 604800;
 // ✅ Fetch all data in parallel
 const fetchHomeData = async () => {
   return await Promise.all([
