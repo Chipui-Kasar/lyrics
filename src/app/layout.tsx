@@ -5,8 +5,6 @@ import Navigation from "@/components/component/Navigation/Navigation";
 import Footer from "@/components/component/Footer/Footer";
 import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
 import PageLoader from "@/components/component/Spinner/Spinner";
-import { getLyrics } from "@/service/allartists";
-import { ILyrics } from "@/models/IObjects";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
 // const ico = require("../../public/tangkhullyrics.ico");
 
@@ -48,16 +46,14 @@ export const metadata: Metadata = {
       "lyrics, tangkhul, tangkhul lyrics, tangkhul laa, tangkhul laa lyrics",
   },
 };
-export const generateStaticParams = async () => {
-  const posts = await getLyrics();
-  return posts;
-};
-export default async function RootLayout({
+export const dynamic = "force-static";
+export const revalidate = 604800;
+
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const lyrics: ILyrics[] = await getLyrics();
 
   return (
     <html lang="en">
@@ -65,7 +61,7 @@ export default async function RootLayout({
         <SessionProviderWrapper>
           <DarkTheme />
           <header>
-            <Navigation lyrics={lyrics} />
+            <Navigation />
           </header>
           <div>
             <PageLoader />
