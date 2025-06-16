@@ -8,6 +8,7 @@ import {
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
+export const dynamic = "force-static";
 export const revalidate = 604800;
 // ✅ Fetch all data in parallel
 const fetchHomeData = async () => {
