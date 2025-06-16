@@ -4,20 +4,31 @@ import { Music2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState, useEffect, useMemo } from "react";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import { ILyrics } from "@/models/IObjects";
 import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
 import Form from "next/form";
 
-interface NavigationProps {
-  lyrics: ILyrics[];
-}
-
-const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
+const Navigation: React.FC = () => {
+  const [lyrics, setLyrics] = useState<ILyrics[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLyrics, setFilteredLyrics] = useState<ILyrics[]>([]);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchLyrics = async () => {
+      try {
+        const res = await fetch("/api/lyrics?sort=title");
+        if (res.ok) {
+          setLyrics(await res.json());
+        }
+      } catch (error) {
+        console.error("Failed to fetch lyrics", error);
+      }
+    };
+    fetchLyrics();
+  }, []);
   const searchIndex = useMemo(
     () =>
       lyrics.map((lyric) => ({
