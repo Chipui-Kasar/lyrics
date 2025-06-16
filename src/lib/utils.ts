@@ -149,15 +149,21 @@ export const handleShare = async (lyrics: ILyrics) => {
  * @returns {string} Cleaned HTML string without custom CSS or duplicate elements.
  */
 export const sanitizeAndDeduplicateHTML = (html: string): string => {
-  if (typeof window === "undefined") return html; // SSR safety check
-
   if (!html) return "";
 
+  const sanitized = html
+    .replace(/\n/g, "<br/>")
+    .replace(/\sstyle="[^"]*"/gi, "")
+    .replace(/\sclass="[^"]*"/gi, "")
+    .replace(/\sid="[^"]*"/gi, "");
+
+  if (typeof window === "undefined") {
+    return sanitized;
+  }
+
   const wrapper = document.createElement("div");
-  wrapper.innerHTML = html.replace(/\n/g, "<br/>");
-
-  const elements = wrapper.querySelectorAll("*"); // all elements
-
+  wrapper.innerHTML = sanitized;
+  const elements = wrapper.querySelectorAll("*");
   elements.forEach((el) => {
     if (el.tagName !== "IMG") {
       el.removeAttribute("style");

@@ -1,5 +1,5 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
-import { generatePageMetadata } from "@/lib/utils";
+import { generatePageMetadata, slugMaker, removeSlug } from "@/lib/utils";
 import { IArtists, ILyrics } from "@/models/IObjects";
 import {
   getAllArtists,
@@ -7,18 +7,18 @@ import {
 } from "@/service/allartists";
 import { cache } from "react";
 export const dynamic = "force-static";
-export const dynamicParams = false;
+// export const dynamicParams = false;
 export const revalidate = 604800;
 // ✅ Fetch lyrics for a single artist
 const fetchFeaturedLyrics = cache(async (artistName: string) => {
-  return await getSingleArtistWithSongCount(artistName);
+  return await getSingleArtistWithSongCount(removeSlug(artistName));
 });
 
 // ✅ Pre-generate static paths for all artists
 export const generateStaticParams = async () => {
   const artists = await getAllArtists();
   return artists.map((artist: IArtists) => ({
-    artists: artist.name?.toLowerCase(), // Ensure consistency in URL
+    artists: slugMaker(artist.name?.toLowerCase() || ""),
   }));
 };
 
@@ -52,5 +52,6 @@ export default async function ArtistPage(props: {
 }) {
   const params = await props.params;
   const lyrics = await fetchFeaturedLyrics(params.artists);
+
   return <ArtistsSongLists lyrics={lyrics} />;
 }
