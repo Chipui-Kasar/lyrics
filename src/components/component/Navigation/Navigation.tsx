@@ -65,7 +65,8 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
   };
 
   const handleResultClick = (id: string, title: string, artist: string) => {
-    router.push(`/lyrics/${id}/${slugMaker(title)}-${slugMaker(artist)}`);
+    // Use the same delimiter used in the route definition (title~artist)
+    router.push(`/lyrics/${id}/${slugMaker(title)}~${slugMaker(artist)}`);
     setSearchQuery(""); // Clear search after selection
     setFilteredLyrics([]); // Hide results
   };
