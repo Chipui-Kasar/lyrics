@@ -18,12 +18,14 @@ interface SearchResultProps {
 }
 
 const SearchResult = ({ params, lyrics }: SearchResultProps) => {
-  const regex = new RegExp(params, "gi");
+  // Use separate regex instances for test and replace to avoid lastIndex issues
+  const highlightRegex = new RegExp(params, "gi");
+  const testRegex = new RegExp(params, "i");
 
   const renderLyrics = () =>
     lyrics.lyrics.map((lyric, key) => {
       const matchingLine =
-        lyric.lyrics.split("\n").find((line) => regex.test(line)) ||
+        lyric.lyrics.split("\n").find((line) => testRegex.test(line)) ||
         lyric.lyrics;
 
       return (
@@ -47,7 +49,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                     sanitizeAndDeduplicateHTML(
                       matchingLine.replace(/<[^>]+>/g, "")
                     ).replace(
-                      regex,
+                      highlightRegex,
                       (match) =>
                         `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
                     ),
@@ -82,7 +84,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                   dangerouslySetInnerHTML={{
                     __html: highlightFuzzyMatch(
                       sanitizeAndDeduplicateHTML(matchingLine).replace(
-                        regex,
+                        highlightRegex,
                         (match) =>
                           `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
                       ),
@@ -95,7 +97,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                   dangerouslySetInnerHTML={{
                     __html: highlightFuzzyMatch(
                       sanitizeAndDeduplicateHTML(villageLine).replace(
-                        regex,
+                        highlightRegex,
                         (match) =>
                           `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
                       ),

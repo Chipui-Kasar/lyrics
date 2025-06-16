@@ -2,6 +2,8 @@ import AllLyrics from "@/components/component/AllLyrics/AllLyrics";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics } from "@/service/allartists";
 import { cache } from "react";
+export const dynamic = "force-static";
+export const dynamicParams = false;
 
 export const revalidate = 1800; // 30 minutes
 

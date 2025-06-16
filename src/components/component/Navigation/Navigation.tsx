@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Music2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { debounce } from "lodash";
 import { ILyrics } from "@/models/IObjects";
 import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
@@ -36,24 +36,28 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
     [lyrics]
   );
   // Function to filter lyrics
-  const filterLyrics = useCallback(
-    debounce((query: string) => {
-      if (query.trim()) {
-        const q = query.toLowerCase();
-        const filtered = searchIndex
-          .filter((lyric) => lyric._search.includes(q))
-          .slice(0, 10);
-        setFilteredLyrics(filtered);
-      } else {
-        setFilteredLyrics([]);
-      }
-    }, 200),
+  const filterLyrics = useMemo(
+    () =>
+      debounce((query: string) => {
+        if (query.trim()) {
+          const q = query.toLowerCase();
+          const filtered = searchIndex
+            .filter((lyric) => lyric._search.includes(q))
+            .slice(0, 10);
+          setFilteredLyrics(filtered);
+        } else {
+          setFilteredLyrics([]);
+        }
+      }, 200),
     [searchIndex]
   );
 
   // Update filtered results when searchQuery changes
   useEffect(() => {
     filterLyrics(searchQuery);
+    return () => {
+      filterLyrics.cancel();
+    };
   }, [searchQuery, filterLyrics]);
 
   //clear search on route change
@@ -65,7 +69,8 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
   };
 
   const handleResultClick = (id: string, title: string, artist: string) => {
-    router.push(`/lyrics/${id}/${slugMaker(title)}-${slugMaker(artist)}`);
+    // Use the same delimiter used in the route definition (title~artist)
+    router.push(`/lyrics/${id}/${slugMaker(title)}~${slugMaker(artist)}`);
     setSearchQuery(""); // Clear search after selection
     setFilteredLyrics([]); // Hide results
   };
@@ -91,7 +96,11 @@ const Navigation: React.FC<NavigationProps> = ({ lyrics }) => {
             <Form
               action="/search"
               className="relative"
-              onSubmit={() => setFilteredLyrics([])}
+              onSubmit={(e) => {
+                e.preventDefault();
+                setFilteredLyrics([]);
+                router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+              }}
             >
               <Input
                 // type="search"

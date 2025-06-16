@@ -2,7 +2,7 @@ import React from "react";
 import PopularArtists from "../PopularArtists/PopularArtists";
 import { IArtists } from "@/models/IObjects";
 
-const AllArtitsts = async ({ artists }: { artists: IArtists[] }) => {
+const AllArtists = async ({ artists }: { artists: IArtists[] }) => {
   return (
     <section className="container py-4 sm:py-8 md:py-10 m-auto">
       <PopularArtists artists={artists} />
@@ -10,4 +10,4 @@ const AllArtitsts = async ({ artists }: { artists: IArtists[] }) => {
   );
 };
 
-export default AllArtitsts;
+export default AllArtists;

@@ -1,8 +1,9 @@
-import AllArtitsts from "@/components/component/AllArtists/AllArtitsts";
+import AllArtists from "@/components/component/AllArtists/AllArtitsts";
 import { generatePageMetadata } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
-import { Lyrics } from "@/models/model";
 import { getArtistsWithSongCount } from "@/service/allartists";
+export const dynamic = "force-static";
+export const dynamicParams = false;
 export const revalidate = 604800;
 // ✅ Fetch artists with song counts
 const fetchArtistsWithSongCount = async () => {
@@ -30,5 +31,5 @@ export async function generateMetadata() {
 // ✅ Server Component for displaying all artists
 export default async function AllArtistsPage() {
   const artists = await fetchArtistsWithSongCount();
-  return <AllArtitsts artists={artists} />;
+  return <AllArtists artists={artists} />;
 }
