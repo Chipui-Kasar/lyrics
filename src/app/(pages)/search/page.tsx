@@ -1,35 +1,16 @@
-import SearchResult from "@/components/component/SearchResult/SearchResult";
+import SearchClient from "@/components/component/SearchResult/SearchClient";
 import { generatePageMetadata } from "@/lib/utils";
-import { searchLyrics } from "@/service/allartists";
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ query?: string }>;
-}) {
-  const resolvedSearchParams = await searchParams;
-  const query = resolvedSearchParams.query?.toString() ?? "";
-  const formattedQuery = decodeURIComponent(query);
+export const dynamic = "force-static";
+export const revalidate = 60;
 
-  return generatePageMetadata({
-    title: `Search results for "${formattedQuery}"`,
-    description: `Find Tangkhul song lyrics related to "${formattedQuery}" on TangkhulLyrics.`,
-    url: `https://tangkhullyrics.com/search?query=${encodeURIComponent(query)}`,
-    keywords: `Tangkhul lyrics, Search lyrics, Tangkhul song lyrics, ${formattedQuery}, Tangkhul music`,
-  });
-}
+export const metadata = generatePageMetadata({
+  title: "Search Tangkhul Lyrics",
+  description: "Find Tangkhul song lyrics and artists.",
+  url: "https://tangkhullyrics.com/search",
+  keywords: "Tangkhul lyrics, Search lyrics, Tangkhul song lyrics, Tangkhul music",
+});
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ query?: string }>;
-}) {
-  const resolvedSearchParams = await searchParams;
-  const query = resolvedSearchParams.query?.toString() ?? "";
-  const formattedQuery = decodeURIComponent(query);
-  const lyrics = query
-    ? await searchLyrics(formattedQuery)
-    : await searchLyrics("kaphaning");
-
-  return <SearchResult params={query} lyrics={lyrics} />;
+export default function SearchPage() {
+  return <SearchClient />;
 }
