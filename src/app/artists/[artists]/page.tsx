@@ -6,28 +6,30 @@ import {
   getSingleArtistWithSongCount,
 } from "@/service/allartists";
 import { cache } from "react";
+
+// Make the route statically rendered and revalidated weekly
 export const dynamic = "force-static";
-// export const dynamicParams = false;
 export const revalidate = 604800;
-// ✅ Fetch lyrics for a single artist
+
+// Cache the lyrics fetch per artist
 const fetchFeaturedLyrics = cache(async (artistName: string) => {
   return await getSingleArtistWithSongCount(removeSlug(artistName));
 });
 
-// ✅ Pre-generate static paths for all artists
-export const generateStaticParams = async () => {
+// ✅ Pre-generate all artist paths for SSG
+export async function generateStaticParams() {
   const artists = await getAllArtists();
   return artists.map((artist: IArtists) => ({
     artists: slugMaker(artist.name?.toLowerCase() || ""),
-    revalidate: 604800, // Revalidate every 7 days
   }));
-};
+}
 
-// ✅ Generate Metadata for SEO
-export async function generateMetadata(props: {
-  params: Promise<{ artists: string }>;
+// ✅ Dynamic metadata generation
+export async function generateMetadata({
+  params,
+}: {
+  params: { artists: string };
 }) {
-  const params = await props.params;
   const artistData: ILyrics[] = await fetchFeaturedLyrics(params.artists);
 
   if (artistData.length === 0) {
@@ -47,12 +49,12 @@ export async function generateMetadata(props: {
   });
 }
 
-// ✅ Artist page (server component)
-export default async function ArtistPage(props: {
-  params: Promise<{ artists: string }>;
+// ✅ Page component
+export default async function ArtistPage({
+  params,
+}: {
+  params: { artists: string };
 }) {
-  const params = await props.params;
   const lyrics = await fetchFeaturedLyrics(params.artists);
-
   return <ArtistsSongLists lyrics={lyrics} />;
 }

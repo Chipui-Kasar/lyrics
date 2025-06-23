@@ -1,5 +1,5 @@
 "use client";
-import NotFound from "@/app/not-found";
+import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { YouTubePlayer } from "@/components/ui/video";
 import { handleShare, sanitizeAndDeduplicateHTML } from "@/lib/utils";
@@ -8,7 +8,7 @@ import { Video } from "lucide-react";
 import Link from "next/link";
 
 const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
-  if (!lyrics._id) return <NotFound />;
+  if (!lyrics._id) notFound();
   const escapeApostrophe = (text: string) => {
     return text?.replace(/'/g, "&apos;");
   };

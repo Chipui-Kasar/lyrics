@@ -1,34 +1,11 @@
-"use client";
-import { cache } from "react";
-import AddNewLyrics from "@/components/component/Admin/Lyrics/AddLyrics";
-import { Sidebar } from "@/components/component/Admin/Navigation/AdminNav";
-import React, { useEffect, useState } from "react";
+import { getAllArtists } from "@/service/allartists";
+import AddLyricsClient from "@/components/component/Admin/Lyrics/AddLyricsClient";
 
 export const dynamic = "force-static";
-export const revalidate = 3600; // 1 hour
+export const revalidate = 3600;
 
-const fetchArtists = cache(
-  async () =>
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`)
-      .then((res) => res.json())
-      .catch((err) => console.error("Failed to fetch artists:", err))
-);
+export default async function AdminLyricsPage() {
+  const artists = await getAllArtists();
 
-const AddLyrics = () => {
-  const [artists, setArtists] = useState([]);
-
-  useEffect(() => {
-    fetchArtists().then((data) => setArtists(data));
-  }, []);
-
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <div className="flex w-full p-4 bg-white rounded shadow-md min-h-[95vh]">
-        <Sidebar />
-        <AddNewLyrics artists={artists} />
-      </div>
-    </div>
-  );
-};
-
-export default AddLyrics;
+  return <AddLyricsClient artists={artists} />;
+}

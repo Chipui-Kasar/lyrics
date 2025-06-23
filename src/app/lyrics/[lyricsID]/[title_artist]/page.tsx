@@ -1,17 +1,16 @@
 // app/lyrics/[lyricsID]/[title_artist]/page.tsx
 
-import NotFound from "@/app/not-found";
+import { notFound } from "next/navigation";
 import Lyrics from "@/components/component/AllArtists/ArtistsSongList/Lyrics/Lyrics";
 import { generatePageMetadata, slugMaker } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
+
 export const dynamic = "force-static";
 export const dynamicParams = false;
-
 export const revalidate = 604800; // 7 days
 
-// Cache the DB fetch during the request lifecycle to avoid duplicate calls
 const fetchLyric = cache(
   async (
     lyricsID: string,
@@ -22,15 +21,14 @@ const fetchLyric = cache(
   }
 );
 
-// 🔹 Generate Metadata Dynamically
+// ✅ FIXED: No Promise<> on params
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ lyricsID: string; title_artist: string }>;
+  params: { lyricsID: string; title_artist: string };
 }) {
-  const awaitedParams = await params;
-  const [title, artist] = awaitedParams["title_artist"].split("_");
-  const lyric = await fetchLyric(awaitedParams.lyricsID, title, artist);
+  const [title, artist] = params.title_artist.split("_");
+  const lyric = await fetchLyric(params?.lyricsID, title, artist);
 
   if (!lyric) {
     return generatePageMetadata({
@@ -51,7 +49,22 @@ export async function generateMetadata({
   });
 }
 
-// 🔹 Generate Static Params for SSG
+// ✅ FIXED: No Promise<> on params
+const LyricsPage = async ({
+  params,
+}: {
+  params: { lyricsID: string; title_artist: string };
+}) => {
+  const [title, artist] = params.title_artist.split("_");
+  const lyric = await fetchLyric(params?.lyricsID, title, artist);
+
+  if (!lyric) {
+    notFound();
+  }
+
+  return <Lyrics lyrics={lyric} />;
+};
+
 export async function generateStaticParams() {
   const posts = await getLyrics();
 
@@ -60,23 +73,5 @@ export async function generateStaticParams() {
     title_artist: `${slugMaker(post.title)}_${slugMaker(post.artistId?.name)}`,
   }));
 }
-
-// 🔹 Page Component (Server Component)
-const LyricsPage = async ({
-  params,
-}: {
-  params: Promise<{ lyricsID: string; title_artist: string }>;
-}) => {
-  const awaitedParams = await params;
-
-  const [title, artist] = awaitedParams["title_artist"].split("_");
-  const lyric = await fetchLyric(awaitedParams.lyricsID, title, artist);
-
-  if (!lyric) {
-    return <NotFound />;
-  }
-
-  return <Lyrics lyrics={lyric} />;
-};
 
 export default LyricsPage;

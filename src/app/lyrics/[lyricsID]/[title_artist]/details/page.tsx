@@ -1,19 +1,17 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/kqDlEjkR9OG
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-import NotFound from "@/app/not-found";
+// app/lyrics/[lyricsID]/[title_artist]/details/page.tsx
+
+import { notFound } from "next/navigation";
 import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
 import { generatePageMetadata, slugMaker } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
+
 export const dynamic = "force-static";
 export const dynamicParams = false;
 export const revalidate = 604800;
 
-// Cache DB fetches during request lifecycle
+// ✅ Cache DB fetches
 const fetchLyric = cache(
   async (
     lyricsID: string,
@@ -23,15 +21,15 @@ const fetchLyric = cache(
     return await getSingleLyrics(lyricsID, title, artist);
   }
 );
-// 🔹 Generate Metadata Dynamically
-export async function generateMetadata(props: {
-  params: Promise<{ lyricsID: string; title_artist: string }>;
-}) {
-  const params = await props.params;
-  const [title, artist] = params["title_artist"].split("_"); // Split the title and artist
-  const lyricsID = params.lyricsID;
 
-  const lyric = await fetchLyric(lyricsID, title, artist);
+// ✅ Dynamic metadata generation
+export async function generateMetadata({
+  params,
+}: {
+  params: { lyricsID: string; title_artist: string };
+}) {
+  const [title, artist] = params.title_artist.split("_");
+  const lyric = await fetchLyric(params?.lyricsID, title, artist);
 
   if (!lyric) {
     return generatePageMetadata({
@@ -47,32 +45,32 @@ export async function generateMetadata(props: {
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       lyric.title
     )}_${slugMaker(lyric.artistId?.name)}/details`,
-    image: `${lyric.thumbnail ?? lyric.artistId.image ?? "/ogImage.jpg"}`, // ✅ Use a valid image
+    image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`,
     keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa`,
   });
 }
 
-// 🔹 Generate Static Params for SSG
+// ✅ Generate SSG params
 export async function generateStaticParams() {
   const posts = await getLyrics();
 
   return posts.map((post: ILyrics) => ({
-    lyricsID: post._id, // ✅ Matches route param
-    title_artist: `${slugMaker(post.title)}_${slugMaker(post.artistId?.name)}`, // ✅ Matches dynamic segment
+    lyricsID: post._id,
+    title_artist: `${slugMaker(post.title)}_${slugMaker(post.artistId?.name)}`,
   }));
 }
 
-// 🔹 Page Component
-export default async function SongDetailsPage(props: {
-  params: Promise<{ lyricsID: string; title_artist: string }>;
+// ✅ Page Component
+export default async function SongDetailsPage({
+  params,
+}: {
+  params: { lyricsID: string; title_artist: string };
 }) {
-  const params = await props.params;
-  const [title, artist] = params["title_artist"].split("_");
-  const lyricsID = params.lyricsID;
+  const [title, artist] = params.title_artist.split("_");
+  const songLyrics = await fetchLyric(params?.lyricsID, title, artist);
 
-  const songLyrics = await fetchLyric(lyricsID, title, artist);
   if (!songLyrics) {
-    return <NotFound />;
+    notFound();
   }
 
   return <SongDetails songLyrics={songLyrics} />;

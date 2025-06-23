@@ -8,11 +8,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ILyrics } from "@/models/IObjects";
-import NotFound from "@/app/not-found";
+import { notFound } from "next/navigation";
 import { handleShare, slugMaker } from "@/lib/utils";
 
 export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
-  if (!songLyrics._id) return <NotFound />;
+  if (!songLyrics._id) notFound();
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="flex-1 py-12">
