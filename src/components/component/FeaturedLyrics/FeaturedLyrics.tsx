@@ -20,7 +20,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
       <div className="mt-6 grid gap-4">
         {lyrics.map((lyric, key) => (
           <Link
-            href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}~${slugMaker(
+            href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
               lyric.artistId?.name
             )}`}
             prefetch={true}

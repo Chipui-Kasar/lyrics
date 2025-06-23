@@ -3,6 +3,9 @@ import AddArtists from "@/components/component/Admin/Artists/AddArtists";
 import AddNewLyrics from "@/components/component/Admin/Lyrics/AddLyrics";
 import React, { useEffect, useState } from "react";
 
+export const dynamic = "force-static";
+export const revalidate = 3600; // 1 hour
+
 const AddNew = () => {
   const [activeTab, setActiveTab] = useState("lyrics");
 

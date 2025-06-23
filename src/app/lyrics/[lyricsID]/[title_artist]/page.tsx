@@ -1,4 +1,4 @@
-// app/lyrics/[lyricsID]/[title~artist]/page.tsx
+// app/lyrics/[lyricsID]/[title_artist]/page.tsx
 
 import NotFound from "@/app/not-found";
 import Lyrics from "@/components/component/AllArtists/ArtistsSongList/Lyrics/Lyrics";
@@ -26,10 +26,10 @@ const fetchLyric = cache(
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ lyricsID: string; "title~artist": string }>;
+  params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
   const awaitedParams = await params;
-  const [title, artist] = awaitedParams["title~artist"].split("~");
+  const [title, artist] = awaitedParams["title_artist"].split("_");
   const lyric = await fetchLyric(awaitedParams.lyricsID, title, artist);
 
   if (!lyric) {
@@ -45,7 +45,7 @@ export async function generateMetadata({
     description: `Read the lyrics of '${lyric.title}' by ${lyric.artistId?.name}.`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       lyric.title
-    )}~${slugMaker(lyric.artistId?.name)}`,
+    )}_${slugMaker(lyric.artistId?.name)}`,
     image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`,
     keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, ${lyric.title} lyrics, ${lyric.artistId?.name} lyrics`,
   });
@@ -57,9 +57,7 @@ export async function generateStaticParams() {
 
   return posts.map((post: ILyrics) => ({
     lyricsID: post._id,
-    "title~artist": `${slugMaker(post.title)}~${slugMaker(
-      post.artistId?.name
-    )}`,
+    title_artist: `${slugMaker(post.title)}_${slugMaker(post.artistId?.name)}`,
   }));
 }
 
@@ -67,11 +65,11 @@ export async function generateStaticParams() {
 const LyricsPage = async ({
   params,
 }: {
-  params: Promise<{ lyricsID: string; "title~artist": string }>;
+  params: Promise<{ lyricsID: string; title_artist: string }>;
 }) => {
   const awaitedParams = await params;
 
-  const [title, artist] = awaitedParams["title~artist"].split("~");
+  const [title, artist] = awaitedParams["title_artist"].split("_");
   const lyric = await fetchLyric(awaitedParams.lyricsID, title, artist);
 
   if (!lyric) {

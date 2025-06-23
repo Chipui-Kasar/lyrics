@@ -1,4 +1,4 @@
-import HomePage from "./(pages)/home/page";
+import HomePage from "./home/page";
 // import RootLayout from "./layout";
 
 export const dynamic = "force-static";

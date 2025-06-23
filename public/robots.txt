@@ -1,0 +1,9 @@
+User-Agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://tangkhullyrics.com/sitemap.xml
+
+# Hello search bot! This is a Tangkhul song lyrics archive.
+# Built with ♥ in Ukhrul.

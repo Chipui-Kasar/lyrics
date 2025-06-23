@@ -4,6 +4,9 @@ import AddNewLyrics from "@/components/component/Admin/Lyrics/AddLyrics";
 import { Sidebar } from "@/components/component/Admin/Navigation/AdminNav";
 import React, { useEffect, useState } from "react";
 
+export const dynamic = "force-static";
+export const revalidate = 3600; // 1 hour
+
 const fetchArtists = cache(
   async () =>
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`)

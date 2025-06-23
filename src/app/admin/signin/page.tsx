@@ -1,5 +1,3 @@
-"use client";
-
 import { signIn } from "next-auth/react";
 import { LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";

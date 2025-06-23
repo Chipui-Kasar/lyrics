@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   highlightFuzzyMatch,
   sanitizeAndDeduplicateHTML,
@@ -31,7 +31,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
 
       return (
         <Link
-          href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}~${slugMaker(
+          href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
             lyric.artistId?.name
           )}`}
           className="group"

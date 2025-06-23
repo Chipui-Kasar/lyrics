@@ -39,7 +39,7 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
               <Link
                 href={`/lyrics/${songLyrics._id}/${slugMaker(
                   songLyrics.title
-                )}~${slugMaker(songLyrics.artistId?.name)}`}
+                )}_${slugMaker(songLyrics.artistId?.name)}`}
                 prefetch={true}
               >
                 <Button>View Lyrics</Button>

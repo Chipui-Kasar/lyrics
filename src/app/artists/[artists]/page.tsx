@@ -19,6 +19,7 @@ export const generateStaticParams = async () => {
   const artists = await getAllArtists();
   return artists.map((artist: IArtists) => ({
     artists: slugMaker(artist.name?.toLowerCase() || ""),
+    revalidate: 604800, // Revalidate every 7 days
   }));
 };
 

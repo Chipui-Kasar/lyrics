@@ -25,10 +25,10 @@ const fetchLyric = cache(
 );
 // 🔹 Generate Metadata Dynamically
 export async function generateMetadata(props: {
-  params: Promise<{ lyricsID: string; "title~artist": string }>;
+  params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
   const params = await props.params;
-  const [title, artist] = params["title~artist"].split("~"); // Split the title and artist
+  const [title, artist] = params["title_artist"].split("_"); // Split the title and artist
   const lyricsID = params.lyricsID;
 
   const lyric = await fetchLyric(lyricsID, title, artist);
@@ -46,7 +46,7 @@ export async function generateMetadata(props: {
     description: `Read the lyrics of '${lyric.title}' by ${lyric.artistId?.name}.`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       lyric.title
-    )}~${slugMaker(lyric.artistId?.name)}/details`,
+    )}_${slugMaker(lyric.artistId?.name)}/details`,
     image: `${lyric.thumbnail ?? lyric.artistId.image ?? "/ogImage.jpg"}`, // ✅ Use a valid image
     keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa`,
   });
@@ -58,18 +58,16 @@ export async function generateStaticParams() {
 
   return posts.map((post: ILyrics) => ({
     lyricsID: post._id, // ✅ Matches route param
-    "title~artist": `${slugMaker(post.title)}~${slugMaker(
-      post.artistId?.name
-    )}`, // ✅ Matches dynamic segment
+    title_artist: `${slugMaker(post.title)}_${slugMaker(post.artistId?.name)}`, // ✅ Matches dynamic segment
   }));
 }
 
 // 🔹 Page Component
 export default async function SongDetailsPage(props: {
-  params: Promise<{ lyricsID: string; "title~artist": string }>;
+  params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
   const params = await props.params;
-  const [title, artist] = params["title~artist"].split("~");
+  const [title, artist] = params["title_artist"].split("_");
   const lyricsID = params.lyricsID;
 
   const songLyrics = await fetchLyric(lyricsID, title, artist);
