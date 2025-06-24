@@ -28,9 +28,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { artists: string };
+  params: Promise<{ artists: string }>;
 }) {
-  const artistData: ILyrics[] = await fetchFeaturedLyrics(params.artists);
+  const artists = await params; // Resolve the promise to get the actual params
+  const artistData: ILyrics[] = await fetchFeaturedLyrics(artists.artists);
 
   if (artistData.length === 0) {
     return generatePageMetadata({
@@ -53,8 +54,9 @@ export async function generateMetadata({
 export default async function ArtistPage({
   params,
 }: {
-  params: { artists: string };
+  params: Promise<{ artists: string }>;
 }) {
-  const lyrics = await fetchFeaturedLyrics(params.artists);
+  const resolvedParams = await params; // Resolve the promise to get the actual params
+  const lyrics = await fetchFeaturedLyrics(resolvedParams.artists);
   return <ArtistsSongLists lyrics={lyrics} />;
 }

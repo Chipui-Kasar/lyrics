@@ -4,7 +4,8 @@ import PopularArtists from "@/components/component/PopularArtists/PopularArtists
 import TopLyrics from "@/components/component/TopLyrics/toplyrics";
 import { generatePageMetadata } from "@/lib/utils";
 import {
-  getArtistsWithSongCount,
+  getAllArtists,
+  // getArtistsWithSongCount,
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
@@ -13,7 +14,8 @@ export const revalidate = 604800;
 // ✅ Fetch all data in parallel
 const fetchHomeData = async () => {
   return await Promise.all([
-    getArtistsWithSongCount(),
+    // getArtistsWithSongCount(),
+    getAllArtists(),
     getFeaturedLyrics(),
     getTopLyrics(13),
   ]);

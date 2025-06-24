@@ -33,7 +33,7 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
             <div className="text-center">
               <h3 className="text-sm font-medium">{artist.name}</h3>
               <p className="text-xs text-muted-foreground">
-                {artist.songCount ?? 0} Lyrics
+                {/* {artist.songCount ?? 0} Lyrics */}
               </p>
             </div>
           </Link>

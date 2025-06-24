@@ -26,10 +26,11 @@ const fetchLyric = cache(
 export async function generateMetadata({
   params,
 }: {
-  params: { lyricsID: string; title_artist: string };
+  params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
-  const [title, artist] = params.title_artist.split("_");
-  const lyric = await fetchLyric(params?.lyricsID, title, artist);
+  const resolvedParams = await params; // Resolve the promise to get the actual params
+  const [title, artist] = resolvedParams.title_artist.split("_");
+  const lyric = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
   if (!lyric) {
     return generatePageMetadata({
@@ -64,10 +65,11 @@ export async function generateStaticParams() {
 export default async function SongDetailsPage({
   params,
 }: {
-  params: { lyricsID: string; title_artist: string };
+  params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
-  const [title, artist] = params.title_artist.split("_");
-  const songLyrics = await fetchLyric(params?.lyricsID, title, artist);
+  const resolvedParams = await params; // Resolve the promise to get the actual params
+  const [title, artist] = resolvedParams.title_artist.split("_");
+  const songLyrics = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
   if (!songLyrics) {
     notFound();
