@@ -3,11 +3,11 @@ import { IArtists, ILyrics } from "@/models/IObjects";
 export const getLyrics = async () => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`,
-      {
-        // next: { revalidate: 604800 },
-        next: { revalidate: 604800 },
-      }
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`
+      // {
+      //   // next: { revalidate: 604800 },
+      //   next: { revalidate: 604800 },
+      // }
     );
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -62,9 +62,12 @@ export const getTopLyrics = async (limit?: number) => {
 };
 export const getAllArtists = async () => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
-      next: { revalidate: 604800 },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/artist`
+      //   {
+      //   next: { revalidate: 604800 },
+      // }
+    );
     return res.ok ? await res.json() : [];
   } catch (error) {
     console.error("Error fetching artists:", error);
