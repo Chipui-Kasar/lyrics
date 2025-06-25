@@ -5,7 +5,7 @@ import { cache } from "react";
 export const dynamic = "force-static";
 export const dynamicParams = false;
 
-export const revalidate = 1800; // 30 minutes
+export const revalidate = 60; // 30 minutes
 
 // Cache the lyrics fetch to prevent duplicate calls during the same request
 const fetchLyricsCached = cache(async (): Promise<ILyrics[]> => {
