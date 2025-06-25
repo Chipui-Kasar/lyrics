@@ -1,8 +1,7 @@
 import AddNewDetailsClient from "@/components/component/Admin/AddNewDetailsClient/AddNewDetailsClient";
 import { getAllArtists } from "@/service/allartists";
 
-export const dynamic = "force-static";
-export const revalidate = 60; // Regenerate every 1 hour
+export const dynamic = "force-dynamic"; // Use dynamic rendering for this page
 
 export default async function AddNewDetailsPage() {
   const artists = await getAllArtists();

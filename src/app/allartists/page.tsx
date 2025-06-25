@@ -4,7 +4,7 @@ import { IArtists } from "@/models/IObjects";
 import { getArtistsWithSongCount } from "@/service/allartists";
 export const dynamic = "force-static";
 export const dynamicParams = false;
-export const revalidate = 60;
+export const revalidate = 604800;
 // ✅ Fetch artists with song counts
 const fetchArtistsWithSongCount = async () => {
   return await getArtistsWithSongCount();

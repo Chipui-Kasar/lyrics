@@ -9,7 +9,7 @@ import { cache } from "react";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
-export const revalidate = 60;
+export const revalidate = 604800;
 
 // ✅ Cache DB fetches
 const fetchLyric = cache(

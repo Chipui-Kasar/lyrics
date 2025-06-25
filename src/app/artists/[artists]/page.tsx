@@ -9,7 +9,7 @@ import { cache } from "react";
 
 // Make the route statically rendered and revalidated weekly
 export const dynamic = "force-static";
-export const revalidate = 60;
+export const revalidate = 604800;
 
 // Cache the lyrics fetch per artist
 const fetchFeaturedLyrics = cache(async (artistName: string) => {

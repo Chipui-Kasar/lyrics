@@ -5,8 +5,8 @@ export const getLyrics = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`,
       {
-        // next: { revalidate: 60 },
-        next: { revalidate: 60 },
+        // next: { revalidate: 604800 },
+        next: { revalidate: 604800 },
       }
     );
     return res.ok ? await res.json() : [];
@@ -23,7 +23,7 @@ export const getSingleLyrics = async (
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?id=${id}&title=${title}&artist=${artist}`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 604800 } }
     );
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -36,7 +36,7 @@ export const getFeaturedLyrics = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2`,
       {
-        next: { revalidate: 60 },
+        next: { revalidate: 604800 },
       }
     );
     return res.ok ? await res.json() : [];
@@ -51,7 +51,7 @@ export const getTopLyrics = async (limit?: number) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics${query}`,
       {
-        next: { revalidate: 60 },
+        next: { revalidate: 604800 },
       }
     );
     return res.ok ? await res.json() : [];
@@ -63,7 +63,7 @@ export const getTopLyrics = async (limit?: number) => {
 export const getAllArtists = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 604800 },
     });
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -74,7 +74,7 @@ export const getAllArtists = async () => {
 export const getArtistsWithSongCount = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 604800 },
       cache: "force-cache",
     });
 
@@ -110,7 +110,7 @@ export const getSingleArtistWithSongCount = async (artistName: string) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/lyrics?artistName=${artistName}`,
       {
-        next: { revalidate: 60 },
+        next: { revalidate: 604800 },
       }
     );
     return res.ok ? await res.json() : [];
@@ -125,7 +125,7 @@ export const searchLyrics = async (query: string) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/search?query=${query}`,
       {
-        next: { revalidate: 60 },
+        next: { revalidate: 604800 },
       }
     );
     return res.ok ? await res.json() : [];

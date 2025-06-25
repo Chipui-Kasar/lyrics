@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
 };
 export const dynamic = "force-static";
-export const revalidate = 60;
+export const revalidate = 604800;
 
 export default function RootLayout({
   children,
