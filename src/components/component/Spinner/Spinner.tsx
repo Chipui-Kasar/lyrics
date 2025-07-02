@@ -4,9 +4,12 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 
-const PageLoader = () => {
+interface PageLoaderProps {
+  isLoading?: boolean;
+}
+const PageLoader: React.FC<PageLoaderProps> = ({ isLoading = false }) => {
   const pathname = usePathname(); // Detect route changes
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(isLoading);
 
   useEffect(() => {
     // Handle clicks on internal links only, except for the current page link
@@ -29,6 +32,7 @@ const PageLoader = () => {
 
   useEffect(() => {
     // Trigger loader on route change
+    if (isLoading) return;
     setLoading(true);
     const timeout = setTimeout(() => setLoading(false), 100);
 

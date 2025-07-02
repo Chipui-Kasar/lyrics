@@ -7,6 +7,7 @@ import { sanitizeAndDeduplicateHTML } from "@/lib/utils";
 import { IArtists, ILyrics } from "@/models/IObjects";
 import { createLyrics, getLyrics, updateLyrics } from "@/service/allartists";
 import React, { useEffect, useState } from "react";
+import PageLoader from "../../Spinner/Spinner";
 // import { ObjectId } from "mongodb";
 
 const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
@@ -29,6 +30,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     Record<string, boolean>
   >({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchLyrics();
@@ -79,6 +81,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       alert("Please enter a valid release year.");
       return;
     }
+    setLoading(true);
 
     // Format the data properly
     const formattedData = {
@@ -116,12 +119,15 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           contributedBy: "",
           _id: "",
         });
+        setLoading(false);
       } else {
         alert("Failed to add lyrics.");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error submitting lyrics:", error);
       alert("An error occurred while submitting the lyrics.");
+      setLoading(false);
     }
   };
 
@@ -282,7 +288,10 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               defaultValue={formData.lyrics ?? ""}
               onChange={({ target }) =>
                 handleChange({
-                  target: { name: "lyrics", value: target.value },
+                  target: {
+                    name: "lyrics",
+                    value: sanitizeAndDeduplicateHTML(target.value),
+                  },
                 })
               }
             />
@@ -357,6 +366,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           )
         )}
       </div>
+      <PageLoader isLoading={loading} />
     </section>
   );
 };
