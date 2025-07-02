@@ -23,7 +23,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
             href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
               lyric.artistId?.name
             )}`}
-            prefetch={true}
+            prefetch={false}
             className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
             key={key}
           >

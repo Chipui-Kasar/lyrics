@@ -2,7 +2,7 @@ import SearchClient from "@/components/component/SearchResult/SearchClient";
 import { generatePageMetadata } from "@/lib/utils";
 
 export const dynamic = "force-static";
-export const revalidate = 604800;
+export const revalidate = 300;
 
 export const metadata = generatePageMetadata({
   title: "Search Tangkhul Lyrics",
