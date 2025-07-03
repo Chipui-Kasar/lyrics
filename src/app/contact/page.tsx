@@ -1,6 +1,8 @@
 import Contact from "@/components/component/Contact/Contact";
 import { generatePageMetadata } from "@/lib/utils";
 export const dynamic = "force-static";
+export const dynamicParams = false;
+
 // ✅ Generate Metadata for SEO
 export async function generateMetadata() {
   return generatePageMetadata({
