@@ -103,12 +103,17 @@ const AddArtists = () => {
     setFormData(artist);
   };
   // const handleDelete = async (artistId: string) => {
-  //   try {
-  //     await deleteArtist(artistId);
-  //     loadArtists();
-  //     alert("Artist deleted successfully!");
-  //   } catch (error) {
-  //     console.error("Error deleting artist:", error);
+  //   const secretWord = prompt("Please enter 'DELETE' to confirm deletion:");
+  //   if (secretWord === process.env.SECRET_WORD) {
+  //     try {
+  //       await deleteArtist(artistId);
+  //       loadArtists();
+  //       alert("Artist deleted successfully!");
+  //     } catch (error) {
+  //       console.error("Error deleting artist:", error);
+  //     }
+  //   } else {
+  //     alert("Deletion cancelled.");
   //   }
   // };
 
@@ -174,6 +179,16 @@ const AddArtists = () => {
               name="village"
               placeholder="Enter the artist village name"
               value={formData.village ?? ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="profile-pic">Profile Photo</Label>
+            <Input
+              id="profile-pic"
+              name="profile-pic"
+              placeholder="Enter the artist profile photo url"
+              value={formData.image ?? ""}
               onChange={handleChange}
             />
           </div>

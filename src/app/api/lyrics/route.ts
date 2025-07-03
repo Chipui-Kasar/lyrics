@@ -65,8 +65,13 @@ export async function GET(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const id = url.searchParams.get("id");
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -81,8 +86,9 @@ export async function DELETE(req: NextRequest) {
       }
     );
   } catch (error) {
+    console.error("Error deleting lyrics:", error);
     return NextResponse.json(
-      { error: "Failed to delete lyrics" },
+      { error: "Failed to delete lyrics", details: (error as Error).message },
       { status: 500 }
     );
   }

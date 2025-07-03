@@ -5,7 +5,12 @@ import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/richTextEditor";
 import { sanitizeAndDeduplicateHTML } from "@/lib/utils";
 import { IArtists, ILyrics } from "@/models/IObjects";
-import { createLyrics, getLyrics, updateLyrics } from "@/service/allartists";
+import {
+  createLyrics,
+  deleteLyrics,
+  getLyrics,
+  updateLyrics,
+} from "@/service/allartists";
 import React, { useEffect, useState } from "react";
 import PageLoader from "../../Spinner/Spinner";
 // import { ObjectId } from "mongodb";
@@ -187,6 +192,27 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       _id: lyrics._id,
     });
   };
+  const deleteLyric = async (lyricId: string) => {
+    const wonderfulWord = new Date().toDateString().replace(/\s/g, "");
+
+    const secretWord = prompt("Please enter 'DELETE' to confirm deletion:");
+    if (secretWord === wonderfulWord) {
+      try {
+        await deleteLyrics(lyricId).then((e) => {
+          if (!e) {
+            alert("Failed to delete lyrics");
+          } else {
+            fetchLyrics();
+            alert("Artist deleted successfully!");
+          }
+        });
+      } catch (error) {
+        console.error("Error deleting artist:", error);
+      }
+    } else {
+      alert("Deletion cancelled.");
+    }
+  };
 
   return (
     <section className="container">
@@ -355,6 +381,9 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                         <td className="border p-2">
                           <Button onClick={() => handleEdit(lyric)}>
                             Edit
+                          </Button>
+                          <Button onClick={() => deleteLyric(lyric._id)}>
+                            Delete
                           </Button>
                         </td>
                       </tr>

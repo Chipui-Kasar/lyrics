@@ -193,7 +193,7 @@ export const deleteArtist = async (id: string) => {
     return res.ok ? await res.json() : null;
   } catch (error) {
     console.error("Error deleting artist:", error);
-    return null;
+    return error;
   }
 };
 
@@ -236,6 +236,20 @@ export const updateLyrics = async (lyricsData: ILyrics) => {
     return null;
   }
 };
-export const deleteLyrics = async () => {};
+export const deleteLyrics = async (id: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?id=${id}`,
+      {
+        method: "DELETE",
+        credentials: "include", // only if you're using sessions/cookies
+      }
+    );
+    return res.ok ? await res.json() : null;
+  } catch (error) {
+    console.error("Error deleting artist:", error);
+    throw new Error("Failed to delete lyrics");
+  }
+};
 
 export const getLyricsCount = async () => {};
