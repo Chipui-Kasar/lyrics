@@ -3,7 +3,7 @@ import { Dropdown } from "@/components/ui/dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/richTextEditor";
-import { sanitizeAndDeduplicateHTML } from "@/lib/utils";
+import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
 import { IArtists, ILyrics } from "@/models/IObjects";
 import {
   createLyrics,
@@ -13,6 +13,7 @@ import {
 } from "@/service/allartists";
 import React, { useEffect, useState } from "react";
 import PageLoader from "../../Spinner/Spinner";
+import Link from "next/link";
 // import { ObjectId } from "mongodb";
 
 const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
@@ -28,6 +29,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     contributedBy: "",
     thumbnail: "",
     lyrics: "",
+    featured: false,
     _id: "",
   });
   const [lyrics, setLyrics] = useState([]);
@@ -53,6 +55,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       | { target: { name: string; value: string } }
   ) => {
     const { name, value } = e.target;
+    console.log(name, value);
 
     setFormData((prev) => ({
       ...prev,
@@ -122,6 +125,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           lyrics: "",
           thumbnail: "",
           contributedBy: "",
+          featured: false,
           _id: "",
         });
         setLoading(false);
@@ -148,7 +152,8 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
         .filter(
           (lyric) =>
             lyric.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            lyric.lyrics?.toLowerCase().includes(searchQuery.toLowerCase())
+            lyric.lyrics?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            lyric.featured
         )
         .reduce((acc, lyric) => {
           const artistName = lyric.artistId.name;
@@ -189,6 +194,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       contributedBy: lyrics.contributedBy,
       thumbnail: lyrics.thumbnail,
       lyrics: sanitizeAndDeduplicateHTML(lyrics.lyrics || ""),
+      featured: lyrics.featured || false,
       _id: lyrics._id,
     });
   };
@@ -323,6 +329,40 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
             />
           </div>
           <div className="grid gap-2">
+            <Label htmlFor="featured">Featured Lyrics?</Label>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={formData.featured}
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, featured: !prev.featured }))
+              }
+              className={`
+                relative inline-flex h-6 w-11 items-center
+                rounded-full rounded-lg border border-gray-400
+                transition-colors duration-300
+                ${formData.featured ? "bg-white" : "bg-gray-300"}
+              `}
+            >
+              <span
+                className={`absolute left-0.5 text-sm text-muted-foreground ${
+                  formData.featured ? "translate-x-0" : "translate-x-5"
+                }`}
+              >
+                {formData.featured ? "Yes" : "No"}
+              </span>
+              <span
+                className={`
+                  absolute left-0.5 
+                  inline-block h-5 w-5 rounded-lg bg-background shadow
+                  transform transition-transform duration-300
+                  ${formData.featured ? "translate-x-5" : "translate-x-0"}
+                `}
+              />
+            </button>
+          </div>
+
+          <div className="grid gap-2">
             <Label htmlFor="_id">Song ID (Deleted Song ID)</Label>
             <Input
               id="_id"
@@ -376,7 +416,20 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                     {artistLyrics.map((lyric) => (
                       <tr key={lyric._id} className="border-t">
                         <td className="border p-2">{lyric._id}</td>
-                        <td className="border p-2">{lyric.title}</td>
+                        <td className="border p-2">
+                          <Link
+                            href={`/lyrics/${lyric._id}/${slugMaker(
+                              lyric.title
+                            )}_${slugMaker(lyric.artistId?.name || "unknown")}`}
+                            // target="_blank"
+                            prefetch={false}
+                            className={`${
+                              lyric.featured ? "text-accent bg-primary" : ""
+                            } hover:underline`}
+                          >
+                            {lyric.title}
+                          </Link>
+                        </td>
                         <td className="border p-2">{lyric.contributedBy}</td>
                         <td className="border p-2">
                           <Button onClick={() => handleEdit(lyric)}>

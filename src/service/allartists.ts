@@ -34,7 +34,7 @@ export const getSingleLyrics = async (
 export const getFeaturedLyrics = async () => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2&sort=createdAt&featured=true`,
       {
         next: { revalidate: 604800 },
       }
@@ -46,7 +46,7 @@ export const getFeaturedLyrics = async () => {
   }
 };
 export const getTopLyrics = async (limit?: number) => {
-  const query = `?sort=created${limit ? `&limit=${limit}` : ""}`;
+  const query = `?sort=createdAt${limit ? `&limit=${limit}` : ""}`;
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics${query}`,

@@ -29,6 +29,7 @@ const lyricsSchema = new Schema(
     thumbnail: String,
     contributedBy: String,
     view: { type: Number, default: 0 },
+    featured: { type: Boolean, default: false }, // For featured lyrics
   },
   {
     timestamps: true,

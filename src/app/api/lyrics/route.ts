@@ -46,11 +46,14 @@ export async function GET(req: NextRequest) {
     const query = Lyrics.find().populate("artistId", "name image");
 
     if (sort) {
-      query.sort({ [sort]: 1 }); // sort descending
+      query.sort({ [sort]: -1 }); // sort descending
     }
 
     if (limit) {
       query.limit(limit);
+    }
+    if (url.searchParams.get("featured")) {
+      query.where({ featured: true });
     }
 
     const lyrics = await query.exec();

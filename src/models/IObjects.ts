@@ -25,6 +25,7 @@ export interface ILyrics {
   thumbnail: string;
   _id: string;
   contributedBy: string;
+  featured?: boolean; // ✅ Add this line
   createdAt?: Date;
   view?: number; // ✅ Add this line
 }

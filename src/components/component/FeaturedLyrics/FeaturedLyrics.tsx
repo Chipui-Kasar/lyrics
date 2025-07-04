@@ -24,10 +24,25 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
               lyric.artistId?.name
             )}`}
             prefetch={true}
-            className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+            className="
+            group
+            relative
+            flex items-center gap-4
+            rounded-lg
+            border border-yellow-400
+            bg-yellow-50
+            p-4
+            shadow
+            transition
+            hover:bg-yellow-100
+            hover:shadow-md
+          "
             key={key}
           >
-            <div className="flex-1">
+            <span className="text-yellow-400 text-xl absolute left-[-10px] top-[-10px]">
+              ⭐
+            </span>
+            <div className="flex-1  ">
               <h3 className="font-medium">{lyric.title}</h3>{" "}
               {/* ✅ Removed nested <Link> */}
               <p className="text-sm text-muted-foreground">
