@@ -448,7 +448,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           )
         )}
       </div>
-      <PageLoader isLoading={loading} />
+      {loading && <PageLoader isLoading={loading} />}
     </section>
   );
 };

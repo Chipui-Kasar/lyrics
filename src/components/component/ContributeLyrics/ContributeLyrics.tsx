@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useState } from "react";
+import PageLoader from "../Spinner/Spinner";
 
 const ContributeLyrics = () => {
   const [contributorName, setContributorName] = useState("");
@@ -11,6 +12,7 @@ const ContributeLyrics = () => {
   const [artistsName, setArtistsName] = useState("");
   const [lyrics, setLyrics] = useState("");
   const [submitStatus, setSubmitStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const submitLyrics = async () => {
     setSubmitStatus("");
@@ -18,6 +20,7 @@ const ContributeLyrics = () => {
       setSubmitStatus("Please fill all the required fields");
       return;
     }
+    setLoading(true);
 
     await fetch("https://api.emailjs.com/api/v1.0/email/send", {
       method: "POST",
@@ -35,14 +38,22 @@ const ContributeLyrics = () => {
           message: lyrics,
         },
       }),
-    }).then((res) => {
-      if (res.ok) {
-        setSubmitStatus("success");
-        clearForm();
-      } else {
+    })
+      .then((res) => {
+        if (res.ok) {
+          setLoading(false);
+          setSubmitStatus("success");
+          clearForm();
+        } else {
+          setLoading(false);
+          setSubmitStatus("error");
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting lyrics:", error);
+        setLoading(false);
         setSubmitStatus("error");
-      }
-    });
+      });
   };
   const clearForm = () => {
     setContributorName("");
@@ -128,6 +139,7 @@ const ContributeLyrics = () => {
           dangerouslySetInnerHTML={{ __html: lyrics.replace(/\n/g, "<br/>") }}
         ></div>
       </div>
+      {loading && <PageLoader isLoading={loading} />}
     </section>
   );
 };

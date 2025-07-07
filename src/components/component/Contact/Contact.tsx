@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
+import PageLoader from "../Spinner/Spinner";
 
 export default function Contact() {
   const [name, setName] = useState("");
@@ -11,45 +12,51 @@ export default function Contact() {
   const [phoneNo, setPhoneNo] = useState("");
   const [message, setMessage] = useState("");
   const [submitStatus, setSubmitStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const submitSuggestions = async () => {
     setSubmitStatus("");
+    setLoading(true);
     if (!name || !email || !message) {
       setSubmitStatus("Please fill all the required fields");
+      setLoading(false);
       return;
     }
-
-    await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        service_id: "myGmail",
-        template_id: "template_dm43ind",
-        user_id: "user_Mc5QI37PU2F55mUGiqmuO",
-        template_params: {
-          name: name,
-          email: email,
-          phone: phoneNo,
-          message: message,
-          subject: `New comments from ${name}`,
+    try {
+      const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      }),
-    }).then((res) => {
+        body: JSON.stringify({
+          service_id: "myGmail",
+          template_id: "template_dm43ind",
+          user_id: "user_Mc5QI37PU2F55mUGiqmuO",
+          template_params: {
+            name: name,
+            email: email,
+            phone: phoneNo,
+            message: message,
+            subject: `New comments from ${name}`,
+          },
+        }),
+      });
       if (res.ok) {
         setSubmitStatus("Sent successfully");
         clearForm();
       } else {
         setSubmitStatus("error");
       }
-    });
+    } finally {
+      setLoading(false);
+    }
   };
   const clearForm = () => {
     setName("");
     setEmail("");
     setPhoneNo("");
     setMessage("");
+    setLoading(false);
   };
 
   return (
@@ -137,6 +144,8 @@ export default function Contact() {
               id="phone-number"
               placeholder="Enter your phone number"
               value={phoneNo}
+              type="tel"
+              max={12}
               onChange={(e) => setPhoneNo(e.target.value)}
             />
           </div>
@@ -174,6 +183,7 @@ export default function Contact() {
           Submit
         </Button>
       </div>
+      {loading && <PageLoader isLoading={loading} />}
     </div>
   );
 }
