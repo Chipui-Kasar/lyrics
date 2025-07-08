@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Tangkhul Song Lyrics",
   description:
-    "Tangkhul Lyrics | Tangkhul Laa Lyrics | Tangkhul Songs Lyrics | Tangkhul Lyrical Oasis",
+    "Tangkhul Song Lyrics offers the best collection of Tangkhul song lyrics, including new releases, trending hits, and traditional favorites—updated regularly for every music lover. Tangkhul Lyrics | Tangkhul Laa Lyrics | Tangkhul Songs Lyrics | Tangkhul Lyrical Oasis",
   // viewport: "width=device-width, initial-scale=1.0",
   robots: "index, follow",
   metadataBase: new URL("https://tangkhullyrics.com/"),
@@ -26,9 +26,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://tangkhullyrics.com/",
-    title: "Tangkhul Song Lyrics",
+    title:
+      "Tangkhul Laa Lyrics – Latest Tangkhul Song Lyrics Collection | Tangkhul Songs Lyrics",
     description:
-      "Explore the rich and vibrant world of Tangkhul song lyrics, where tradition meets melody. Dive into our extensive collection of Tangkhul Laa Lyrics and immerse yourself in the Tangkhul lyrical oasis.",
+      "Discover the latest Tangkhul songs and lyrics. Tangkhul Laa Lyrics offers a rich collection of traditional and modern Tangkhul song lyrics for every music lover.",
     images: [
       {
         url: "/ogImage.jpg",
@@ -38,12 +39,21 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Tangkhul Laa Lyrics – Latest Tangkhul Song Lyrics Collection | Tangkhul Songs Lyrics",
+    description:
+      "Explore trending Tangkhul songs and lyrics. Tangkhul Laa Lyrics brings you the best of traditional and new Tangkhul music.",
+    images: ["/ogImage.jpg"],
+  },
   verification: {
-    google: "QThzXenD8T7A0SAtb_L2qOy3Wzbw72-7AJfE3vQbxIA",
+    google: "ca-pub-1569774903364815",
   },
   other: {
     keywords:
       "lyrics, tangkhul, tangkhul lyrics, tangkhul laa, tangkhul laa lyrics",
+    "google-adsense-account": "ca-pub-1569774903364815",
   },
 };
 export const dynamic = "force-static";
