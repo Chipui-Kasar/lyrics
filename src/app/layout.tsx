@@ -66,6 +66,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* ✅ Google Auto Ads Script must be inside <head> */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
+          crossOrigin="anonymous"
+        ></script>
+      </head>
       <body className={`${inter.className}`}>
         <SessionProviderWrapper>
           <DarkTheme />
