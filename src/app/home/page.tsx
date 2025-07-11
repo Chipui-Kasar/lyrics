@@ -3,6 +3,7 @@ import FeaturedLyrics from "@/components/component/FeaturedLyrics/FeaturedLyrics
 import PopularArtists from "@/components/component/PopularArtists/PopularArtists";
 import TopLyrics from "@/components/component/TopLyrics/toplyrics";
 import { generatePageMetadata } from "@/lib/utils";
+import { IArtists } from "@/models/IObjects";
 import {
   getAllArtists,
   // getArtistsWithSongCount,
@@ -44,7 +45,11 @@ const HomePage = async () => {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             <div className="col-span-2 grid gap-4">
               <FeaturedLyrics lyrics={featuredLyrics} />
-              <PopularArtists artists={artists} />
+              <PopularArtists
+                artists={artists.filter(
+                  (artist: IArtists) => artist.name !== "Pamching Kasar"
+                )}
+              />
             </div>
             <TopLyrics lyrics={topLyrics} />
           </div>

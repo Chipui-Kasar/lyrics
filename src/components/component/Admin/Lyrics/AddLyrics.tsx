@@ -55,7 +55,6 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       | { target: { name: string; value: string } }
   ) => {
     const { name, value } = e.target;
-    console.log(name, value);
 
     setFormData((prev) => ({
       ...prev,

@@ -183,10 +183,10 @@ const AddArtists = () => {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="profile-pic">Profile Photo</Label>
+            <Label htmlFor="image">Profile Photo</Label>
             <Input
-              id="profile-pic"
-              name="profile-pic"
+              id="image"
+              name="image"
               placeholder="Enter the artist profile photo url"
               value={formData.image ?? ""}
               onChange={handleChange}

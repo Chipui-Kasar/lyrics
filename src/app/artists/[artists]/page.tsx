@@ -45,8 +45,10 @@ export async function generateMetadata({
   return generatePageMetadata({
     title: `${artistData[0].artistId?.name} - Tangkhul Song Lyrics`,
     description: `Explore all song lyrics by ${artistData[0].artistId?.name} on Tangkhul Lyrics.`,
-    url: `https://tangkhullyrics.com/artists/${artistData[0].artistId?.name?.toLowerCase()}`,
-    keywords: `${artistData[0].artistId?.name}, Tangkhul songs, Tangkhul lyrics, ${artistData[0].artistId?.name} lyrics`,
+    url: `https://tangkhullyrics.com/artists/${slugMaker(
+      artistData[0].artistId?.name?.toLowerCase()
+    )}`,
+    keywords: `${artistData[0]?.artistId?.name}, Tangkhul songs, Tangkhul lyrics, ${artistData[0]?.artistId?.name} lyrics`,
   });
 }
 

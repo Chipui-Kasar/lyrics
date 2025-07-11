@@ -30,13 +30,21 @@ export function generatePageMetadata({
   title,
   description,
   url,
-  image = "/ogImage.jpg", // Default image if none is provided
+  image = "https://tangkhullyrics.com/ogImage.jpg",
   keywords = "Tangkhul lyrics, Tangkhul song lyrics, Tangkhul Laa, Tangkhul music",
   robots = "index, follow",
-}: MetadataProps): Metadata {
+}: {
+  title: string;
+  description: string;
+  url: string;
+  image?: string;
+  keywords?: string;
+  robots?: string;
+}): Metadata {
   return {
     title,
     description,
+    keywords,
     metadataBase: new URL("https://tangkhullyrics.com/"),
 
     openGraph: {
@@ -46,7 +54,7 @@ export function generatePageMetadata({
       siteName: "Tangkhul Lyrics",
       images: [
         {
-          url: image ?? "/ogImage.jpg",
+          url: image,
           width: 1200,
           height: 630,
           alt: title,
@@ -58,7 +66,7 @@ export function generatePageMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [image ?? "/ogImage.jpg"],
+      images: [image],
       site: "@TangkhulLyrics",
     },
 
@@ -66,8 +74,10 @@ export function generatePageMetadata({
       canonical: url,
     },
 
-    keywords,
-    robots,
+    robots: {
+      index: robots.includes("index"),
+      follow: robots.includes("follow"),
+    },
   };
 }
 

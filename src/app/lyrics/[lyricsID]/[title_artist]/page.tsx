@@ -40,12 +40,21 @@ export async function generateMetadata({
 
   return generatePageMetadata({
     title: `${lyric.title} by ${lyric.artistId?.name} | ${lyric?.album}`,
-    description: `Read the lyrics of '${lyric.title}' by ${lyric.artistId?.name}.`,
+    description: `${lyric.lyrics.slice(0, 150)}... - ${lyric.artistId?.name}`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       lyric.title
     )}_${slugMaker(lyric.artistId?.name)}`,
     image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`,
-    keywords: `${lyric.title}, ${lyric.artistId?.name}, Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, ${lyric.title} lyrics, ${lyric.artistId?.name} lyrics`,
+    keywords: [
+      lyric.title,
+      lyric.artistId?.name,
+      "Tangkhul lyrics",
+      "Tangkhul songs",
+      "Tangkhul Laa",
+      lyric.title + " lyrics",
+      lyric.artistId?.name + " lyrics",
+    ].join(", "),
+    robots: "index, follow",
   });
 }
 
