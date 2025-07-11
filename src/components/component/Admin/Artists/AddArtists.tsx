@@ -9,7 +9,7 @@ import {
   getAllArtists,
   updateArtist,
 } from "@/service/allartists";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const AddArtists = () => {
   const [formData, setFormData] = useState<{

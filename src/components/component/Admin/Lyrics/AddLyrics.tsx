@@ -11,7 +11,7 @@ import {
   getLyrics,
   updateLyrics,
 } from "@/service/allartists";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PageLoader from "../../Spinner/Spinner";
 import Link from "next/link";
 // import { ObjectId } from "mongodb";

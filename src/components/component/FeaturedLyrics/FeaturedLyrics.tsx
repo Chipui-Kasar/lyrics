@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import React from "react";
 import { Button } from "../../ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import { ILyrics } from "@/models/IObjects";
@@ -24,33 +23,19 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
               lyric.artistId?.name
             )}`}
             prefetch={true}
-            className="
-            group
-            relative
-            flex items-center gap-4
-            rounded-lg
-            border border-yellow-400
-            bg-yellow-50
-            p-4
-            shadow
-            transition
-            hover:bg-yellow-100
-            hover:shadow-md
-          "
+            className="group relative flex items-center gap-4 rounded-lg border border-yellow-400 bg-yellow-50 p-4 shadow transition hover:bg-yellow-100 hover:shadow-md"
             key={key}
           >
             <span className="text-yellow-400 text-xl absolute left-[-10px] top-[-10px]">
               ⭐
             </span>
-            <div className="flex-1  ">
-              <h3 className="font-medium">{lyric.title}</h3>{" "}
-              {/* ✅ Removed nested <Link> */}
+            <div className="flex-1">
+              <h3 className="font-medium">{lyric.title}</h3>
               <p className="text-sm text-muted-foreground">
                 by{" "}
                 <span className="font-medium">
                   {lyric.artistId?.name ?? "Unknown Artist"}
-                </span>{" "}
-                {/* ✅ No nested <Link> */}
+                </span>
               </p>
             </div>
             <Button

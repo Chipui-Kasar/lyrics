@@ -1,7 +1,6 @@
 import { IArtists } from "@/models/IObjects";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 interface PopularArtistsProps {
   artists: IArtists[];

@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Music2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useEffect, useMemo } from "react";
+import  { useState, useEffect, useMemo } from "react";
 import debounce from "lodash/debounce";
 import { ILyrics } from "@/models/IObjects";
 import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import { Button } from "../../ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import { ILyrics } from "@/models/IObjects";

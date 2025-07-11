@@ -8,7 +8,6 @@ import {
 import { IArtists, ILyrics } from "@/models/IObjects";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 
 interface SearchResultProps {
   params: string;
