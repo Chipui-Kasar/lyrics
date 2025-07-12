@@ -10,6 +10,7 @@ import {
   updateArtist,
 } from "@/service/allartists";
 import { useEffect, useState } from "react";
+import PageLoader from "../../Spinner/Spinner";
 
 const AddArtists = () => {
   const [formData, setFormData] = useState<{
@@ -26,6 +27,9 @@ const AddArtists = () => {
     image: "",
     village: "",
   });
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   // ✅ Handle text inputs
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,6 +58,14 @@ const AddArtists = () => {
       alert("Please add artist name.");
       return;
     }
+    if (isSameArtistExists(formData.name)) {
+      const confirmAdd = window.confirm(
+        "Artist with this name already exists. Do you still want to add?"
+      );
+      if (!confirmAdd) return;
+    }
+
+    setLoading(true);
 
     // Format the data properly
     const formattedData = {
@@ -79,16 +91,22 @@ const AddArtists = () => {
           village: "",
         });
         loadArtists();
+        setLoading(false);
       } else {
         alert("Failed to add artist.");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error submitting artist:", error);
       alert("An error occurred while submitting the artist.");
+      setLoading(false);
     }
   };
-
-  const [artists, setArtists] = useState([]);
+  const isSameArtistExists = (artistName: string) => {
+    return artists.some(
+      (a: IArtists) => a.name.toLowerCase() === artistName.toLowerCase()
+    );
+  };
 
   useEffect(() => {
     loadArtists();
@@ -224,6 +242,7 @@ const AddArtists = () => {
           ))}
         </tbody>
       </table>
+      {loading && <PageLoader isLoading={loading} />}
     </section>
   );
 };
