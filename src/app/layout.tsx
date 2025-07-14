@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     images: ["/ogImage.jpg"],
   },
   verification: {
-    google: "ca-pub-1569774903364815",
+    google: "QThzXenD8T7A0SAtb_L2qOy3Wzbw72-7AJfE3vQbxIA",
   },
   other: {
     keywords:
