@@ -5,43 +5,45 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#FAD4F1",
+  "theme_color": "#667eea",
   "orientation": "portrait-primary",
   "categories": ["music", "entertainment", "lifestyle"],
   "lang": "en",
   "scope": "/",
   "icons": [
     {
+      "src": "/icon-32.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    },
+    {
       "src": "/tangkhullyrics.ico",
-      "sizes": "48x48",
+      "sizes": "46x46",
       "type": "image/x-icon"
     },
     {
-      "src": "/tangkhullyrics.ico",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "/tangkhullyrics.ico",
-      "sizes": "96x96",
-      "type": "image/png"
-    },
-    {
-      "src": "/tangkhullyrics.ico",
-      "sizes": "144x144",
-      "type": "image/png"
-    },
-    {
-      "src": "/tangkhullyrics.ico",
+      "src": "/icon-192.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     },
     {
-      "src": "/tangkhullyrics.ico",
+      "src": "/icon-512.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
@@ -50,14 +52,18 @@
       "short_name": "Search",
       "description": "Search for Tangkhul song lyrics",
       "url": "/search",
-      "icons": [{ "src": "/tangkhullyrics.ico", "sizes": "96x96" }]
+      "icons": [
+        { "src": "/icon-32.svg", "sizes": "32x32", "type": "image/svg+xml" }
+      ]
     },
     {
       "name": "Browse Artists",
       "short_name": "Artists",
       "description": "Browse all Tangkhul artists",
       "url": "/allartists",
-      "icons": [{ "src": "/tangkhullyrics.ico", "sizes": "96x96" }]
+      "icons": [
+        { "src": "/icon-32.svg", "sizes": "32x32", "type": "image/svg+xml" }
+      ]
     }
   ]
 }

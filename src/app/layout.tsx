@@ -82,10 +82,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/icon-32.svg", sizes: "32x32", type: "image/svg+xml" },
       { url: "/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
       { url: "/icon-512.svg", sizes: "512x512", type: "image/svg+xml" },
-      { url: "/tangkhullyrics.ico", type: "image/x-icon" },
+      { url: "/tangkhullyrics.ico", sizes: "46x46", type: "image/x-icon" },
     ],
     apple: [
       { url: "/apple-touch-icon.svg", sizes: "180x180", type: "image/svg+xml" },
@@ -95,7 +96,7 @@ export const metadata: Metadata = {
       {
         rel: "mask-icon",
         url: "/safari-pinned-tab.svg",
-        color: "#FAD4F1",
+        color: "#667eea",
       },
     ],
   },

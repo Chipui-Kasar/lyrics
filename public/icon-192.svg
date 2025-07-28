@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-  <rect width="192" height="192" fill="#FAD4F1" rx="20"/>
-  <text x="96" y="120" font-family="Arial, sans-serif" font-size="70" font-weight="bold" text-anchor="middle" fill="white">TL</text>
-  <circle cx="96" cy="150" r="8" fill="#fbbf24"/>
+  <defs>
+    <linearGradient id="grad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background -->
+  <rect width="192" height="192" fill="url(#grad192)" rx="28"/>
+  
+  <!-- Musical note from reference SVG (scaled to be clearly visible) -->
+  <g transform="translate(30,165) scale(0.025,-0.025)" fill="white">
+    <path d="M2490 3121 l0 -1290 -73 34 c-130 60 -223 79 -387 79 -173 1 -264 -19 -405 -89 -115 -56 -202 -128 -265 -217 -67 -96 -91 -163 -97 -273 -9 -155 38 -282 148 -400 136 -144 309 -224 536 -246 215 -20 427 33 597 150 63 44 157 149 193 217 66 124 63 62 63 1311 0 623 2 1133 4 1133 2 0 29 -16 61 -35 32 -19 90 -46 129 -61 346 -128 533 -312 622 -611 52 -174 42 -410 -21 -520 -35 -63 -13 -52 51 25 81 98 140 203 177 317 30 93 32 110 32 240 0 152 -10 205 -66 343 -56 142 -142 268 -270 399 -100 102 -179 166 -339 277 -143 98 -258 207 -313 298 -38 64 -67 143 -67 185 l0 23 -155 0 -155 0 0 -1289z"/>
+  </g>
 </svg>
