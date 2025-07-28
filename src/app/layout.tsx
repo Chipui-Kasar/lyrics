@@ -13,6 +13,14 @@ const inter = Inter({
   preload: true,
   display: "swap",
   variable: "--font-inter",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Arial",
+    "sans-serif",
+  ],
 });
 
 export const viewport: Viewport = {
@@ -24,6 +32,7 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
   ],
+  colorScheme: "light dark",
 };
 
 export const metadata: Metadata = {
@@ -73,11 +82,21 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/tangkhullyrics.ico", sizes: "any" },
+      { url: "/icon-32.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+      { url: "/icon-512.svg", sizes: "512x512", type: "image/svg+xml" },
       { url: "/tangkhullyrics.ico", type: "image/x-icon" },
     ],
     apple: [
-      { url: "/tangkhullyrics.ico", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon.svg", sizes: "180x180", type: "image/svg+xml" },
+    ],
+    shortcut: "/tangkhullyrics.ico",
+    other: [
+      {
+        rel: "mask-icon",
+        url: "/safari-pinned-tab.svg",
+        color: "#2563eb",
+      },
     ],
   },
   manifest: "/manifest.json",
@@ -116,8 +135,13 @@ export const metadata: Metadata = {
   classification: "Music & Entertainment",
   other: {
     "google-adsense-account": "ca-pub-1569774903364815",
-    "msapplication-TileColor": "#2563eb",
+    "msapplication-TileColor": "#FAD4F1",
     "theme-color": "#ffffff",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-title": "Tangkhul Lyrics",
+    "mobile-web-app-capable": "yes",
+    "msapplication-config": "/browserconfig.xml",
   },
 };
 
@@ -132,22 +156,40 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <head>
+        <meta charSet="utf-8" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
-          crossOrigin=""
+          crossOrigin="anonymous"
         />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preload" href="/ogImage.jpg" as="image" type="image/jpeg" />
       </head>
-      <body className="font-sans">
+      <body className="font-sans antialiased">
+        <noscript>
+          <div
+            style={{
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: "#f3f4f6",
+            }}
+          >
+            JavaScript is required for the best experience on Tangkhul Lyrics.
+          </div>
+        </noscript>
         <Script
-          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
-          crossOrigin="anonymous"
           strategy="afterInteractive"
+          crossOrigin="anonymous"
+          async
         />
-        <Script id="structured-data" type="application/ld+json">
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",

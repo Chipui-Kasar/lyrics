@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#2563eb" rx="50"/>
+  <text x="256" y="300" font-family="Arial, sans-serif" font-size="180" font-weight="bold" text-anchor="middle" fill="white">TL</text>
+  <circle cx="256" cy="380" r="20" fill="#fbbf24"/>
+  <text x="256" y="450" font-family="Arial, sans-serif" font-size="40" text-anchor="middle" fill="#e5e7eb">Lyrics</text>
+</svg>

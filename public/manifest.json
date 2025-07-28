@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "theme_color": "#FAD4F1",
   "orientation": "portrait-primary",
   "categories": ["music", "entertainment", "lifestyle"],
   "lang": "en",
