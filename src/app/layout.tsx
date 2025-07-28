@@ -8,28 +8,28 @@ import PageLoader from "@/components/component/Spinner/Spinner";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
 import Script from "next/script";
 
-const inter = Inter({ 
-  subsets: ["latin"], 
+const inter = Inter({
+  subsets: ["latin"],
   preload: true,
-  display: 'swap',
-  variable: '--font-inter'
+  display: "swap",
+  variable: "--font-inter",
 });
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' }
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
   ],
 };
 
 export const metadata: Metadata = {
   title: {
     default: "Tangkhul Song Lyrics | Best Collection of Tangkhul Music",
-    template: "%s | Tangkhul Lyrics"
+    template: "%s | Tangkhul Lyrics",
   },
   description:
     "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics.",
@@ -37,16 +37,18 @@ export const metadata: Metadata = {
   referrer: "origin-when-cross-origin",
   keywords: [
     "Tangkhul lyrics",
-    "Tangkhul songs", 
+    "Tangkhul songs",
     "Tangkhul music",
     "Tangkhul Laa lyrics",
     "Manipur songs",
     "Northeast India music",
     "Tribal songs",
     "Traditional music",
-    "Contemporary Tangkhul music"
+    "Contemporary Tangkhul music",
   ],
-  authors: [{ name: "Tangkhul Lyrics Team", url: "https://tangkhullyrics.com/about" }],
+  authors: [
+    { name: "Tangkhul Lyrics Team", url: "https://tangkhullyrics.com/about" },
+  ],
   creator: "Tangkhul Lyrics",
   publisher: "Tangkhul Lyrics",
   formatDetection: {
@@ -64,9 +66,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   icons: {
@@ -108,8 +110,7 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "QThzXenD8T7A0SAtb_L2qOy3Wzbw72-7AJfE3vQbxIA",
-    yandex: "verification_code_here",
-    yahoo: "verification_code_here",
+    yandex: "27e339faa60d25cd",
   },
   category: "music",
   classification: "Music & Entertainment",
@@ -132,7 +133,11 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
       </head>
       <body className="font-sans">
@@ -146,26 +151,28 @@ export default function RootLayout({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "Tangkhul Lyrics",
-            "description": "The largest collection of Tangkhul song lyrics online",
-            "url": "https://tangkhullyrics.com",
-            "potentialAction": {
+            name: "Tangkhul Lyrics",
+            description:
+              "The largest collection of Tangkhul song lyrics online",
+            url: "https://tangkhullyrics.com",
+            potentialAction: {
               "@type": "SearchAction",
-              "target": {
+              target: {
                 "@type": "EntryPoint",
-                "urlTemplate": "https://tangkhullyrics.com/search?query={search_term_string}"
+                urlTemplate:
+                  "https://tangkhullyrics.com/search?query={search_term_string}",
               },
-              "query-input": "required name=search_term_string"
+              "query-input": "required name=search_term_string",
             },
-            "publisher": {
+            publisher: {
               "@type": "Organization",
-              "name": "Tangkhul Lyrics",
-              "url": "https://tangkhullyrics.com",
-              "logo": {
+              name: "Tangkhul Lyrics",
+              url: "https://tangkhullyrics.com",
+              logo: {
                 "@type": "ImageObject",
-                "url": "https://tangkhullyrics.com/ogImage.jpg"
-              }
-            }
+                url: "https://tangkhullyrics.com/ogImage.jpg",
+              },
+            },
           })}
         </Script>
         <SessionProviderWrapper>

@@ -1,8 +1,8 @@
 # humanstxt.org
 
 /* TEAM */
-  Developer: Tangkhul Lyrics Team
-  Contact: contact@tangkhullyrics.com
+  Developer: Chipui kasar
+  Contact: tangkhullaalyrics@gmail.com
   Location: Ukhrul, Manipur, India
 
 /* THANKS */

@@ -15,17 +15,17 @@ export async function generateMetadata() {
     structuredData: {
       "@context": "https://schema.org",
       "@type": "SearchAction",
-      "target": {
+      target: {
         "@type": "EntryPoint",
-        "urlTemplate": "https://tangkhullyrics.com/search?q={search_term_string}",
-        "actionPlatform": [
+        urlTemplate: "https://tangkhullyrics.com/search?q={search_term_string}",
+        actionPlatform: [
           "http://schema.org/DesktopWebPlatform",
           "http://schema.org/IOSPlatform",
-          "http://schema.org/AndroidPlatform"
-        ]
+          "http://schema.org/AndroidPlatform",
+        ],
       },
-      "query-input": "required name=search_term_string"
-    }
+      "query-input": "required name=search_term_string",
+    },
   });
 }
 

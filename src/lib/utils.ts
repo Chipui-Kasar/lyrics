@@ -45,21 +45,21 @@ export function generatePageMetadata({
   structuredData?: Record<string, any>;
 }): Metadata {
   // Ensure description is optimized length (150-160 characters)
-  const optimizedDescription = description.length > 160 
-    ? description.substring(0, 157) + "..." 
-    : description;
+  const optimizedDescription =
+    description.length > 160
+      ? description.substring(0, 157) + "..."
+      : description;
 
   // Ensure title is optimized length (50-60 characters)
-  const optimizedTitle = title.length > 60 
-    ? title.substring(0, 57) + "..." 
-    : title;
+  const optimizedTitle =
+    title.length > 60 ? title.substring(0, 57) + "..." : title;
 
   return {
     title: optimizedTitle,
     description: optimizedDescription,
-    keywords: Array.isArray(keywords) ? keywords : keywords.split(', '),
+    keywords: Array.isArray(keywords) ? keywords : keywords.split(", "),
     metadataBase: new URL("https://tangkhullyrics.com"),
-    
+
     alternates: {
       canonical: url,
     },
@@ -97,9 +97,9 @@ export function generatePageMetadata({
       googleBot: {
         index: robots.includes("index"),
         follow: robots.includes("follow"),
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
       },
     },
 

@@ -32,16 +32,17 @@ export async function generateMetadata() {
     structuredData: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      "name": "Tangkhul Lyrics Collection",
-      "description": "Complete collection of Tangkhul song lyrics and traditional music",
-      "url": "https://tangkhullyrics.com/lyrics",
-      "mainEntity": {
+      name: "Tangkhul Lyrics Collection",
+      description:
+        "Complete collection of Tangkhul song lyrics and traditional music",
+      url: "https://tangkhullyrics.com/lyrics",
+      mainEntity: {
         "@type": "MusicPlaylist",
-        "name": "Tangkhul Song Collection",
-        "description": "Traditional and contemporary Tangkhul songs",
-        "genre": "Traditional Music"
-      }
-    }
+        name: "Tangkhul Song Collection",
+        description: "Traditional and contemporary Tangkhul songs",
+        genre: "Traditional Music",
+      },
+    },
   });
 }
 

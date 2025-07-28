@@ -27,16 +27,17 @@ export async function generateMetadata() {
     structuredData: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      "name": "Tangkhul Artists Directory",
-      "description": "Complete directory of Tangkhul musicians and artists",
-      "url": "https://tangkhullyrics.com/allartists",
-      "mainEntity": {
+      name: "Tangkhul Artists Directory",
+      description: "Complete directory of Tangkhul musicians and artists",
+      url: "https://tangkhullyrics.com/allartists",
+      mainEntity: {
         "@type": "ItemList",
-        "name": "Tangkhul Artists",
-        "description": "Collection of traditional and contemporary Tangkhul musicians",
-        "numberOfItems": "50+"
-      }
-    }
+        name: "Tangkhul Artists",
+        description:
+          "Collection of traditional and contemporary Tangkhul musicians",
+        numberOfItems: "50+",
+      },
+    },
   });
 }
 

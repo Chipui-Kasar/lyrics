@@ -43,15 +43,21 @@ const HomePage = async () => {
   return (
     <div className="flex min-h-screen flex-col">
       <section className="container py-4 sm:py-8 md:py-10 m-auto" role="main">
-        <h1 className="sr-only">Tangkhul Song Lyrics - Cultural Heritage Through Music</h1>
+        <h1 className="sr-only">
+          Tangkhul Song Lyrics - Cultural Heritage Through Music
+        </h1>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="col-span-2 grid gap-4">
             <section aria-labelledby="featured-lyrics-heading">
-              <h2 id="featured-lyrics-heading" className="sr-only">Featured Tangkhul Song Lyrics</h2>
+              <h2 id="featured-lyrics-heading" className="sr-only">
+                Featured Tangkhul Song Lyrics
+              </h2>
               <FeaturedLyrics lyrics={featuredLyrics} />
             </section>
             <section aria-labelledby="popular-artists-heading">
-              <h2 id="popular-artists-heading" className="sr-only">Popular Tangkhul Artists</h2>
+              <h2 id="popular-artists-heading" className="sr-only">
+                Popular Tangkhul Artists
+              </h2>
               <PopularArtists
                 artists={artists.filter(
                   (artist: IArtists) => artist.name !== "Pamching Kasar"
@@ -60,13 +66,17 @@ const HomePage = async () => {
             </section>
           </div>
           <aside aria-labelledby="top-lyrics-heading">
-            <h2 id="top-lyrics-heading" className="sr-only">Top Tangkhul Song Lyrics</h2>
+            <h2 id="top-lyrics-heading" className="sr-only">
+              Top Tangkhul Song Lyrics
+            </h2>
             <TopLyrics lyrics={topLyrics} />
           </aside>
         </div>
       </section>
       <section aria-labelledby="contribute-heading">
-        <h2 id="contribute-heading" className="sr-only">Contribute Tangkhul Song Lyrics</h2>
+        <h2 id="contribute-heading" className="sr-only">
+          Contribute Tangkhul Song Lyrics
+        </h2>
         <ContributeLyrics />
       </section>
     </div>

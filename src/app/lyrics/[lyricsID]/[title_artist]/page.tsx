@@ -38,39 +38,44 @@ export async function generateMetadata({
     });
   }
 
-  const songTitle = lyric.title || 'Untitled';
-  const artistName = lyric.artistId?.name || 'Unknown Artist';
-  const albumName = lyric.album || 'Single';
-  const lyricsPreview = lyric.lyrics?.slice(0, 140) || 'Traditional Tangkhul song';
+  const songTitle = lyric.title || "Untitled";
+  const artistName = lyric.artistId?.name || "Unknown Artist";
+  const albumName = lyric.album || "Single";
+  const lyricsPreview =
+    lyric.lyrics?.slice(0, 140) || "Traditional Tangkhul song";
 
   return generatePageMetadata({
     title: `${songTitle} by ${artistName} - Lyrics & Meaning`,
     description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context.`,
-    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(songTitle)}_${slugMaker(artistName)}`,
+    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
+      songTitle
+    )}_${slugMaker(artistName)}`,
     image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`,
     keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
     structuredData: {
       "@context": "https://schema.org",
       "@type": "MusicComposition",
-      "name": songTitle,
-      "composer": {
+      name: songTitle,
+      composer: {
         "@type": "Person",
-        "name": artistName
+        name: artistName,
       },
-      "lyricist": {
-        "@type": "Person", 
-        "name": artistName
+      lyricist: {
+        "@type": "Person",
+        name: artistName,
       },
-      "genre": "Traditional Music",
-      "inLanguage": "sai",
-      "description": `Traditional Tangkhul song "${songTitle}" by ${artistName}`,
-      "url": `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(songTitle)}_${slugMaker(artistName)}`,
-      "datePublished": lyric.createdAt || new Date().toISOString(),
-      "publisher": {
+      genre: "Traditional Music",
+      inLanguage: "tkh",
+      description: `Traditional Tangkhul song "${songTitle}" by ${artistName}`,
+      url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
+        songTitle
+      )}_${slugMaker(artistName)}`,
+      datePublished: lyric.createdAt || new Date().toISOString(),
+      publisher: {
         "@type": "Organization",
-        "name": "Tangkhul Lyrics"
-      }
-    }
+        name: "Tangkhul Lyrics",
+      },
+    },
   });
 }
 

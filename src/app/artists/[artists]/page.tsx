@@ -42,7 +42,7 @@ export async function generateMetadata({
     });
   }
 
-  const artistName = artistData[0].artistId?.name || 'Unknown Artist';
+  const artistName = artistData[0].artistId?.name || "Unknown Artist";
   const songCount = artistData.length;
 
   return generatePageMetadata({
@@ -53,16 +53,16 @@ export async function generateMetadata({
     structuredData: {
       "@context": "https://schema.org",
       "@type": "MusicGroup",
-      "name": artistName,
-      "genre": "Traditional Music",
-      "url": `https://tangkhullyrics.com/artists/${slugMaker(artistName)}`,
-      "description": `Tangkhul artist with ${songCount} songs`,
-      "numberOfTracks": songCount,
-      "musicBy": {
+      name: artistName,
+      genre: "Traditional Music",
+      url: `https://tangkhullyrics.com/artists/${slugMaker(artistName)}`,
+      description: `Tangkhul artist with ${songCount} songs`,
+      numberOfTracks: songCount,
+      musicBy: {
         "@type": "Person",
-        "name": artistName
-      }
-    }
+        name: artistName,
+      },
+    },
   });
 }
 

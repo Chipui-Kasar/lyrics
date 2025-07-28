@@ -76,18 +76,28 @@ const Navigation: React.FC = () => {
     setFilteredLyrics([]);
   }, [pathname]);
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    []
+  );
 
-  const handleResultClick = useCallback((id: string, title: string, artist: string) => {
-    router.push(`/lyrics/${id}/${slugMaker(title)}_${slugMaker(artist)}`);
-    setSearchQuery("");
-    setFilteredLyrics([]);
-  }, [router]);
+  const handleResultClick = useCallback(
+    (id: string, title: string, artist: string) => {
+      router.push(`/lyrics/${id}/${slugMaker(title)}_${slugMaker(artist)}`);
+      setSearchQuery("");
+      setFilteredLyrics([]);
+    },
+    [router]
+  );
 
   return (
-    <nav className="border-b bg-background" role="navigation" aria-label="Main navigation">
+    <nav
+      className="border-b bg-background"
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="m-auto flex flex-col w-full p-4 gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         {/* Logo */}
         <div className="flex items-center gap-4">
