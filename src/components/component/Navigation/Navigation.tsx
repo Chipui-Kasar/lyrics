@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Music2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import  { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import debounce from "lodash/debounce";
 import { ILyrics } from "@/models/IObjects";
 import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
@@ -29,6 +29,7 @@ const Navigation: React.FC = () => {
     };
     fetchLyrics();
   }, []);
+
   const searchIndex = useMemo(
     () =>
       lyrics.map((lyric) => ({
@@ -46,7 +47,7 @@ const Navigation: React.FC = () => {
       })),
     [lyrics]
   );
-  // Function to filter lyrics
+
   const filterLyrics = useMemo(
     () =>
       debounce((query: string) => {
@@ -59,11 +60,10 @@ const Navigation: React.FC = () => {
         } else {
           setFilteredLyrics([]);
         }
-      }, 200),
+      }, 300), // Increased debounce time
     [searchIndex]
   );
 
-  // Update filtered results when searchQuery changes
   useEffect(() => {
     filterLyrics(searchQuery);
     return () => {
@@ -71,20 +71,20 @@ const Navigation: React.FC = () => {
     };
   }, [searchQuery, filterLyrics]);
 
-  //clear search on route change
   useEffect(() => {
     setSearchQuery("");
+    setFilteredLyrics([]);
   }, [pathname]);
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
 
-  const handleResultClick = (id: string, title: string, artist: string) => {
-    // Use the same delimiter used in the route definition (title_artist)
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const handleResultClick = useCallback((id: string, title: string, artist: string) => {
     router.push(`/lyrics/${id}/${slugMaker(title)}_${slugMaker(artist)}`);
-    setSearchQuery(""); // Clear search after selection
-    setFilteredLyrics([]); // Hide results
-  };
+    setSearchQuery("");
+    setFilteredLyrics([]);
+  }, [router]);
 
   return (
     <header className="border-b bg-background">

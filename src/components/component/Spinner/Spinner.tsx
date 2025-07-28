@@ -7,12 +7,12 @@ import { Loader } from "lucide-react";
 interface PageLoaderProps {
   isLoading?: boolean;
 }
+
 const PageLoader: React.FC<PageLoaderProps> = ({ isLoading = false }) => {
-  const pathname = usePathname(); // Detect route changes
+  const pathname = usePathname();
   const [loading, setLoading] = useState(isLoading);
 
   useEffect(() => {
-    // Handle clicks on internal links only, except for the current page link
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       const link = target.closest("a");
@@ -31,30 +31,17 @@ const PageLoader: React.FC<PageLoaderProps> = ({ isLoading = false }) => {
   }, [pathname]);
 
   useEffect(() => {
-    // Trigger loader on route change
     if (isLoading) return;
     setLoading(true);
     const timeout = setTimeout(() => setLoading(false), 100);
-
     return () => clearTimeout(timeout);
   }, [pathname]);
 
-  //   if (!loading) return null;
+  if (!loading) return null;
+
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center rounded-lg shadow-lg 
-      bg-gradient-to-r from-[#79095c33] to-[#001fff29] 
-      transition-all duration-700 ease-in-out
-      ${
-        loading
-          ? "opacity-100 scale-100"
-          : "opacity-0 scale-95 pointer-events-none"
-      }
-    `}
-    >
-      {loading && (
-        <Loader className="h-12 w-12 animate-spin text-white drop-shadow-lg" />
-      )}
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-r from-[#79095c33] to-[#001fff29] z-50">
+      <Loader className="h-12 w-12 animate-spin text-white drop-shadow-lg" />
     </div>
   );
 };

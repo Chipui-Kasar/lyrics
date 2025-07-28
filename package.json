@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:webpack": "next dev",
     "build": "cross-env NODE_ENV=production next build",
+    "build:turbo": "cross-env NODE_ENV=production next build --turbo",
     "start": "next start",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "build:analyze": "cross-env ANALYZE=true npm run build",
     "reindex": "ts-node --esm src/scripts/reindex.ts"
   },
   "dependencies": {
@@ -14,7 +18,6 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.12.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.408.0",
     "mongoose": "^8.11.0",
@@ -32,6 +35,7 @@
     "@types/node": "^20",
     "@types/react": "19.1.4",
     "@types/react-dom": "19.1.5",
+    "autoprefixer": "^10.4.21",
     "cross-env": "^7.0.3",
     "eslint": "^8",
     "eslint-config-next": "15.3.2",

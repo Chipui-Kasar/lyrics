@@ -6,15 +6,19 @@ import Footer from "@/components/component/Footer/Footer";
 import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
 import PageLoader from "@/components/component/Spinner/Spinner";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
-// const ico = require("../../public/tangkhullyrics.ico");
+import Script from "next/script";
 
-const inter = Inter({ subsets: ["latin"], preload: true });
+const inter = Inter({ 
+  subsets: ["latin"], 
+  preload: true,
+  display: 'swap',
+  variable: '--font-inter'
+});
 
 export const metadata: Metadata = {
   title: "Tangkhul Song Lyrics",
   description:
     "Tangkhul Song Lyrics offers the best collection of Tangkhul song lyrics, including new releases, trending hits, and traditional favorites—updated regularly for every music lover. Tangkhul Lyrics | Tangkhul Laa Lyrics | Tangkhul Songs Lyrics | Tangkhul Lyrical Oasis",
-  // viewport: "width=device-width, initial-scale=1.0",
   robots: "index, follow",
   metadataBase: new URL("https://tangkhullyrics.com/"),
   authors: [{ name: "Tangkhul Lyrics", url: "https://tangkhullyrics.com/" }],
@@ -56,6 +60,7 @@ export const metadata: Metadata = {
     "google-adsense-account": "ca-pub-1569774903364815",
   },
 };
+
 export const dynamic = "force-static";
 export const revalidate = 300;
 
@@ -65,28 +70,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        {/* ✅ Google Auto Ads Script must be inside <head> */}
-        <script
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans">
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
           crossOrigin="anonymous"
-        ></script>
-      </head>
-      <body className={`${inter.className}`}>
+          strategy="afterInteractive"
+        />
         <SessionProviderWrapper>
           <DarkTheme />
           <header>
             <Navigation />
           </header>
-          <div>
+          <main>
             <PageLoader />
             {children}
-          </div>
-          <footer>
-            <Footer />
-          </footer>
+          </main>
+          <Footer />
         </SessionProviderWrapper>
       </body>
     </html>

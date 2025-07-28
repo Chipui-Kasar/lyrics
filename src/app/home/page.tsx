@@ -6,23 +6,26 @@ import { generatePageMetadata } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import {
   getAllArtists,
-  // getArtistsWithSongCount,
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
+
 export const dynamic = "force-static";
 export const revalidate = 300;
-// ✅ Fetch all data in parallel
+
 const fetchHomeData = async () => {
-  return await Promise.all([
-    // getArtistsWithSongCount(),
-    getAllArtists(),
-    getFeaturedLyrics(),
-    getTopLyrics(13),
-  ]);
+  try {
+    return await Promise.all([
+      getAllArtists(),
+      getFeaturedLyrics(),
+      getTopLyrics(13),
+    ]);
+  } catch (error) {
+    console.error("Error fetching home data:", error);
+    return [[], [], []];
+  }
 };
 
-// ✅ Generate Metadata for SEO
 export async function generateMetadata() {
   return generatePageMetadata({
     title: "Tangkhul Lyrics - Find Your Favorite Tangkhul Songs",
@@ -34,28 +37,25 @@ export async function generateMetadata() {
   });
 }
 
-// ✅ Home Page Component
 const HomePage = async () => {
   const [artists, featuredLyrics, topLyrics] = await fetchHomeData();
 
   return (
-    <div className="flex min-h-screen flex-col dark:bg-background">
-      <main className="flex-1">
-        <section className="container py-4 sm:py-8 md:py-10 m-auto">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <div className="col-span-2 grid gap-4">
-              <FeaturedLyrics lyrics={featuredLyrics} />
-              <PopularArtists
-                artists={artists.filter(
-                  (artist: IArtists) => artist.name !== "Pamching Kasar"
-                )}
-              />
-            </div>
-            <TopLyrics lyrics={topLyrics} />
+    <div className="flex min-h-screen flex-col">
+      <section className="container py-4 sm:py-8 md:py-10 m-auto">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="col-span-2 grid gap-4">
+            <FeaturedLyrics lyrics={featuredLyrics} />
+            <PopularArtists
+              artists={artists.filter(
+                (artist: IArtists) => artist.name !== "Pamching Kasar"
+              )}
+            />
           </div>
-        </section>
-        <ContributeLyrics />
-      </main>
+          <TopLyrics lyrics={topLyrics} />
+        </div>
+      </section>
+      <ContributeLyrics />
     </div>
   );
 };
