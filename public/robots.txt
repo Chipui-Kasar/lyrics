@@ -1,9 +1,28 @@
 User-Agent: *
 Allow: /
-Disallow: /admin
-Disallow: /api
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
 
+# Allow important crawlers
+User-Agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+User-Agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Crawl-delay for other bots
+User-Agent: *
+Crawl-delay: 1
+
+# Sitemaps
 Sitemap: https://tangkhullyrics.com/sitemap.xml
 
-# Hello search bot! This is a Tangkhul song lyrics archive.
-# Built with ♥ in Ukhrul.
+# Tangkhul song lyrics archive
+# Preserving cultural heritage through music ♥
+# Built with love in Ukhrul, Manipur

@@ -15,15 +15,28 @@ export const generateStaticParams = async () => {
   return posts.map((post: IArtists) => ({ artists: post.name }));
 };
 
-// ✅ Generate Metadata for SEO
+// ✅ Enhanced SEO Metadata with structured data
 export async function generateMetadata() {
   return generatePageMetadata({
-    title: "All Tangkhul Artists - Tangkhul Lyrics",
+    title: "All Tangkhul Artists - Complete Artist Directory",
     description:
-      "Explore all Tangkhul artists and their song lyrics on Tangkhul Lyrics.",
+      "Explore our complete directory of Tangkhul artists and musicians. Discover traditional and contemporary Tangkhul singers, songwriters, and performers with their song collections.",
     url: "https://tangkhullyrics.com/allartists",
     keywords:
-      "Tangkhul artists, Tangkhul song lyrics, artist song list, Tangkhul music",
+      "Tangkhul artists, Tangkhul musicians, Tangkhul singers, traditional artists, contemporary musicians, Manipur artists, tribal music",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Tangkhul Artists Directory",
+      "description": "Complete directory of Tangkhul musicians and artists",
+      "url": "https://tangkhullyrics.com/allartists",
+      "mainEntity": {
+        "@type": "ItemList",
+        "name": "Tangkhul Artists",
+        "description": "Collection of traditional and contemporary Tangkhul musicians",
+        "numberOfItems": "50+"
+      }
+    }
   });
 }
 

@@ -38,23 +38,39 @@ export async function generateMetadata({
     });
   }
 
+  const songTitle = lyric.title || 'Untitled';
+  const artistName = lyric.artistId?.name || 'Unknown Artist';
+  const albumName = lyric.album || 'Single';
+  const lyricsPreview = lyric.lyrics?.slice(0, 140) || 'Traditional Tangkhul song';
+
   return generatePageMetadata({
-    title: `${lyric.title} by ${lyric.artistId?.name} | ${lyric?.album}`,
-    description: `${lyric.lyrics.slice(0, 150)}... - ${lyric.artistId?.name}`,
-    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
-      lyric.title
-    )}_${slugMaker(lyric.artistId?.name)}`,
+    title: `${songTitle} by ${artistName} - Lyrics & Meaning`,
+    description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context.`,
+    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(songTitle)}_${slugMaker(artistName)}`,
     image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`,
-    keywords: [
-      lyric.title,
-      lyric.artistId?.name,
-      "Tangkhul lyrics",
-      "Tangkhul songs",
-      "Tangkhul Laa",
-      lyric.title + " lyrics",
-      lyric.artistId?.name + " lyrics",
-    ].join(", "),
-    robots: "index, follow",
+    keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "MusicComposition",
+      "name": songTitle,
+      "composer": {
+        "@type": "Person",
+        "name": artistName
+      },
+      "lyricist": {
+        "@type": "Person", 
+        "name": artistName
+      },
+      "genre": "Traditional Music",
+      "inLanguage": "sai",
+      "description": `Traditional Tangkhul song "${songTitle}" by ${artistName}`,
+      "url": `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(songTitle)}_${slugMaker(artistName)}`,
+      "datePublished": lyric.createdAt || new Date().toISOString(),
+      "publisher": {
+        "@type": "Organization",
+        "name": "Tangkhul Lyrics"
+      }
+    }
   });
 }
 

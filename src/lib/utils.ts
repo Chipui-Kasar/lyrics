@@ -24,6 +24,7 @@ interface MetadataProps {
   image?: string;
   keywords?: string;
   robots?: string;
+  structuredData?: Record<string, any>;
 }
 
 export function generatePageMetadata({
@@ -33,6 +34,7 @@ export function generatePageMetadata({
   image = "https://tangkhullyrics.com/ogImage.jpg",
   keywords = "Tangkhul lyrics, Tangkhul song lyrics, Tangkhul Laa, Tangkhul music",
   robots = "index, follow",
+  structuredData,
 }: {
   title: string;
   description: string;
@@ -40,43 +42,72 @@ export function generatePageMetadata({
   image?: string;
   keywords?: string;
   robots?: string;
+  structuredData?: Record<string, any>;
 }): Metadata {
+  // Ensure description is optimized length (150-160 characters)
+  const optimizedDescription = description.length > 160 
+    ? description.substring(0, 157) + "..." 
+    : description;
+
+  // Ensure title is optimized length (50-60 characters)
+  const optimizedTitle = title.length > 60 
+    ? title.substring(0, 57) + "..." 
+    : title;
+
   return {
-    title,
-    description,
-    keywords,
-    metadataBase: new URL("https://tangkhullyrics.com/"),
+    title: optimizedTitle,
+    description: optimizedDescription,
+    keywords: Array.isArray(keywords) ? keywords : keywords.split(', '),
+    metadataBase: new URL("https://tangkhullyrics.com"),
+    
+    alternates: {
+      canonical: url,
+    },
 
     openGraph: {
-      title,
-      description,
+      title: optimizedTitle,
+      description: optimizedDescription,
       url,
       siteName: "Tangkhul Lyrics",
+      type: "website",
+      locale: "en_US",
       images: [
         {
           url: image,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: optimizedTitle,
+          type: "image/jpeg",
         },
       ],
     },
 
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
-      images: [image],
       site: "@TangkhulLyrics",
-    },
-
-    alternates: {
-      canonical: url,
+      creator: "@TangkhulLyrics",
+      title: optimizedTitle,
+      description: optimizedDescription,
+      images: [image],
     },
 
     robots: {
       index: robots.includes("index"),
       follow: robots.includes("follow"),
+      googleBot: {
+        index: robots.includes("index"),
+        follow: robots.includes("follow"),
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+
+    other: {
+      "article:publisher": "https://tangkhullyrics.com",
+      "og:site_name": "Tangkhul Lyrics",
+      "twitter:domain": "tangkhullyrics.com",
+      "format-detection": "telephone=no",
     },
   };
 }

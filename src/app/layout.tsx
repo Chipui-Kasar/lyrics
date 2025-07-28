@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import Navigation from "@/components/component/Navigation/Navigation";
@@ -15,54 +15,113 @@ const inter = Inter({
   variable: '--font-inter'
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' }
+  ],
+};
+
 export const metadata: Metadata = {
-  title: "Tangkhul Song Lyrics",
+  title: {
+    default: "Tangkhul Song Lyrics | Best Collection of Tangkhul Music",
+    template: "%s | Tangkhul Lyrics"
+  },
   description:
-    "Tangkhul Song Lyrics offers the best collection of Tangkhul song lyrics, including new releases, trending hits, and traditional favorites—updated regularly for every music lover. Tangkhul Lyrics | Tangkhul Laa Lyrics | Tangkhul Songs Lyrics | Tangkhul Lyrical Oasis",
-  robots: "index, follow",
-  metadataBase: new URL("https://tangkhullyrics.com/"),
-  authors: [{ name: "Tangkhul Lyrics", url: "https://tangkhullyrics.com/" }],
+    "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics.",
+  applicationName: "Tangkhul Lyrics",
+  referrer: "origin-when-cross-origin",
+  keywords: [
+    "Tangkhul lyrics",
+    "Tangkhul songs", 
+    "Tangkhul music",
+    "Tangkhul Laa lyrics",
+    "Manipur songs",
+    "Northeast India music",
+    "Tribal songs",
+    "Traditional music",
+    "Contemporary Tangkhul music"
+  ],
+  authors: [{ name: "Tangkhul Lyrics Team", url: "https://tangkhullyrics.com/about" }],
   creator: "Tangkhul Lyrics",
   publisher: "Tangkhul Lyrics",
-  icons: {
-    icon: "/tangkhullyrics.ico",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
+  metadataBase: new URL("https://tangkhullyrics.com"),
+  alternates: {
+    canonical: "https://tangkhullyrics.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/tangkhullyrics.ico", sizes: "any" },
+      { url: "/tangkhullyrics.ico", type: "image/x-icon" },
+    ],
+    apple: [
+      { url: "/tangkhullyrics.ico", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/manifest.json",
   openGraph: {
     type: "website",
-    url: "https://tangkhullyrics.com/",
-    title:
-      "Tangkhul Laa Lyrics – Latest Tangkhul Song Lyrics Collection | Tangkhul Songs Lyrics",
+    locale: "en_US",
+    url: "https://tangkhullyrics.com",
+    siteName: "Tangkhul Lyrics",
+    title: "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics",
     description:
-      "Discover the latest Tangkhul songs and lyrics. Tangkhul Laa Lyrics offers a rich collection of traditional and modern Tangkhul song lyrics for every music lover.",
+      "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists.",
     images: [
       {
         url: "/ogImage.jpg",
         width: 1200,
         height: 630,
-        alt: "Tangkhul Song Lyrics",
+        alt: "Tangkhul Song Lyrics Collection",
+        type: "image/jpeg",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title:
-      "Tangkhul Laa Lyrics – Latest Tangkhul Song Lyrics Collection | Tangkhul Songs Lyrics",
+    site: "@TangkhulLyrics",
+    creator: "@TangkhulLyrics",
+    title: "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics",
     description:
-      "Explore trending Tangkhul songs and lyrics. Tangkhul Laa Lyrics brings you the best of traditional and new Tangkhul music.",
+      "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases.",
     images: ["/ogImage.jpg"],
   },
   verification: {
     google: "QThzXenD8T7A0SAtb_L2qOy3Wzbw72-7AJfE3vQbxIA",
+    yandex: "verification_code_here",
+    yahoo: "verification_code_here",
   },
+  category: "music",
+  classification: "Music & Entertainment",
   other: {
-    keywords:
-      "lyrics, tangkhul, tangkhul lyrics, tangkhul laa, tangkhul laa lyrics",
     "google-adsense-account": "ca-pub-1569774903364815",
+    "msapplication-TileColor": "#2563eb",
+    "theme-color": "#ffffff",
   },
 };
 
 export const dynamic = "force-static";
-export const revalidate = 300;
+export const revalidate = 3600; // Increased to 1 hour for better caching
 
 export default function RootLayout({
   children,
@@ -71,6 +130,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+      </head>
       <body className="font-sans">
         <Script
           async
@@ -78,6 +142,32 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        <Script id="structured-data" type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Tangkhul Lyrics",
+            "description": "The largest collection of Tangkhul song lyrics online",
+            "url": "https://tangkhullyrics.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://tangkhullyrics.com/search?query={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Tangkhul Lyrics",
+              "url": "https://tangkhullyrics.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://tangkhullyrics.com/ogImage.jpg"
+              }
+            }
+          })}
+        </Script>
         <SessionProviderWrapper>
           <DarkTheme />
           <header>

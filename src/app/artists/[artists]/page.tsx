@@ -24,7 +24,7 @@ export async function generateStaticParams() {
   }));
 }
 
-// ✅ Dynamic metadata generation
+// ✅ Enhanced dynamic metadata generation with structured data
 export async function generateMetadata({
   params,
 }: {
@@ -42,13 +42,27 @@ export async function generateMetadata({
     });
   }
 
+  const artistName = artistData[0].artistId?.name || 'Unknown Artist';
+  const songCount = artistData.length;
+
   return generatePageMetadata({
-    title: `${artistData[0].artistId?.name} - Tangkhul Song Lyrics`,
-    description: `Explore all song lyrics by ${artistData[0].artistId?.name} on Tangkhul Lyrics.`,
-    url: `https://tangkhullyrics.com/artists/${slugMaker(
-      artistData[0].artistId?.name
-    )}`,
-    keywords: `${artistData[0]?.artistId?.name}, Tangkhul songs, Tangkhul lyrics, ${artistData[0]?.artistId?.name} lyrics`,
+    title: `${artistName} - Tangkhul Songs & Lyrics Collection`,
+    description: `Discover ${songCount} songs by ${artistName}. Explore traditional and contemporary Tangkhul music with complete lyrics and cultural context.`,
+    url: `https://tangkhullyrics.com/artists/${slugMaker(artistName)}`,
+    keywords: `${artistName}, Tangkhul songs, Tangkhul lyrics, ${artistName} lyrics, traditional music, Manipur music`,
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "MusicGroup",
+      "name": artistName,
+      "genre": "Traditional Music",
+      "url": `https://tangkhullyrics.com/artists/${slugMaker(artistName)}`,
+      "description": `Tangkhul artist with ${songCount} songs`,
+      "numberOfTracks": songCount,
+      "musicBy": {
+        "@type": "Person",
+        "name": artistName
+      }
+    }
   });
 }
 

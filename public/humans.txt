@@ -1,0 +1,31 @@
+# humanstxt.org
+
+/* TEAM */
+  Developer: Tangkhul Lyrics Team
+  Contact: contact@tangkhullyrics.com
+  Location: Ukhrul, Manipur, India
+
+/* THANKS */
+  Next.js: Modern React framework
+  Tailwind CSS: Utility-first CSS framework
+  MongoDB: Database for lyrics storage
+  Vercel: Hosting platform
+  Tangkhul Community: For preserving cultural heritage
+
+/* SITE */
+  Last update: 2025/01/28
+  Language: English / Tangkhul
+  Doctype: HTML5
+  IDE: Visual Studio Code
+  Standards: HTML5, CSS3, WAI-ARIA
+  Components: React, TypeScript
+  Software: Next.js, MongoDB, Node.js
+
+/* DESCRIPTION */
+  Tangkhul Lyrics is a cultural preservation project
+  dedicated to archiving and sharing Tangkhul song lyrics.
+  We believe in preserving the rich musical heritage
+  of the Tangkhul community for future generations.
+
+  Built with ♥ in Ukhrul
+  Preserving culture through technology

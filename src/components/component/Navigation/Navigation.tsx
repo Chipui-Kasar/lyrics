@@ -87,7 +87,7 @@ const Navigation: React.FC = () => {
   }, [router]);
 
   return (
-    <header className="border-b bg-background">
+    <nav className="border-b bg-background" role="navigation" aria-label="Main navigation">
       <div className="m-auto flex flex-col w-full p-4 gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         {/* Logo */}
         <div className="flex items-center gap-4">
@@ -95,8 +95,9 @@ const Navigation: React.FC = () => {
             href="/"
             className="flex items-center gap-2 text-2xl font-bold"
             prefetch={true}
+            aria-label="Tangkhul Lyrics - Home"
           >
-            <Music2Icon className="h-6 w-6 text-primary" />
+            <Music2Icon className="h-6 w-6 text-primary" aria-hidden="true" />
             <span>Tangkhul Lyrics</span>
           </Link>
         </div>
@@ -182,7 +183,7 @@ const Navigation: React.FC = () => {
           </Link>
         </div>
       </div>
-    </header>
+    </nav>
   );
 };
 
