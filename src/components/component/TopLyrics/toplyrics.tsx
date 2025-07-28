@@ -8,7 +8,7 @@ interface TopLyricsProps {
 }
 const TopLyrics = ({ lyrics }: TopLyricsProps) => {
   return (
-    <div className="w-full col-span-2 md:col-span-2 lg:col-span-1 rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
+    <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
       <h2 className="text-2xl font-bold">Recently Added</h2>
       <p className="mt-2 text-muted-foreground">
         Check out the recently added lyrics on our platform.

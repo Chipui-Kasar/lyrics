@@ -30,7 +30,7 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
           </div>
           <div className="flex flex-wrap w-full items-start gap-6">
             {lyrics.streamingLinks.youtube !== "" ? (
-              <YouTubePlayer videoUrl={lyrics.streamingLinks.youtube} />
+              <YouTubePlayer videoUrl={lyrics.streamingLinks?.youtube} />
             ) : (
               <Video
                 width="200"

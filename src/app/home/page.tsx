@@ -65,7 +65,10 @@ const HomePage = async () => {
               />
             </section>
           </div>
-          <aside aria-labelledby="top-lyrics-heading">
+          <aside
+            aria-labelledby="top-lyrics-heading"
+            className="col-span-2 md:col-span-2 lg:col-span-1 "
+          >
             <h2 id="top-lyrics-heading" className="sr-only">
               Top Tangkhul Song Lyrics
             </h2>
