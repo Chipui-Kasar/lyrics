@@ -48,28 +48,27 @@ const Navigation: React.FC = () => {
     [lyrics]
   );
 
-  const filterLyrics = useMemo(
-    () =>
-      debounce((query: string) => {
-        if (query.trim()) {
-          const q = query.toLowerCase();
-          const filtered = searchIndex
-            .filter((lyric) => lyric._search.includes(q))
-            .slice(0, 10);
-          setFilteredLyrics(filtered);
-        } else {
-          setFilteredLyrics([]);
-        }
-      }, 300), // Increased debounce time
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      if (!query.trim()) {
+        setFilteredLyrics([]);
+        return;
+      }
+
+      const filtered = searchIndex
+        .filter((lyric) => lyric._search.includes(query.toLowerCase()))
+        .slice(0, 8); // Limit results for performance
+      setFilteredLyrics(filtered);
+    }, 250), // Reduced from 300ms to 250ms for better responsiveness
     [searchIndex]
   );
 
   useEffect(() => {
-    filterLyrics(searchQuery);
+    debouncedSearch(searchQuery);
     return () => {
-      filterLyrics.cancel();
+      debouncedSearch.cancel();
     };
-  }, [searchQuery, filterLyrics]);
+  }, [searchQuery, debouncedSearch]);
 
   useEffect(() => {
     setSearchQuery("");
