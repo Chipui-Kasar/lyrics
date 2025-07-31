@@ -6,6 +6,8 @@ import Footer from "@/components/component/Footer/Footer";
 import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
 import PageLoader from "@/components/component/Spinner/Spinner";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
+import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
+import PerformanceMonitor from "@/components/component/PerformanceMonitor/PerformanceMonitor";
 import Script from "next/script";
 
 const inter = Inter({
@@ -166,7 +168,15 @@ export default function RootLayout({
         />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preload" href="/ogImage.jpg" as="image" type="image/jpeg" />
+        <link
+          rel="preload"
+          href="/icon-512.svg"
+          as="image"
+          type="image/svg+xml"
+        />
       </head>
       <body className="font-sans antialiased">
         <noscript>
@@ -219,15 +229,18 @@ export default function RootLayout({
           })}
         </Script>
         <SessionProviderWrapper>
-          <DarkTheme />
-          <header>
-            <Navigation />
-          </header>
-          <main>
-            <PageLoader />
-            {children}
-          </main>
-          <Footer />
+          <ErrorBoundary>
+            <PerformanceMonitor />
+            <DarkTheme />
+            <header>
+              <Navigation />
+            </header>
+            <main>
+              <PageLoader />
+              {children}
+            </main>
+            <Footer />
+          </ErrorBoundary>
         </SessionProviderWrapper>
       </body>
     </html>

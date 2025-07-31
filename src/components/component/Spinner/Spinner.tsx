@@ -35,7 +35,7 @@ const PageLoader: React.FC<PageLoaderProps> = ({ isLoading = false }) => {
     setLoading(true);
     const timeout = setTimeout(() => setLoading(false), 100);
     return () => clearTimeout(timeout);
-  }, [pathname]);
+  }, [pathname, isLoading]);
 
   if (!loading) return null;
 

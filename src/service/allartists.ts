@@ -3,13 +3,21 @@ import { IArtists, ILyrics } from "@/models/IObjects";
 export const getLyrics = async () => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`
-      // {
-      //   // next: { revalidate: 604800 },
-      //   next: { revalidate: 604800 },
-      // }
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`,
+      {
+        next: { revalidate: 300 }, // 5 minutes for better freshness
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
     );
-    return res.ok ? await res.json() : [];
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return await res.json();
   } catch (error) {
     console.error("Error fetching lyrics:", error);
     return [];
@@ -22,13 +30,27 @@ export const getSingleLyrics = async (
 ) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?id=${id}&title=${title}&artist=${artist}`,
-      { next: { revalidate: 604800 } }
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/lyrics/author/singleLyrics?id=${id}&title=${encodeURIComponent(
+        title
+      )}&artist=${encodeURIComponent(artist)}`,
+      {
+        next: { revalidate: 3600 }, // 1 hour for individual lyrics
+        headers: {
+          Accept: "application/json",
+        },
+      }
     );
-    return res.ok ? await res.json() : [];
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return await res.json();
   } catch (error) {
-    console.error("Error fetching lyrics:", error);
-    return [];
+    console.error("Error fetching single lyrics:", error);
+    return null;
   }
 };
 export const getFeaturedLyrics = async () => {
