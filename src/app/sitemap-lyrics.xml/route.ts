@@ -12,7 +12,7 @@ export async function GET() {
     // Split lyrics into chunks if too many (max 45,000 URLs per sitemap for safety)
     const CHUNK_SIZE = 45000;
     const chunks = [];
-    
+
     for (let i = 0; i < lyrics.length; i += CHUNK_SIZE) {
       chunks.push(lyrics.slice(i, i + CHUNK_SIZE));
     }
@@ -57,7 +57,7 @@ ${lyricPages
     });
   } catch (error) {
     console.error("Lyrics sitemap generation error:", error);
-    
+
     const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
