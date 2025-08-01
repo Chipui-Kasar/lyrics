@@ -11,9 +11,14 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: [], // Add external domains if needed
+    domains: ["res.cloudinary.com"], // Add external domains if needed
     remotePatterns: [
-      // Add remote patterns for external images if needed
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 

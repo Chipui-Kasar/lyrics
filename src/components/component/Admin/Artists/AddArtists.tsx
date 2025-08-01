@@ -11,6 +11,8 @@ import {
 } from "@/service/allartists";
 import { useEffect, useState } from "react";
 import PageLoader from "../../Spinner/Spinner";
+import ImageUpload from "../ImageUpload/ImageUpload";
+import Image from "next/image";
 
 const AddArtists = () => {
   const [formData, setFormData] = useState<{
@@ -47,6 +49,14 @@ const AddArtists = () => {
     setFormData((prev) => ({
       ...prev,
       socialLinks: { ...prev.socialLinks, [name]: value },
+    }));
+  };
+
+  // Handle image upload/URL change
+  const handleImageChange = (imageUrl: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: imageUrl,
     }));
   };
 
@@ -200,16 +210,12 @@ const AddArtists = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="image">Profile Photo</Label>
-            <Input
-              id="image"
-              name="image"
-              placeholder="Enter the artist profile photo url"
-              value={formData.image ?? ""}
-              onChange={handleChange}
-            />
-          </div>
+          <ImageUpload
+            currentImageUrl={formData.image}
+            onImageUploaded={handleImageChange}
+            label="Profile Photo"
+            placeholder="Enter the artist profile photo URL"
+          />
           <div className="flex justify-end">
             <Button type="submit">Submit</Button>
           </div>
@@ -221,6 +227,7 @@ const AddArtists = () => {
         <thead>
           <tr className="bg-gray-200">
             <th className="border p-2">ID</th>
+            <th className="border p-2">Image</th>
             <th className="border p-2">Name</th>
             <th className="border p-2">Genre</th>
             <th className="border p-2">Village</th>
@@ -231,6 +238,25 @@ const AddArtists = () => {
           {artists.map((artist: IArtists) => (
             <tr key={artist._id} className="border-b">
               <td className="border p-2">{artist._id}</td>
+              <td className="border p-2">
+                {artist.image ? (
+                  <Image
+                    src={artist.image}
+                    alt={artist.name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-cover rounded-full"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "/placeholder-user.jpg";
+                    }}
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-gray-500">No Image</span>
+                  </div>
+                )}
+              </td>
               <td className="border p-2">{artist.name}</td>
               <td className="border p-2">{artist.genre.join(", ")}</td>
               <td className="border p-2">{artist.village}</td>

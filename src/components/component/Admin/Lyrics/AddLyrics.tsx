@@ -13,7 +13,9 @@ import {
 } from "@/service/allartists";
 import { useEffect, useState } from "react";
 import PageLoader from "../../Spinner/Spinner";
+import ImageUpload from "../ImageUpload/ImageUpload";
 import Link from "next/link";
+import Image from "next/image";
 // import { ObjectId } from "mongodb";
 
 const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
@@ -70,6 +72,14 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     setFormData((prev) => ({
       ...prev,
       streamingLinks: { ...prev.streamingLinks, [name]: value },
+    }));
+  };
+
+  // Handle thumbnail upload/URL change
+  const handleThumbnailChange = (imageUrl: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      thumbnail: imageUrl,
     }));
   };
 
@@ -299,6 +309,14 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               className="mb-2"
             />
           </div>
+
+          {/* ✅ Thumbnail Upload */}
+          <ImageUpload
+            currentImageUrl={formData.thumbnail}
+            onImageUploaded={handleThumbnailChange}
+            label="Song Thumbnail"
+            placeholder="Enter the song thumbnail URL"
+          />
           <div className="grid gap-2">
             <Label htmlFor="contributedBy">Contributed By</Label>
             <Input
@@ -406,6 +424,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                   <thead>
                     <tr className="bg-gray-100">
                       <th className="border p-2">ID</th>
+                      <th className="border p-2">Thumbnail</th>
                       <th className="border p-2">Title</th>
                       <th className="border p-2">Contributed By</th>
                       <th className="border p-2">Action</th>
@@ -415,6 +434,27 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                     {artistLyrics.map((lyric) => (
                       <tr key={lyric._id} className="border-t">
                         <td className="border p-2">{lyric._id}</td>
+                        <td className="border p-2">
+                          {lyric.thumbnail ? (
+                            <Image
+                              src={lyric.thumbnail}
+                              alt={lyric.title}
+                              width={48}
+                              height={48}
+                              className="w-12 h-12 object-cover rounded"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  "/placeholder.svg";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                              <span className="text-xs text-gray-500">
+                                No Image
+                              </span>
+                            </div>
+                          )}
+                        </td>
                         <td className="border p-2">
                           <Link
                             href={`/lyrics/${lyric._id}/${slugMaker(

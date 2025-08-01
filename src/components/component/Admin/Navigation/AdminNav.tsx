@@ -12,7 +12,6 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { signOut } from "next-auth/react";
-export const dynamic = "force-static";
 interface NavItem {
   title: string;
   href: string;

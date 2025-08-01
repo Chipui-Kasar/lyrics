@@ -1,10 +1,34 @@
+"use client";
 import { getAllArtists } from "@/service/allartists";
 import AddLyricsClient from "@/components/component/Admin/Lyrics/AddLyricsClient";
+import { useEffect, useState } from "react";
 
-export const dynamic = "force-dynamic";
+export default function AdminLyricsPage() {
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function AdminLyricsPage() {
-  const artists = await getAllArtists();
+  useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        const artistsData = await getAllArtists();
+        setArtists(artistsData);
+      } catch (error) {
+        console.error("Failed to fetch artists:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArtists();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return <AddLyricsClient artists={artists} />;
 }

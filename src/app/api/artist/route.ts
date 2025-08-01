@@ -5,13 +5,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export async function POST(req: Request) {
-  const { name, genre, socialLinks, village } = await req.json();
+  const { name, genre, socialLinks, village, image } = await req.json();
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   await connectMongoDB(true);
-  await Artist.create({ name, genre, socialLinks, village });
+  await Artist.create({ name, genre, socialLinks, village, image });
   return NextResponse.json(
     { message: "Artist created successfully" },
     { status: 201 }
@@ -63,7 +63,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { _id, name, genre, socialLinks, village } = await req.json();
+    const { _id, name, genre, socialLinks, village, image } = await req.json();
 
     if (!_id) {
       return NextResponse.json(
@@ -76,7 +76,7 @@ export async function PUT(req: NextRequest) {
 
     const updatedArtist = await Artist.findByIdAndUpdate(
       _id,
-      { name, genre, socialLinks, village },
+      { name, genre, socialLinks, village, image },
       { new: true }
     );
 

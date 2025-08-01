@@ -8,6 +8,7 @@ import PageLoader from "@/components/component/Spinner/Spinner";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
 import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
 import PerformanceMonitor from "@/components/component/PerformanceMonitor/PerformanceMonitor";
+import ServiceWorkerErrorHandler from "@/components/component/ServiceWorkerErrorHandler/ServiceWorkerErrorHandler";
 import Script from "next/script";
 
 const inter = Inter({
@@ -230,6 +231,7 @@ export default function RootLayout({
         </Script>
         <SessionProviderWrapper>
           <ErrorBoundary>
+            <ServiceWorkerErrorHandler />
             <PerformanceMonitor />
             <DarkTheme />
             <header>

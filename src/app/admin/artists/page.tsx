@@ -1,6 +1,6 @@
+"use client";
 import AddArtists from "@/components/component/Admin/Artists/AddArtists";
 import { Sidebar } from "@/components/component/Admin/Navigation/AdminNav";
-export const dynamic = "force-dynamic";
 
 export default function AddLyrics() {
   return (
