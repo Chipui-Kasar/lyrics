@@ -12,15 +12,18 @@ export async function POST(request: NextRequest) {
   try {
     // Add cache control headers to prevent service worker issues
     const headers = new Headers();
-    headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    headers.set('Pragma', 'no-cache');
-    headers.set('Expires', '0');
+    headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    headers.set("Pragma", "no-cache");
+    headers.set("Expires", "0");
 
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400, headers });
+      return NextResponse.json(
+        { error: "No file provided" },
+        { status: 400, headers }
+      );
     }
 
     // Convert file to buffer
@@ -47,11 +50,14 @@ export async function POST(request: NextRequest) {
         .end(buffer);
     });
 
-    return NextResponse.json({
-      success: true,
-      url: (result as any).secure_url,
-      public_id: (result as any).public_id,
-    }, { headers });
+    return NextResponse.json(
+      {
+        success: true,
+        url: (result as any).secure_url,
+        public_id: (result as any).public_id,
+      },
+      { headers }
+    );
   } catch (error) {
     console.error("Cloudinary upload error:", error);
     return NextResponse.json(
