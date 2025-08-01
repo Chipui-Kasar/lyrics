@@ -25,63 +25,31 @@ export async function GET(req: Request) {
   try {
     await connectMongoDB();
 
-    // Fuzzy search using MongoDB Atlas Search (if using MongoDB Atlas)
-    const lyrics = await Lyrics.aggregate([
-      {
-        $search: {
-          index: "default", // Ensure this matches your search index name
-          text: {
-            query,
-            path: ["lyrics", "title", "album", "artistId.name"], // Fields to search in
-            fuzzy: {
-              maxEdits: 2,
-              prefixLength: 2,
-            },
-          },
-        },
-      },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: "artists", // Ensure this matches your artists collection name
-          localField: "artistId",
-          foreignField: "_id",
-          as: "artist",
-        },
-      },
-      { $unwind: "$artist" },
-      {
-        $project: {
-          lyrics: 1,
-          title: 1, // ✅ Include the song title
-          album: 1,
-          "artistId.name": "$artist.name", // ✅ Include the artist ID
-          score: { $meta: "searchScore" },
-        },
-      },
-    ]);
+    // Create case-insensitive regex for search
+    const searchRegex = new RegExp(query, "i");
 
-    const artists = await Artist.aggregate([
-      {
-        $search: {
-          index: "default",
-          text: {
-            query,
-            path: ["name", "village", "genre"],
-            fuzzy: { maxEdits: 2, prefixLength: 2 },
-          },
-        },
-      },
-      { $limit: 10 },
-      {
-        $project: {
-          name: 1,
-          village: 1,
-          genre: 1,
-          score: { $meta: "searchScore" },
-        },
-      },
-    ]);
+    // Search lyrics with populated artist data
+    const lyrics = await Lyrics.find({
+      $or: [
+        { title: { $regex: searchRegex } },
+        { lyrics: { $regex: searchRegex } },
+        { album: { $regex: searchRegex } },
+      ],
+    })
+      .populate("artistId", "name village")
+      .limit(20)
+      .lean();
+
+    // Search artists
+    const artists = await Artist.find({
+      $or: [
+        { name: { $regex: searchRegex } },
+        { village: { $regex: searchRegex } },
+        { genre: { $regex: searchRegex } },
+      ],
+    })
+      .limit(20)
+      .lean();
 
     return NextResponse.json(
       { lyrics, artists },

@@ -2,6 +2,7 @@ import ContributeLyrics from "@/components/component/ContributeLyrics/Contribute
 import FeaturedLyrics from "@/components/component/FeaturedLyrics/FeaturedLyrics";
 import PopularArtists from "@/components/component/PopularArtists/PopularArtists";
 import TopLyrics from "@/components/component/TopLyrics/toplyrics";
+import PromotionalBanner from "@/components/component/PromotionalBanner/PromotionalBanner";
 import { generatePageMetadata } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import {
@@ -42,6 +43,8 @@ const HomePage = async () => {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Full Width Promotional Banner */}
+      <PromotionalBanner />
       <section className="container py-4 sm:py-8 md:py-10 m-auto" role="main">
         <h1 className="sr-only">
           Tangkhul Song Lyrics - Cultural Heritage Through Music
