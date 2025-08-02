@@ -36,7 +36,7 @@ const PromotionalBanner = () => {
     {
       id: "2",
       title: "🎤 Submit Your Lyrics & Win Prizes!",
-      description: "Help preserve our cultural heritage by contributing lyrics",
+      description: "Help preserve our cultural by contributing lyrics",
       imageUrl: "/placeholder.svg",
       linkUrl: "/contribute",
       buttonText: "Contribute",
@@ -138,7 +138,7 @@ const PromotionalBanner = () => {
 
   return (
     <section className="w-full bg-gray-50 dark:bg-gray-900 py-6 border-y border-gray-200 dark:border-gray-700">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto p-4 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <div
           className={`relative overflow-hidden rounded-xl shadow-lg ${activeItem.backgroundColor} p-6 md:p-8 transition-all duration-500 ease-in-out`}
           onMouseEnter={() => setIsAutoPlaying(false)}

@@ -48,7 +48,7 @@ const TermsOfServicePage = () => {
           </h2>
           <p className="mb-4">
             Tangkhul Lyrics is a platform dedicated to preserving and sharing
-            Tangkhul song lyrics and cultural heritage. Our service includes:
+            Tangkhul song lyrics and cultural. Our service includes:
           </p>
           <ul className="list-disc list-inside mb-4 space-y-2">
             <li>Access to a collection of Tangkhul song lyrics</li>
@@ -118,15 +118,14 @@ const TermsOfServicePage = () => {
             By submitting content, you grant us a non-exclusive, worldwide,
             royalty-free license to use, display, and distribute your content on
             our platform for the purpose of preserving and sharing Tangkhul
-            cultural heritage.
+            cultural.
           </p>
 
           <h3 className="text-xl font-medium mb-3">Traditional Content</h3>
           <p className="mb-4">
             We respect that many lyrics and songs are part of traditional
-            Tangkhul heritage. We aim to preserve and honor this cultural
-            content while respecting the rights of contemporary artists and
-            creators.
+            Tangkhul. We aim to preserve and honor this cultural content while
+            respecting the rights of contemporary artists and creators.
           </p>
         </section>
 

@@ -290,31 +290,6 @@ const CookiePolicyPage = () => {
             If you have any questions about our use of cookies, please contact
             us:
           </p>
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-            <ul className="space-y-2">
-              <li>
-                <strong>Email:</strong> cookies@tangkhullyrics.com
-              </li>
-              <li>
-                <strong>Website:</strong>{" "}
-                <a
-                  href="/contact"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  Contact Form
-                </a>
-              </li>
-              <li>
-                <strong>Privacy Policy:</strong>{" "}
-                <a
-                  href="/privacy"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  Read our Privacy Policy
-                </a>
-              </li>
-            </ul>
-          </div>
         </section>
 
         <div className="text-center text-sm text-muted-foreground mt-12">

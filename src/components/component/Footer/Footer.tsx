@@ -24,7 +24,7 @@ const Footer = () => {
 
   return (
     <footer className="border-t bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto mt-4 px-4 py-8 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         {/* Main Footer Content */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand Section */}
@@ -33,8 +33,8 @@ const Footer = () => {
               Tangkhul Lyrics
             </h3>
             <p className="text-sm text-muted-foreground">
-              Preserving Tangkhul cultural heritage through music and lyrics.
-              Discover, contribute, and celebrate our rich musical tradition.
+              Preserving Tangkhul cultural through music and lyrics. Discover,
+              contribute, and celebrate our rich musical tradition.
             </p>
           </div>
 
@@ -100,14 +100,12 @@ const Footer = () => {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             {/* Copyright */}
             <p className="text-sm text-muted-foreground">
-              &copy; {currentYear} Tangkhul Lyrics. All rights reserved.
+              &copy; 2024 - {currentYear} Tangkhul Lyrics. All rights reserved.
             </p>
 
             {/* Additional Info */}
             <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground md:flex-row md:gap-4">
               <span>Made with ❤️ for Tangkhul Community</span>
-              <span className="hidden md:inline">•</span>
-              <span>Preserving Heritage Through Music</span>
             </div>
           </div>
         </div>
