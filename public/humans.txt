@@ -10,7 +10,7 @@
   Tailwind CSS: Utility-first CSS framework
   MongoDB: Database for lyrics storage
   Vercel: Hosting platform
-  Tangkhul Community: For preserving cultural heritage
+  Tangkhul Community: For preserving cultural
 
 /* SITE */
   Last update: 2025/01/28
@@ -24,7 +24,7 @@
 /* DESCRIPTION */
   Tangkhul Lyrics is a cultural preservation project
   dedicated to archiving and sharing Tangkhul song lyrics.
-  We believe in preserving the rich musical heritage
+  We believe in preserving the rich musical
   of the Tangkhul community for future generations.
 
   Built with ♥ in Ukhrul

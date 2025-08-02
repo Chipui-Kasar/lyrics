@@ -9,7 +9,7 @@ interface PopularArtistsProps {
 const PopularArtists = ({ artists }: PopularArtistsProps) => {
   return (
     <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
-      <h2 className="text-2xl font-bold">Popular Artists</h2>
+      <h2 className="text-2xl font-bold">Browse by Artists</h2>
       <p className="mt-2 text-muted-foreground">
         Explore the most popular artists on our platform.
       </p>
@@ -26,11 +26,11 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
               width={64}
               height={64}
               alt={artist.name}
-              className="h-16 w-16 object-cover"
+              className="h-12 w-12 object-cover"
               style={{ borderRadius: "50%" }}
             />
             <div className="text-center">
-              <h3 className="text-sm font-medium">{artist.name}</h3>
+              <h3 className="text-xs font-medium">{artist.name}</h3>
               <p className="text-xs text-muted-foreground">
                 {/* {artist.songCount ?? 0} Lyrics */}
               </p>

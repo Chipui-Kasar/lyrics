@@ -2,6 +2,7 @@ import ContributeLyrics from "@/components/component/ContributeLyrics/Contribute
 import FeaturedLyrics from "@/components/component/FeaturedLyrics/FeaturedLyrics";
 import PopularArtists from "@/components/component/PopularArtists/PopularArtists";
 import TopLyrics from "@/components/component/TopLyrics/toplyrics";
+import PromotionalBanner from "@/components/component/PromotionalBanner/PromotionalBanner";
 import { generatePageMetadata } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import {
@@ -30,7 +31,7 @@ export async function generateMetadata() {
   return generatePageMetadata({
     title: "Tangkhul Lyrics - Find Your Favorite Tangkhul Songs",
     description:
-      "Discover the largest collection of Tangkhul song lyrics online. Browse featured songs, top artists, and contribute your own lyrics to preserve cultural heritage.",
+      "Discover the largest collection of Tangkhul song lyrics online. Browse featured songs, top artists, and contribute your own lyrics to preserve cultural.",
     url: "https://tangkhullyrics.com",
     keywords:
       "Tangkhul lyrics, Tangkhul songs, Tangkhul artists, contribute lyrics, top songs, Manipur music, Northeast India songs, tribal music",
@@ -42,9 +43,11 @@ const HomePage = async () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <section className="container py-4 sm:py-8 md:py-10 m-auto" role="main">
+      {/* Full Width Promotional Banner */}
+      <PromotionalBanner />
+      <section className="container py-4 sm:py-6 md:py-8 m-auto" role="main">
         <h1 className="sr-only">
-          Tangkhul Song Lyrics - Cultural Heritage Through Music
+          Tangkhul Song Lyrics - Cultural Through Music
         </h1>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="col-span-2 grid gap-4">

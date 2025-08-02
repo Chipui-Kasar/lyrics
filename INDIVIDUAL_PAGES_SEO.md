@@ -37,7 +37,7 @@ Route (app)                                       Size  First Load JS  Revalidat
 
 - ✅ **Static generation** for fast loading
 - ✅ **SEO-optimized metadata** using utility function
-- ✅ **Cultural context keywords** highlighting Tangkhul heritage
+- ✅ **Cultural context keywords** highlighting Tangkhul
 - ✅ **1-hour revalidation** for content updates
 - ✅ **Proper canonical URLs** for duplicate content prevention
 
@@ -216,7 +216,7 @@ structuredData: {
 ### 4. Cultural and Language SEO
 
 - **Tangkhul language specification** (`inLanguage: "tkh"`)
-- **Cultural keywords** emphasizing heritage and tradition
+- **Cultural keywords** emphasizing and tradition
 - **Regional targeting** for Northeast India and Manipur
 - **Traditional music genre** classification
 
@@ -241,7 +241,7 @@ structuredData: {
 ### Lyrics Pages
 
 - **Song Search**: Improved visibility for specific song queries
-- **Cultural Heritage**: Enhanced discoverability of traditional songs
+- **Cultural**: Enhanced discoverability of traditional songs
 - **Educational Value**: Better context for cultural learning
 - **User Engagement**: Optimized previews and descriptions
 
@@ -296,7 +296,7 @@ structuredData: {
 ### Content Strategy
 
 - **Genre Classification**: Traditional music categorization
-- **Cultural Context**: Heritage and traditional value emphasis
+- **Cultural Context**: and traditional value emphasis
 - **Artist Profiles**: Comprehensive musician information
 - **Song Metadata**: Complete composition details
 

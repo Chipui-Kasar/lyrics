@@ -74,10 +74,10 @@ Route (app)                                       Size  First Load JS
 export const metadata: Metadata = {
   title: {
     template: "%s | Tangkhul Lyrics",
-    default: "Tangkhul Lyrics - Traditional Songs & Cultural Heritage",
+    default: "Tangkhul Lyrics - Traditional Songs & Cultural",
   },
   description:
-    "Discover and explore traditional Tangkhul songs, lyrics, and cultural heritage...",
+    "Discover and explore traditional Tangkhul songs, lyrics, and cultural...",
   keywords: ["Tangkhul songs", "Tangkhul lyrics", "traditional music"],
   openGraph: {
     type: "website",
@@ -108,7 +108,7 @@ export const metadata: Metadata = {
     {
       "@type": "Organization",
       "name": "Tangkhul Lyrics",
-      "description": "Comprehensive collection of Tangkhul songs and cultural heritage"
+      "description": "Comprehensive collection of Tangkhul songs and cultural"
     }
   ]
 }
