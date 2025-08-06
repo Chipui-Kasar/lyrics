@@ -76,9 +76,9 @@ const PromotionalBanner = () => {
         if (prev >= 100) {
           return 0;
         }
-        return prev + 100 / 500; // 5000ms / 10ms intervals = 500 steps
+        return prev + 100 / 250; // 5000ms / 20ms intervals = 250 steps
       });
-    }, 10);
+    }, 20);
 
     return () => {
       clearInterval(interval);
@@ -226,21 +226,6 @@ const PromotionalBanner = () => {
                 </Link>
               )}
             </div>
-
-            {/* Image Section */}
-            {activeItem.imageUrl && (
-              <div className="flex-shrink-0">
-                <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden border-4 border-white/20 shadow-xl">
-                  <Image
-                    src={activeItem.imageUrl}
-                    alt={activeItem.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 128px, 160px"
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Slide Indicators */}

@@ -42,6 +42,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
               variant="ghost"
               size="icon"
               className="group-hover:opacity-100"
+              aria-label="View Lyrics"
             >
               <ArrowRightIcon className="h-5 w-5" />
             </Button>

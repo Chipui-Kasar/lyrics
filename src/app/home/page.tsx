@@ -1,8 +1,3 @@
-import ContributeLyrics from "@/components/component/ContributeLyrics/ContributeLyrics";
-import FeaturedLyrics from "@/components/component/FeaturedLyrics/FeaturedLyrics";
-import PopularArtists from "@/components/component/PopularArtists/PopularArtists";
-import TopLyrics from "@/components/component/TopLyrics/toplyrics";
-import PromotionalBanner from "@/components/component/PromotionalBanner/PromotionalBanner";
 import { generatePageMetadata } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import {
@@ -10,6 +5,23 @@ import {
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
+import { Suspense, lazy } from "react";
+import { HomeComponentSkeleton } from "@/components/ui/skeleton";
+import PromotionalBanner from "@/components/component/PromotionalBanner/PromotionalBanner";
+
+// Lazy load components to reduce initial bundle size
+const FeaturedLyrics = lazy(
+  () => import("@/components/component/FeaturedLyrics/FeaturedLyrics")
+);
+const PopularArtists = lazy(
+  () => import("@/components/component/PopularArtists/PopularArtists")
+);
+const TopLyrics = lazy(
+  () => import("@/components/component/TopLyrics/toplyrics")
+);
+const ContributeLyrics = lazy(
+  () => import("@/components/component/ContributeLyrics/ContributeLyrics")
+);
 
 export const dynamic = "force-static";
 export const revalidate = 300;
@@ -45,7 +57,10 @@ const HomePage = async () => {
     <div className="flex min-h-screen flex-col">
       {/* Full Width Promotional Banner */}
       <PromotionalBanner />
-      <section className="container py-4 sm:py-6 md:py-8 m-auto" role="main">
+      <section
+        className="above-fold container py-4 sm:py-6 md:py-8 m-auto"
+        role="main"
+      >
         <h1 className="sr-only">
           Tangkhul Song Lyrics - Cultural Through Music
         </h1>
@@ -55,35 +70,46 @@ const HomePage = async () => {
               <h2 id="featured-lyrics-heading" className="sr-only">
                 Featured Tangkhul Song Lyrics
               </h2>
-              <FeaturedLyrics lyrics={featuredLyrics} />
+              <Suspense fallback={<HomeComponentSkeleton />}>
+                <FeaturedLyrics lyrics={featuredLyrics} />
+              </Suspense>
             </section>
-            <section aria-labelledby="popular-artists-heading">
+            <section
+              aria-labelledby="popular-artists-heading"
+              className="below-fold"
+            >
               <h2 id="popular-artists-heading" className="sr-only">
                 Popular Tangkhul Artists
               </h2>
-              <PopularArtists
-                artists={artists.filter(
-                  (artist: IArtists) => artist.name !== "Pamching Kasar"
-                )}
-              />
+              <Suspense fallback={<HomeComponentSkeleton />}>
+                <PopularArtists
+                  artists={artists.filter(
+                    (artist: IArtists) => artist.name !== "Pamching Kasar"
+                  )}
+                />
+              </Suspense>
             </section>
           </div>
           <aside
             aria-labelledby="top-lyrics-heading"
-            className="col-span-2 md:col-span-2 lg:col-span-1 "
+            className="col-span-2 md:col-span-2 lg:col-span-1"
           >
             <h2 id="top-lyrics-heading" className="sr-only">
               Top Tangkhul Song Lyrics
             </h2>
-            <TopLyrics lyrics={topLyrics} />
+            <Suspense fallback={<HomeComponentSkeleton />}>
+              <TopLyrics lyrics={topLyrics} />
+            </Suspense>
           </aside>
         </div>
       </section>
-      <section aria-labelledby="contribute-heading">
+      <section aria-labelledby="contribute-heading" className="below-fold">
         <h2 id="contribute-heading" className="sr-only">
           Contribute Tangkhul Song Lyrics
         </h2>
-        <ContributeLyrics />
+        <Suspense fallback={<HomeComponentSkeleton />}>
+          <ContributeLyrics />
+        </Suspense>
       </section>
     </div>
   );

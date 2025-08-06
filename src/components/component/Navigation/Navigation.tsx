@@ -17,29 +17,32 @@ const Navigation: React.FC = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const fetchLyrics = async () => {
-      try {
-        const res = await fetch("/api/lyrics?sort=title");
-        if (res.ok) {
-          setLyrics(await res.json());
+    // Only fetch when user starts searching to improve FCP/LCP
+    if (searchQuery.length > 2) {
+      const fetchLyrics = async () => {
+        try {
+          const res = await fetch(
+            `/api/search?q=${encodeURIComponent(searchQuery)}&limit=10`
+          );
+          if (res.ok) {
+            setLyrics(await res.json());
+          }
+        } catch (error) {
+          console.error("Failed to fetch lyrics", error);
         }
-      } catch (error) {
-        console.error("Failed to fetch lyrics", error);
-      }
-    };
-    fetchLyrics();
-  }, []);
+      };
+      fetchLyrics();
+    } else {
+      setLyrics([]);
+      setFilteredLyrics([]);
+    }
+  }, [searchQuery]);
 
   const searchIndex = useMemo(
     () =>
       lyrics.map((lyric) => ({
         ...lyric,
-        _search: [
-          lyric.title || "",
-          lyric.album || "",
-          lyric.lyrics || "",
-          lyric.artistId?.name || "",
-        ]
+        _search: [lyric.title || "", lyric.artistId?.name || ""]
           .join(" ")
           .replace(/\s+/g, " ")
           .trim()
@@ -48,7 +51,32 @@ const Navigation: React.FC = () => {
     [lyrics]
   );
 
+  // Enhanced debounced search with performance optimization
   const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      if (query.length > 2) {
+        // Use requestIdleCallback for better performance
+        if ("requestIdleCallback" in window) {
+          requestIdleCallback(() => setSearchQuery(query), { timeout: 100 });
+        } else {
+          setSearchQuery(query);
+        }
+      } else {
+        setSearchQuery("");
+      }
+    }, 300),
+    []
+  );
+
+  // Cleanup debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Enhanced debounced search for filtering results
+  const debouncedFilter = useCallback(
     debounce((query: string) => {
       if (!query.trim()) {
         setFilteredLyrics([]);
@@ -57,18 +85,18 @@ const Navigation: React.FC = () => {
 
       const filtered = searchIndex
         .filter((lyric) => lyric._search.includes(query.toLowerCase()))
-        .slice(0, 8); // Limit results for performance
+        .slice(0, 5); // Reduced from 8 to 5 for better performance
       setFilteredLyrics(filtered);
-    }, 250), // Reduced from 300ms to 250ms for better responsiveness
+    }, 300), // Increased to 300ms for better performance
     [searchIndex]
   );
 
   useEffect(() => {
-    debouncedSearch(searchQuery);
+    debouncedFilter(searchQuery);
     return () => {
-      debouncedSearch.cancel();
+      debouncedFilter.cancel();
     };
-  }, [searchQuery, debouncedSearch]);
+  }, [searchQuery, debouncedFilter]);
 
   useEffect(() => {
     setSearchQuery("");
@@ -137,12 +165,11 @@ const Navigation: React.FC = () => {
 
             {/* Search Results Dropdown */}
             {filteredLyrics.length > 0 && (
-              <ul className="absolute left-0 mt-2 w-full bg-background border border-gray-200 rounded-md shadow-lg overflow-hidden z-50">
+              <ul className="search-dropdown absolute left-0 mt-2 w-full bg-background border border-gray-200 rounded-md shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
                 {filteredLyrics.map((lyric) => {
                   const regex = new RegExp(searchQuery, "gi");
-                  const lines = lyric.lyrics.split("\n"); // Split into lines
-                  const matchingLine =
-                    lines.find((line) => regex.test(line)) || lyric.lyrics; // Find first matching line
+                  // Use only title for display to improve performance
+                  const displayText = lyric.title || "Untitled";
 
                   return (
                     <li
@@ -154,18 +181,25 @@ const Navigation: React.FC = () => {
                           lyric.artistId?.name
                         )
                       }
-                      title={lyric.lyrics}
-                      className="cursor-pointer hover:bg-gray-100 transition text-sm text-truncate-2-lines"
-                      dangerouslySetInnerHTML={{
-                        __html: sanitizeAndDeduplicateHTML(
-                          matchingLine
-                        ).replace(
-                          regex,
-                          (match) =>
-                            `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
-                        ),
-                      }}
-                    />
+                      className="cursor-pointer hover:bg-gray-100 transition text-sm p-3 border-b border-gray-100 last:border-b-0"
+                    >
+                      <div className="font-medium text-gray-900">
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: sanitizeAndDeduplicateHTML(
+                              displayText
+                            ).replace(
+                              regex,
+                              (match) =>
+                                `<span class="bg-yellow-200 text-yellow-800">${match}</span>`
+                            ),
+                          }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        by {lyric.artistId?.name || "Unknown Artist"}
+                      </div>
+                    </li>
                   );
                 })}
               </ul>

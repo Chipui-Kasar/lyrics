@@ -9,6 +9,8 @@ import SessionProviderWrapper from "@/components/component/SessionProviderWrappe
 import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
 import PerformanceMonitor from "@/components/component/PerformanceMonitor/PerformanceMonitor";
 import ServiceWorkerErrorHandler from "@/components/component/ServiceWorkerErrorHandler/ServiceWorkerErrorHandler";
+import BackForwardCacheOptimizer from "@/components/component/BackForwardCacheOptimizer/BackForwardCacheOptimizer";
+import LCPOptimizer from "@/components/component/LCPOptimizer/LCPOptimizer";
 import Script from "next/script";
 
 const inter = Inter({
@@ -24,6 +26,7 @@ const inter = Inter({
     "Arial",
     "sans-serif",
   ],
+  adjustFontFallback: true, // Reduce layout shift
 });
 
 export const viewport: Viewport = {
@@ -161,22 +164,44 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <meta charSet="utf-8" />
+        {/* Font preloading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+
+        {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+        {/* Preload critical images */}
         <link rel="preload" href="/ogImage.jpg" as="image" type="image/jpeg" />
         <link
           rel="preload"
           href="/icon-512.svg"
           as="image"
           type="image/svg+xml"
+        />
+
+        {/* Optimize LCP by preloading critical resources */}
+        <link
+          rel="preload"
+          href="/reference-music-logo.svg"
+          as="image"
+          type="image/svg+xml"
+        />
+
+        {/* Critical CSS for LCP optimization */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            .above-fold { content-visibility: visible; contain: none; }
+            .layout-stable { contain: layout style paint; }
+            .skeleton-loading { background-color: hsl(200, 20%, 90%); }
+          `,
+          }}
         />
       </head>
       <body className="font-sans antialiased">
@@ -231,6 +256,8 @@ export default function RootLayout({
         </Script>
         <SessionProviderWrapper>
           <ErrorBoundary>
+            <LCPOptimizer />
+            <BackForwardCacheOptimizer />
             <ServiceWorkerErrorHandler />
             <PerformanceMonitor />
             <DarkTheme />

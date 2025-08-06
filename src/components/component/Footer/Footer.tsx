@@ -23,33 +23,33 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="border-t bg-background">
-      <div className="container mx-auto mt-4 px-4 py-8 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
+    <footer className="footer-container border-t bg-background">
+      <div className="footer-content container mx-auto mt-4 px-4 py-8 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         {/* Main Footer Content */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="footer-grid grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">
+          <div className="footer-brand space-y-4">
+            <h3 className="footer-title text-lg font-semibold text-foreground">
               Tangkhul Lyrics
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="footer-description">
               Preserving Tangkhul cultural through music and lyrics. Discover,
               contribute, and celebrate our rich musical tradition.
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="text-base font-medium text-foreground">
+          <div className="footer-section space-y-4">
+            <h4 className="footer-section-title text-base font-medium text-foreground">
               Quick Links
             </h4>
-            <ul className="space-y-2">
+            <ul className="footer-links space-y-2">
               {quickLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.name} className="footer-link-item">
                   <Link
                     href={link.href}
                     prefetch={false}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
+                    className="footer-link text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
                   >
                     {link.name}
                   </Link>
@@ -59,15 +59,17 @@ const Footer = () => {
           </div>
 
           {/* Support */}
-          <div className="space-y-4">
-            <h4 className="text-base font-medium text-foreground">Support</h4>
-            <ul className="space-y-2">
+          <div className="footer-section space-y-4">
+            <h4 className="footer-section-title text-base font-medium text-foreground">
+              Support
+            </h4>
+            <ul className="footer-links space-y-2">
               {supportLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.name} className="footer-link-item">
                   <Link
                     href={link.href}
                     prefetch={false}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
+                    className="footer-link text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
                   >
                     {link.name}
                   </Link>
@@ -77,15 +79,17 @@ const Footer = () => {
           </div>
 
           {/* Legal */}
-          <div className="space-y-4">
-            <h4 className="text-base font-medium text-foreground">Legal</h4>
-            <ul className="space-y-2">
+          <div className="footer-section space-y-4">
+            <h4 className="footer-section-title text-base font-medium text-foreground">
+              Legal
+            </h4>
+            <ul className="footer-links space-y-2">
               {legalLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.name} className="footer-link-item">
                   <Link
                     href={link.href}
                     prefetch={false}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
+                    className="footer-link text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
                   >
                     {link.name}
                   </Link>
@@ -96,15 +100,15 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="mt-8 border-t pt-6">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div className="footer-bottom mt-8 border-t pt-6">
+          <div className="footer-bottom-content flex flex-col items-center justify-between gap-4 md:flex-row">
             {/* Copyright */}
-            <p className="text-sm text-muted-foreground">
+            <p className="footer-copyright text-sm text-muted-foreground">
               &copy; 2024 - {currentYear} Tangkhul Lyrics. All rights reserved.
             </p>
 
             {/* Additional Info */}
-            <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground md:flex-row md:gap-4">
+            <div className="footer-info flex flex-col items-center gap-2 text-sm text-muted-foreground md:flex-row md:gap-4">
               <span>Made with ❤️ for Tangkhul Community</span>
             </div>
           </div>

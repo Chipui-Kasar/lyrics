@@ -3,15 +3,18 @@ const nextConfig = {
   // Enable compression
   compress: true,
 
-  // Optimize images
+  // Production optimizations for mobile
+  productionBrowserSourceMaps: false,
+
+  // Optimize images for mobile
   images: {
     formats: ["image/webp", "image/avif"],
-    minimumCacheTTL: 60,
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 86400, // 24 hours
+    deviceSizes: [640, 750, 828, 1080, 1200], // Mobile-first device sizes
+    imageSizes: [16, 32, 48, 64, 96, 128, 256], // Smaller image sizes for mobile
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ["res.cloudinary.com"], // Add external domains if needed
+    loader: "default",
     remotePatterns: [
       {
         protocol: "https",
@@ -22,23 +25,15 @@ const nextConfig = {
     ],
   },
 
-  // Remove unused imports at build time
+  // Simplified experimental features - removed webpack conflicts
   experimental: {
     optimizePackageImports: [
       "lucide-react",
       "@radix-ui/react-label",
       "@radix-ui/react-toggle",
+      "lodash",
     ],
-  },
-
-  // Turbopack configuration (stable in Next.js 15+)
-  turbopack: {
-    rules: {
-      "*.svg": {
-        loaders: ["@svgr/webpack"],
-        as: "*.js",
-      },
-    },
+    scrollRestoration: true,
   },
 
   // Enhanced security headers for Best Practices score
@@ -96,9 +91,6 @@ const nextConfig = {
 
   // Remove powered by header
   poweredByHeader: false,
-
-  // Note: Webpack config removed in favor of Turbopack
-  // Turbopack handles module optimization automatically
 };
 
 export default nextConfig;
