@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Button } from "../../ui/button";
-import { ArrowRightIcon } from "lucide-react";
 import { ILyrics } from "@/models/IObjects";
 import { slugMaker } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 interface AllLyricsProps {
   lyrics: ILyrics[];
 }
@@ -16,20 +15,20 @@ const AllLyrics = ({ lyrics }: AllLyricsProps) => {
         Explore the growing collection of lyrics from various artists and
         genres.
       </p>
-      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {lyrics.map((lyric, key) => (
           <Link
             href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
               lyric.artistId?.name
             )}`}
             prefetch={true}
-            className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+            className="group flex items-center gap-4 rounded-lg bg-background p-2 transition-colors hover:bg-muted"
             key={key}
           >
             <div className="flex-1">
-              <h3 className="font-medium">{lyric.title}</h3>{" "}
+              <h3 className="font-medium text-sm">{lyric.title}</h3>{" "}
               {/* ✅ Removed nested <Link> */}
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 by{" "}
                 <span className="font-medium">
                   {lyric.artistId?.name ?? "Unknown Artist"}
@@ -37,13 +36,6 @@ const AllLyrics = ({ lyrics }: AllLyricsProps) => {
                 {/* ✅ No nested <Link> */}
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="group-hover:opacity-100"
-            >
-              <ArrowRightIcon className="h-5 w-5" />
-            </Button>
           </Link>
         ))}
       </div>
