@@ -58,7 +58,7 @@ export const getFeaturedLyrics = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2&sort=createdAt&featured=true`,
       {
-        next: { revalidate: 604800 },
+        next: { revalidate: 3600 },
       }
     );
     return res.ok ? await res.json() : [];
@@ -73,7 +73,7 @@ export const getTopLyrics = async (limit?: number) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics${query}`,
       {
-        next: { revalidate: 604800 },
+        next: { revalidate: 3600 },
       }
     );
     return res.ok ? await res.json() : [];
