@@ -26,9 +26,9 @@ const Footer = () => {
     <footer className="footer-container border-t bg-background">
       <div className="footer-content container mx-auto mt-4 px-4 py-8 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         {/* Main Footer Content */}
-        <div className="footer-grid grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="footer-grid grid gap-8 md:grid-cols-2 grid-cols-2 lg:grid-cols-4">
           {/* Brand Section */}
-          <div className="footer-brand space-y-4">
+          <div className="footer-brand space-y-4 col-span-2 lg:col-span-1">
             <h3 className="footer-title text-lg font-semibold text-foreground">
               Tangkhul Lyrics
             </h3>
