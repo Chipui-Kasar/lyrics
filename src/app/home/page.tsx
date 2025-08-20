@@ -41,12 +41,13 @@ const fetchHomeData = async () => {
 
 export async function generateMetadata() {
   return generatePageMetadata({
-    title: "Tangkhul Lyrics - Find Your Favorite Tangkhul Songs",
+    title:
+      "Tangkhul Lyrics - Find Your Favorite Tangkhul Songs and Artists | Tangkhul Lyrics Translation",
     description:
-      "Discover the largest collection of Tangkhul song lyrics online. Browse featured songs, top artists, and contribute your own lyrics to preserve cultural.",
+      "Discover the largest collection of Tangkhul song lyrics online. Browse featured songs, top artists, and contribute your own lyrics to preserve cultural. | Tangkhul Lyrics Translation",
     url: "https://tangkhullyrics.com",
     keywords:
-      "Tangkhul lyrics, Tangkhul songs, Tangkhul artists, contribute lyrics, top songs, Manipur music, Northeast India songs, tribal music",
+      "Tangkhul lyrics, Tangkhul songs, Tangkhul artists, contribute lyrics, top songs, Manipur music, Northeast India songs, tribal music | Tangkhul Lyrics Translation",
   });
 }
 

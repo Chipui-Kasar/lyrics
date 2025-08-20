@@ -45,7 +45,11 @@ export async function generateMetadata({
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       lyric.title
     )}_${slugMaker(lyric.artistId?.name)}`,
-    image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`,
+    image: `${
+      lyric.thumbnail && lyric.thumbnail !== ""
+        ? lyric.thumbnail
+        : lyric.artistId?.image ?? "/ogImage.jpg"
+    }`,
     keywords: [
       lyric.title,
       lyric.artistId?.name,

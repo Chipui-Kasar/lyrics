@@ -47,11 +47,13 @@ export const metadata: Metadata = {
     template: "%s | Tangkhul Lyrics",
   },
   description:
-    "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics.",
+    "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics. | Tangkhul Lyrics Translation",
   applicationName: "Tangkhul Lyrics",
   referrer: "origin-when-cross-origin",
   keywords: [
     "Tangkhul lyrics",
+    "Tangkhul artists",
+    "Tangkhul lyrics translation",
     "Tangkhul songs",
     "Tangkhul music",
     "Tangkhul Laa lyrics",
@@ -60,6 +62,8 @@ export const metadata: Metadata = {
     "Tribal songs",
     "Traditional music",
     "Contemporary Tangkhul music",
+    "Tangkhul song lyrics translation",
+    "Tangkhul song meanings",
   ],
   authors: [
     { name: "Tangkhul Lyrics Team", url: "https://tangkhullyrics.com/about" },
@@ -112,7 +116,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://tangkhullyrics.com",
     siteName: "Tangkhul Lyrics",
-    title: "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics",
+    title:
+      "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics | Tangkhul Lyrics Translation",
     description:
       "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists.",
     images: [
@@ -129,7 +134,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@TangkhulLyrics",
     creator: "@TangkhulLyrics",
-    title: "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics",
+    title:
+      "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics | Tangkhul Lyrics Translation",
     description:
       "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases.",
     images: ["/ogImage.jpg"],

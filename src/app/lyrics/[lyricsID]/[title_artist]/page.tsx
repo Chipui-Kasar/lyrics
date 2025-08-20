@@ -45,13 +45,17 @@ export async function generateMetadata({
     lyric.lyrics?.slice(0, 140) || "Traditional Tangkhul song";
 
   return generatePageMetadata({
-    title: `${songTitle} by ${artistName} - Lyrics & Meaning`,
-    description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context.`,
+    title: `${songTitle} by ${artistName} - Lyrics | Tangkhul Lyrics`,
+    description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context. Tangkhul song lyrics translation`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       songTitle
     )}_${slugMaker(artistName)}`,
-    image: `${lyric.thumbnail ?? lyric.artistId?.image ?? "/ogImage.jpg"}`,
-    keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
+    image: `${
+      lyric.thumbnail && lyric.thumbnail !== ""
+        ? lyric.thumbnail
+        : lyric.artistId?.image ?? "/ogImage.jpg"
+    }`,
+    keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul song lyrics translation, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
     structuredData: {
       "@context": "https://schema.org",
       "@type": "MusicComposition",
@@ -66,7 +70,7 @@ export async function generateMetadata({
       },
       genre: "Traditional Music",
       inLanguage: "tkh",
-      description: `Traditional Tangkhul song "${songTitle}" by ${artistName}`,
+      description: `Traditional Tangkhul song "${songTitle}" by ${artistName} | Tangkhul Lyrics | Tangkhul lyrics translation`,
       url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
         songTitle
       )}_${slugMaker(artistName)}`,
