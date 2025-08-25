@@ -29,8 +29,8 @@ const ContributeLyrics = () => {
       },
       body: JSON.stringify({
         service_id: "myGmail",
-        template_id: "template_8oepnwl",
-        user_id: "user_Mc5QI37PU2F55mUGiqmuO",
+        template_id: "template_gppj9by",
+        user_id: "KryXXcTZ4sCD-udAD",
         template_params: {
           from_name: contributorName,
           song_title: songTitle,

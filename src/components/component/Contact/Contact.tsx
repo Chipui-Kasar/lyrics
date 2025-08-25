@@ -30,8 +30,8 @@ export default function Contact() {
         },
         body: JSON.stringify({
           service_id: "myGmail",
-          template_id: "template_dm43ind",
-          user_id: "user_Mc5QI37PU2F55mUGiqmuO",
+          template_id: "template_khsnsao",
+          user_id: "KryXXcTZ4sCD-udAD",
           template_params: {
             name: name,
             email: email,
