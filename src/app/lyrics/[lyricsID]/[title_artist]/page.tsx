@@ -2,10 +2,16 @@
 
 import { notFound } from "next/navigation";
 import Lyrics from "@/components/component/AllArtists/ArtistsSongList/Lyrics/Lyrics";
-import { generatePageMetadata, slugMaker } from "@/lib/utils";
+import {
+  generatePageMetadata,
+  replaceAllHTMLTagsWithSpace,
+  sanitizeAndDeduplicateHTML,
+  slugMaker,
+} from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
+import StructuredData from "@/components/StructureDataComponent";
 
 export const dynamic = "force-static";
 export const revalidate = 300; // 7 days
@@ -20,13 +26,12 @@ const fetchLyric = cache(
   }
 );
 
-// ✅ FIXED: No Promise<> on params
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
-  const resolvedParams = await params; // Resolve the promise to get the actual params
+  const resolvedParams = await params;
   const [title, artist] = resolvedParams.title_artist.split("_");
   const lyric = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
@@ -42,10 +47,12 @@ export async function generateMetadata({
   const artistName = lyric.artistId?.name || "Unknown Artist";
   const albumName = lyric.album || "Single";
   const lyricsPreview =
-    lyric.lyrics?.slice(0, 140) || "Traditional Tangkhul song";
+    replaceAllHTMLTagsWithSpace(
+      sanitizeAndDeduplicateHTML(lyric.lyrics)
+    )?.slice(0, 155) || "Traditional Tangkhul song";
 
   return generatePageMetadata({
-    title: `${songTitle} by ${artistName} - Lyrics | Tangkhul Lyrics`,
+    title: `${songTitle} by ${artistName} - Lyrics | ${songTitle} Lyrics`,
     description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context. Tangkhul song lyrics translation`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       songTitle
@@ -56,40 +63,15 @@ export async function generateMetadata({
         : lyric.artistId?.image ?? "/ogImage.jpg"
     }`,
     keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul song lyrics translation, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
-    structuredData: {
-      "@context": "https://schema.org",
-      "@type": "MusicComposition",
-      name: songTitle,
-      composer: {
-        "@type": "Person",
-        name: artistName,
-      },
-      lyricist: {
-        "@type": "Person",
-        name: artistName,
-      },
-      genre: "Traditional Music",
-      inLanguage: "tkh",
-      description: `Traditional Tangkhul song "${songTitle}" by ${artistName} | Tangkhul Lyrics | Tangkhul lyrics translation`,
-      url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
-        songTitle
-      )}_${slugMaker(artistName)}`,
-      datePublished: lyric.createdAt || new Date().toISOString(),
-      publisher: {
-        "@type": "Organization",
-        name: "Tangkhul Lyrics",
-      },
-    },
   });
 }
 
-// ✅ FIXED: No Promise<> on params
 const LyricsPage = async ({
   params,
 }: {
   params: Promise<{ lyricsID: string; title_artist: string }>;
 }) => {
-  const resolvedParams = await params; // Resolve the promise to get the actual params
+  const resolvedParams = await params;
   const [title, artist] = resolvedParams.title_artist.split("_");
   const lyric = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
@@ -97,7 +79,40 @@ const LyricsPage = async ({
     notFound();
   }
 
-  return <Lyrics lyrics={lyric} />;
+  const songTitle = lyric.title || "Untitled";
+  const artistName = lyric.artistId?.name || "Unknown Artist";
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "MusicRecording",
+    name: songTitle,
+    composer: {
+      "@type": "Person",
+      name: artistName,
+    },
+    lyricist: {
+      "@type": "Person",
+      name: artistName,
+    },
+    genre: "Traditional Music",
+    inLanguage: "tkh",
+    description: `Traditional Tangkhul song "${songTitle}" by ${artistName} | Tangkhul Lyrics | Tangkhul lyrics translation`,
+    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
+      songTitle
+    )}_${slugMaker(artistName)}`,
+    datePublished: lyric.createdAt || new Date().toISOString(),
+    publisher: {
+      "@type": "Organization",
+      name: "Tangkhul Lyrics",
+    },
+  };
+
+  return (
+    <>
+      <StructuredData data={structuredData} />
+      <Lyrics lyrics={lyric} />
+    </>
+  );
 };
 
 export async function generateStaticParams() {

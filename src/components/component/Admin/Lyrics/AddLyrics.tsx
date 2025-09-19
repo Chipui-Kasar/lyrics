@@ -465,6 +465,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                             className={`${
                               lyric.featured ? "text-accent bg-primary" : ""
                             } hover:underline`}
+                            rel="noopener noreferrer"
                           >
                             {lyric.title}
                           </Link>

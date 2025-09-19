@@ -2,7 +2,12 @@
 
 import { notFound } from "next/navigation";
 import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
-import { generatePageMetadata, slugMaker } from "@/lib/utils";
+import {
+  generatePageMetadata,
+  replaceAllHTMLTagsWithSpace,
+  sanitizeAndDeduplicateHTML,
+  slugMaker,
+} from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
@@ -39,27 +44,50 @@ export async function generateMetadata({
     });
   }
 
+  const songTitle = lyric.title || "Untitled";
+  const artistName = lyric.artistId?.name || "Unknown Artist";
+  const albumName = lyric.album || "Single";
+  const lyricsPreview =
+    replaceAllHTMLTagsWithSpace(
+      sanitizeAndDeduplicateHTML(lyric.lyrics)
+    )?.slice(0, 140) || "Traditional Tangkhul song";
+
   return generatePageMetadata({
-    title: `${lyric.title} by ${lyric.artistId?.name} | ${lyric?.album}`,
-    description: `${lyric.lyrics.slice(0, 150)}... - ${lyric.artistId?.name}`,
+    title: `${songTitle} by ${artistName} - Lyrics | ${songTitle} Details`,
+    description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context. Tangkhul song lyrics translation`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
-      lyric.title
-    )}_${slugMaker(lyric.artistId?.name)}`,
+      songTitle
+    )}_${slugMaker(artistName)}/details`,
     image: `${
       lyric.thumbnail && lyric.thumbnail !== ""
         ? lyric.thumbnail
         : lyric.artistId?.image ?? "/ogImage.jpg"
     }`,
-    keywords: [
-      lyric.title,
-      lyric.artistId?.name,
-      "Tangkhul lyrics",
-      "Tangkhul songs",
-      "Tangkhul Laa",
-      lyric.title + " lyrics",
-      lyric.artistId?.name + " lyrics",
-    ].join(", "),
-    robots: "index, follow",
+    keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul song lyrics translation, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "MusicComposition",
+      name: songTitle,
+      composer: {
+        "@type": "Person",
+        name: artistName,
+      },
+      lyricist: {
+        "@type": "Person",
+        name: artistName,
+      },
+      genre: "Traditional Music",
+      inLanguage: "tkh",
+      description: `Traditional Tangkhul song "${songTitle}" by ${artistName} | Tangkhul Lyrics | Tangkhul lyrics translation`,
+      url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
+        songTitle
+      )}_${slugMaker(artistName)}/details`,
+      datePublished: lyric.createdAt || new Date().toISOString(),
+      publisher: {
+        "@type": "Organization",
+        name: "Tangkhul Lyrics",
+      },
+    },
   });
 }
 

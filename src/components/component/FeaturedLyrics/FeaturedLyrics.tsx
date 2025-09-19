@@ -25,6 +25,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
             prefetch={true}
             className="group relative flex items-center gap-4 rounded-lg border border-yellow-400 bg-yellow-50 p-4 shadow transition hover:bg-yellow-100 hover:shadow-md"
             key={key}
+            rel="noopener noreferrer"
           >
             <span className="text-yellow-400 text-xl absolute left-[-10px] top-[-10px]">
               ⭐

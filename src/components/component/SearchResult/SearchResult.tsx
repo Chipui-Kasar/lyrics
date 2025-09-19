@@ -179,6 +179,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                           className="group"
                           prefetch={true}
                           key={`lyric-${index}`}
+                          rel="noopener noreferrer"
                         >
                           <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
                             <div className="flex-1">
@@ -223,6 +224,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                           className="group"
                           prefetch={true}
                           key={`artist-${index}`}
+                          rel="noopener noreferrer"
                         >
                           <div className="flex items-center gap-4 p-4 rounded-lg bg-muted hover:bg-muted/50 transition-colors bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
                             <div className="flex-1">

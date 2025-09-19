@@ -24,6 +24,7 @@ const AllLyrics = ({ lyrics }: AllLyricsProps) => {
             prefetch={true}
             className="group flex items-center gap-4 rounded-lg bg-background p-2 transition-colors hover:bg-muted"
             key={key}
+            rel="noopener noreferrer"
           >
             <div className="flex-1">
               <h3 className="font-medium text-sm">{lyric.title}</h3>{" "}

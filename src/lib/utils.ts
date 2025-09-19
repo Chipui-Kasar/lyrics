@@ -215,3 +215,8 @@ export const sanitizeAndDeduplicateHTML = (html: string): string => {
 
   return wrapper.innerHTML.trim();
 };
+
+export const replaceAllHTMLTagsWithSpace = (html: string): string => {
+  if (!html) return "";
+  return html.replace(/<[^>]+>/g, " ").trim();
+};

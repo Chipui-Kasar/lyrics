@@ -104,7 +104,11 @@ export function Sidebar() {
   return (
     <div className="hidden w-64 flex-col border-r bg-background md:flex">
       <div className="flex h-14 items-center border-b px-4">
-        <Link href="/admin" className="flex items-center gap-2 font-semibold">
+        <Link
+          href="/admin"
+          className="flex items-center gap-2 font-semibold"
+          rel="noopener noreferrer"
+        >
           <Package className="h-6 w-6" />
           <span>Admin Panel</span>
         </Link>

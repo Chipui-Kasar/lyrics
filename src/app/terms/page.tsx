@@ -1,4 +1,5 @@
 import { generatePageMetadata } from "@/lib/utils";
+import Link from "next/link";
 
 export async function generateMetadata() {
   return generatePageMetadata({
@@ -174,13 +175,14 @@ const TermsOfServicePage = () => {
           <h2 className="text-2xl font-semibold mb-4">7. Privacy</h2>
           <p className="mb-4">
             Your privacy is important to us. Please review our
-            <a
+            <Link
               href="/privacy"
               className="text-blue-600 dark:text-blue-400 hover:underline"
+              rel="noopener noreferrer"
             >
               {" "}
               Privacy Policy
-            </a>
+            </Link>
             , which also governs your use of the service.
           </p>
         </section>

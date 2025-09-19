@@ -1,4 +1,5 @@
 import { generatePageMetadata } from "@/lib/utils";
+import Link from "next/link";
 
 export async function generateMetadata() {
   return generatePageMetadata({
@@ -120,13 +121,14 @@ const PrivacyPolicyPage = () => {
             Our website uses cookies and similar tracking technologies to
             enhance your browsing experience. You can control cookie settings
             through your browser preferences. For more details, please see our
-            <a
+            <Link
               href="/cookies"
               className="text-blue-600 dark:text-blue-400 hover:underline"
+              rel="noopener noreferrer"
             >
               {" "}
               Cookie Policy
-            </a>
+            </Link>
             .
           </p>
         </section>

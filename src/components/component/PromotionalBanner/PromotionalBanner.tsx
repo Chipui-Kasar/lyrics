@@ -206,7 +206,11 @@ const PromotionalBanner = () => {
 
               {/* Call to Action Button */}
               {activeItem.linkUrl && activeItem.buttonText && (
-                <Link href={activeItem.linkUrl} prefetch={true}>
+                <Link
+                  href={activeItem.linkUrl}
+                  prefetch={true}
+                  rel="noopener noreferrer"
+                >
                   <button className="inline-flex items-center px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-lg font-semibold text-white transition-all duration-300 hover:scale-105 transform">
                     {activeItem.buttonText}
                     <svg

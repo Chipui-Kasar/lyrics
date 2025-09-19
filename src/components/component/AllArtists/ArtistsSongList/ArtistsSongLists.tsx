@@ -29,6 +29,7 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
                         )}_${slugMaker(lyric.artistId?.name)}`}
                         className="font-medium hover:underline"
                         prefetch={true}
+                        rel="noopener noreferrer"
                       >
                         {lyric.title}
                       </Link>

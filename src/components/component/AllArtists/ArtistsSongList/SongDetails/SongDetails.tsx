@@ -41,6 +41,7 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
                   songLyrics.title
                 )}_${slugMaker(songLyrics.artistId?.name)}`}
                 prefetch={true}
+                rel="noopener noreferrer"
               >
                 <Button>View Lyrics</Button>
               </Link>

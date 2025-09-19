@@ -49,6 +49,7 @@ const Footer = () => {
                   <Link
                     href={link.href}
                     prefetch={false}
+                    rel="noopener noreferrer"
                     className="footer-link text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
                   >
                     {link.name}
@@ -68,6 +69,7 @@ const Footer = () => {
                 <li key={link.name} className="footer-link-item">
                   <Link
                     href={link.href}
+                    rel="noopener noreferrer"
                     prefetch={false}
                     className="footer-link text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
                   >
@@ -88,6 +90,7 @@ const Footer = () => {
                 <li key={link.name} className="footer-link-item">
                   <Link
                     href={link.href}
+                    rel="noopener noreferrer"
                     prefetch={false}
                     className="footer-link text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
                   >
