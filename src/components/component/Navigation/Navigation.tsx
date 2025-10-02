@@ -4,16 +4,25 @@ import { Music2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
-import debounce from "lodash/debounce";
 import { ILyrics } from "@/models/IObjects";
 import {
   sanitizeAndDeduplicateHTML,
   slugMaker,
-  calculateSimilarity,
   highlightFuzzyMatch,
   getMatchingLyricsExcerpt,
 } from "@/lib/utils";
 import Form from "next/form";
+
+// Simple debounce function
+const debounce = (func: (...args: any[]) => void, delay: number) => {
+  let timeoutId: NodeJS.Timeout;
+  const debouncedFunction = (...args: any[]) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+  debouncedFunction.cancel = () => clearTimeout(timeoutId);
+  return debouncedFunction;
+};
 
 const Navigation: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
