@@ -34,7 +34,6 @@ const nextConfig = {
       "lucide-react",
       "@radix-ui/react-label",
       "@radix-ui/react-toggle",
-      "lodash",
       "next/image",
       "next/link",
     ],
@@ -98,8 +97,6 @@ const nextConfig = {
       if (!isServer) {
         config.resolve.alias = {
           ...config.resolve.alias,
-          // Optimize lodash imports
-          lodash: "lodash-es",
         };
       }
     }
