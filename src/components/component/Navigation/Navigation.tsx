@@ -3,66 +3,95 @@ import { Input } from "@/components/ui/input";
 import { Music2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import debounce from "lodash/debounce";
 import { ILyrics } from "@/models/IObjects";
-import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
+import {
+  sanitizeAndDeduplicateHTML,
+  slugMaker,
+  calculateSimilarity,
+  highlightFuzzyMatch,
+  getMatchingLyricsExcerpt,
+} from "@/lib/utils";
 import Form from "next/form";
 
 const Navigation: React.FC = () => {
-  const [lyrics, setLyrics] = useState<ILyrics[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLyrics, setFilteredLyrics] = useState<ILyrics[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    // Only fetch when user starts searching to improve FCP/LCP
-    if (searchQuery.length > 2) {
-      const fetchLyrics = async () => {
-        try {
-          const res = await fetch(
-            `/api/search?q=${encodeURIComponent(searchQuery)}&limit=10`
-          );
-          if (res.ok) {
-            setLyrics(await res.json());
-          }
-        } catch (error) {
-          console.error("Failed to fetch lyrics", error);
-        }
-      };
-      fetchLyrics();
-    } else {
-      setLyrics([]);
-      setFilteredLyrics([]);
-    }
-  }, [searchQuery]);
-
-  const searchIndex = useMemo(
-    () =>
-      lyrics.map((lyric) => ({
-        ...lyric,
-        _search: [lyric.title || "", lyric.artistId?.name || ""]
-          .join(" ")
-          .replace(/\s+/g, " ")
-          .trim()
-          .toLowerCase(),
-      })),
-    [lyrics]
-  );
-
-  // Enhanced debounced search with performance optimization
+  // Debounced search that handles both API calls and filtering
   const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      if (query.length > 2) {
-        // Use requestIdleCallback for better performance
-        if ("requestIdleCallback" in window) {
-          requestIdleCallback(() => setSearchQuery(query), { timeout: 100 });
-        } else {
-          setSearchQuery(query);
+    debounce(async (query: string) => {
+      if (query.length <= 2) {
+        setFilteredLyrics([]);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      const controller = new AbortController();
+
+      try {
+        const res = await fetch(
+          `/api/search?query=${encodeURIComponent(query)}&limit=8`,
+          {
+            signal: controller.signal,
+            headers: {
+              "Cache-Control":
+                "public, max-age=300, stale-while-revalidate=600",
+            },
+          }
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          // The API returns { lyrics, artists }, we want just lyrics
+          const lyricsData = data.lyrics || [];
+
+          // Simple filtering like SearchResult component
+          const searchRegex = new RegExp(query, "i");
+          const filteredResults = lyricsData
+            .filter((lyric: ILyrics) => {
+              const title = lyric.title || "";
+              const artist = lyric.artistId?.name || "";
+              const album = lyric.album || "";
+              const lyricsContent = lyric.lyrics || "";
+
+              return (
+                searchRegex.test(title) ||
+                searchRegex.test(artist) ||
+                searchRegex.test(album) ||
+                searchRegex.test(lyricsContent)
+              );
+            })
+            .map((lyric: ILyrics) => {
+              // Check if the match was in lyrics content
+              const lyricsContent = lyric.lyrics || "";
+              const hasLyricsMatch = searchRegex.test(lyricsContent);
+
+              return {
+                ...lyric,
+                _hasLyricsMatch: hasLyricsMatch,
+                _lyricsExcerpt: hasLyricsMatch
+                  ? getMatchingLyricsExcerpt(lyricsContent, query)
+                  : "",
+              };
+            })
+            .slice(0, 8); // Limit to 8 results
+
+          setFilteredLyrics(filteredResults);
         }
-      } else {
-        setSearchQuery("");
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Failed to fetch lyrics", error);
+          setFilteredLyrics([]);
+        }
+      } finally {
+        setIsLoading(false);
       }
     }, 300),
     []
@@ -75,29 +104,6 @@ const Navigation: React.FC = () => {
     };
   }, [debouncedSearch]);
 
-  // Enhanced debounced search for filtering results
-  const debouncedFilter = useCallback(
-    debounce((query: string) => {
-      if (!query.trim()) {
-        setFilteredLyrics([]);
-        return;
-      }
-
-      const filtered = searchIndex
-        .filter((lyric) => lyric._search.includes(query.toLowerCase()))
-        .slice(0, 5); // Reduced from 8 to 5 for better performance
-      setFilteredLyrics(filtered);
-    }, 300), // Increased to 300ms for better performance
-    [searchIndex]
-  );
-
-  useEffect(() => {
-    debouncedFilter(searchQuery);
-    return () => {
-      debouncedFilter.cancel();
-    };
-  }, [searchQuery, debouncedFilter]);
-
   useEffect(() => {
     setSearchQuery("");
     setFilteredLyrics([]);
@@ -105,9 +111,12 @@ const Navigation: React.FC = () => {
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value);
+      const value = e.target.value;
+      setSearchQuery(value);
+      setIsSubmitted(false); // Reset submitted state when typing
+      debouncedSearch(value);
     },
-    []
+    [debouncedSearch]
   );
 
   const handleResultClick = useCallback(
@@ -148,6 +157,7 @@ const Navigation: React.FC = () => {
               className="relative"
               onSubmit={(e) => {
                 e.preventDefault();
+                setIsSubmitted(true);
                 setFilteredLyrics([]);
                 router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
               }}
@@ -160,51 +170,95 @@ const Navigation: React.FC = () => {
                 onChange={handleSearchChange}
                 value={searchQuery}
                 name="query"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setIsSubmitted(true);
+                    setFilteredLyrics([]);
+                  }
+                }}
               />
               <SearchIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             </Form>
 
             {/* Search Results Dropdown */}
-            {filteredLyrics.length > 0 && (
-              <ul className="search-dropdown absolute left-0 mt-2 w-full bg-background border border-gray-200 rounded-md shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
-                {filteredLyrics.map((lyric) => {
-                  const regex = new RegExp(searchQuery, "gi");
-                  // Use only title for display to improve performance
-                  const displayText = lyric.title || "Untitled";
-
-                  return (
-                    <li
-                      key={lyric._id}
-                      onClick={() =>
-                        handleResultClick(
-                          lyric._id,
-                          lyric.title,
-                          lyric.artistId?.name
-                        )
-                      }
-                      className="cursor-pointer hover:bg-gray-100 transition text-sm p-3 border-b border-gray-100 last:border-b-0"
-                    >
-                      <div className="font-medium text-gray-900">
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: sanitizeAndDeduplicateHTML(
-                              displayText
-                            ).replace(
-                              regex,
-                              (match) =>
-                                `<span class="bg-yellow-200 text-yellow-800">${match}</span>`
-                            ),
-                          }}
-                        />
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        by {lyric.artistId?.name || "Unknown Artist"}
+            {!isSubmitted &&
+              (filteredLyrics.length > 0 ||
+                isLoading ||
+                (searchQuery.length > 2 && !isLoading)) && (
+                <ul className="search-dropdown absolute left-0 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto backdrop-blur-sm">
+                  {isLoading ? (
+                    <li className="p-3 text-center text-gray-500">
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+                        Searching...
                       </div>
                     </li>
-                  );
-                })}
-              </ul>
-            )}
+                  ) : filteredLyrics.length > 0 ? (
+                    filteredLyrics.map((lyric: ILyrics) => {
+                      const displayText = lyric.title || "Untitled";
+                      const artistName =
+                        lyric.artistId?.name || "Unknown Artist";
+
+                      // Use lyrics excerpt as main content if available, otherwise use title
+                      const mainDisplayText = lyric.lyrics;
+
+                      return (
+                        <li
+                          key={lyric._id}
+                          onClick={() =>
+                            handleResultClick(
+                              lyric._id,
+                              lyric.title,
+                              lyric.artistId?.name
+                            )
+                          }
+                          className="cursor-pointer hover:bg-gray-100 transition text-sm p-3 border-b border-gray-100 last:border-b-0 relative"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="font-medium text-gray-900">
+                                <span
+                                  dangerouslySetInnerHTML={{
+                                    __html: sanitizeAndDeduplicateHTML(
+                                      highlightFuzzyMatch(
+                                        mainDisplayText
+                                          .split(/\s+/)
+                                          .slice(0, 8)
+                                          .join(" "),
+                                        searchQuery
+                                      )
+                                    ),
+                                  }}
+                                />
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                "{displayText}" by{" "}
+                                <span
+                                  dangerouslySetInnerHTML={{
+                                    __html: highlightFuzzyMatch(
+                                      artistName,
+                                      searchQuery
+                                    ),
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })
+                  ) : searchQuery.length > 2 ? (
+                    <li className="p-3 text-center text-gray-500">
+                      <div className="flex flex-col items-center gap-1">
+                        <span>No results found for "{searchQuery}"</span>
+                        <span className="text-xs text-gray-400">
+                          Try a different spelling or shorter terms
+                        </span>
+                      </div>
+                    </li>
+                  ) : null}
+                </ul>
+              )}
           </div>
         )}
 

@@ -28,15 +28,83 @@ const nextConfig = {
     ],
   },
 
-  // Simplified experimental features - removed webpack conflicts
+  // Enhanced experimental features for ultra performance
   experimental: {
     optimizePackageImports: [
       "lucide-react",
       "@radix-ui/react-label",
       "@radix-ui/react-toggle",
       "lodash",
+      "next/image",
+      "next/link",
     ],
     scrollRestoration: true,
+    optimizeCss: true,
+  },
+
+  // Turbopack configuration (stable in Next.js 15)
+  turbopack: {
+    rules: {
+      "*.svg": {
+        loaders: ["@svgr/webpack"],
+        as: "*.js",
+      },
+    },
+  },
+
+  // Optimized webpack configuration for production
+  webpack: (config, { isServer, dev }) => {
+    // Only apply optimizations in production
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        usedExports: true,
+        sideEffects: false,
+        splitChunks: {
+          chunks: "all",
+          minSize: 20000,
+          maxSize: 244000,
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Framework chunk for React and Next.js core
+            framework: {
+              chunks: "all",
+              name: "framework",
+              test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
+              priority: 40,
+              enforce: true,
+            },
+            // Libraries chunk for third-party dependencies
+            lib: {
+              test: /[\\/]node_modules[\\/]/,
+              name: "lib",
+              priority: 30,
+              minChunks: 1,
+              reuseExistingChunk: true,
+            },
+            // Commons chunk for shared components
+            commons: {
+              name: "commons",
+              minChunks: 2,
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+          },
+        },
+      };
+
+      // Optimize for modern browsers
+      if (!isServer) {
+        config.resolve.alias = {
+          ...config.resolve.alias,
+          // Optimize lodash imports
+          lodash: "lodash-es",
+        };
+      }
+    }
+
+    return config;
   },
 
   // Enhanced security headers for Best Practices score
