@@ -8,6 +8,7 @@ import {
   Package,
   Settings,
   Users,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,66 +36,57 @@ const navItems: NavItem[] = [
     icon: Package,
   },
   {
+    title: "Contributions",
+    href: "/admin/contributions",
+    icon: FileText,
+  },
+  {
     title: "Settings",
-    href: "/settings",
+    href: "/admin/settings",
     icon: Settings,
   },
 ];
 
-export default function AdminPanel() {
+export default function AdminNavigation() {
+  const pathname = usePathname();
+
   return (
-    <div className="flex min-h-[95vh] w-full flex-col bg-muted/40">
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1">
-          <div className="flex h-14 items-center border-b bg-background px-4 md:px-6">
-            <div className="ml-auto">
-              <Button variant="outline" size="sm" onClick={() => signOut()}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </Button>
-            </div>
-          </div>
-          <div className="p-4 md:p-6">
-            <div className="mx-auto max-w-5xl space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Dashboard</h2>
-              </div>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Card title="Total Users" value="12,345" />
-                <Card title="Total Orders" value="1,234" />
-                <Card title="Total Revenue" value="$123,456" />
-              </div>
-              <div className="rounded-lg border bg-card p-6 shadow-sm">
-                <h2 className="mb-4 text-xl font-semibold">Recent Activity</h2>
-                <div className="space-y-4">
-                  <ActivityItem
-                    title="New user registered"
-                    description="John Doe just created an account"
-                    time="2 minutes ago"
-                  />
-                  <ActivityItem
-                    title="New order placed"
-                    description="Order #12345 was placed"
-                    time="15 minutes ago"
-                  />
-                  <ActivityItem
-                    title="Product updated"
-                    description="iPhone 15 Pro stock updated to 25 units"
-                    time="1 hour ago"
-                  />
-                  <ActivityItem
-                    title="Payment received"
-                    description="Payment of $1,234 received for order #12344"
-                    time="3 hours ago"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
+    <aside className="w-64 bg-gray-800 text-white min-h-screen flex flex-col">
+      <div className="p-4 border-b border-gray-700">
+        <h2 className="text-xl font-bold">Admin Panel</h2>
       </div>
-    </div>
+      <nav className="flex-1 mt-4">
+        <ul className="space-y-1">
+          {navItems.map((item) => (
+            <li key={item.title}>
+              <Link
+                href={item.href}
+                className={cn(
+                  "flex items-center px-4 py-3 text-sm font-medium transition-colors",
+                  pathname === item.href
+                    ? "bg-gray-700 text-white border-r-2 border-blue-400"
+                    : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                )}
+              >
+                <item.icon className="mr-3 h-5 w-5" />
+                {item.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div className="p-4 border-t border-gray-700">
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full text-gray-800 bg-white hover:bg-gray-100"
+          onClick={() => signOut({ callbackUrl: "/" })}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
+        </Button>
+      </div>
+    </aside>
   );
 }
 

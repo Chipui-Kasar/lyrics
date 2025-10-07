@@ -1,10 +1,18 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import { Music2Icon, SearchIcon } from "lucide-react";
+import {
+  Music2Icon,
+  SearchIcon,
+  User,
+  LogOut,
+  Settings,
+  ChevronDown,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
 import { ILyrics } from "@/models/IObjects";
+import { useSession, signIn, signOut } from "next-auth/react";
 import {
   sanitizeAndDeduplicateHTML,
   slugMaker,
@@ -29,6 +37,8 @@ const Navigation: React.FC = () => {
   const [filteredLyrics, setFilteredLyrics] = useState<ILyrics[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -105,6 +115,26 @@ const Navigation: React.FC = () => {
     }, 300),
     []
   );
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isProfileOpen) {
+        const target = event.target as Element;
+        if (!target.closest(".profile-dropdown")) {
+          setIsProfileOpen(false);
+        }
+      }
+    };
+
+    if (isProfileOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isProfileOpen]);
 
   // Cleanup debounced function on unmount
   useEffect(() => {
@@ -290,6 +320,86 @@ const Navigation: React.FC = () => {
           >
             Share Lyrics
           </Link>
+
+          {/* Profile Dropdown */}
+          <div className="relative profile-dropdown">
+            {session ? (
+              <div>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-primary-foreground text-sm font-medium">
+                      {session.user.name?.charAt(0)?.toUpperCase() || "U"}
+                    </span>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                </button>
+
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900">
+                        {session.user.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {session.user.email}
+                      </p>
+                    </div>
+                    <div className="py-1">
+                      {session.user.role === "admin" && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <Settings className="w-4 h-4 mr-2" />
+                          Admin Dashboard
+                        </Link>
+                      )}
+                      <button
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          // Add edit profile functionality here
+                          alert("Edit profile functionality coming soon!");
+                        }}
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Edit Profile
+                      </button>
+                      <button
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          signOut({ callbackUrl: "/" });
+                        }}
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => signIn()}
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Sign In
+                </button>
+                <Link
+                  href="/signup"
+                  className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

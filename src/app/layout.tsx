@@ -6,6 +6,7 @@ import Footer from "@/components/component/Footer/Footer";
 import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
 import PageLoader from "@/components/component/Spinner/Spinner";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
+import SessionValidator from "@/components/SessionValidator";
 import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
 import PerformanceMonitor from "@/components/component/PerformanceMonitor/PerformanceMonitor";
 import ServiceWorkerErrorHandler from "@/components/component/ServiceWorkerErrorHandler/ServiceWorkerErrorHandler";
@@ -261,21 +262,23 @@ export default function RootLayout({
           })}
         </Script>
         <SessionProviderWrapper>
-          <ErrorBoundary>
-            <LCPOptimizer />
-            <BackForwardCacheOptimizer />
-            <ServiceWorkerErrorHandler />
-            <PerformanceMonitor />
-            <DarkTheme />
-            <header>
-              <Navigation />
-            </header>
-            <main>
-              <PageLoader />
-              {children}
-            </main>
-            <Footer />
-          </ErrorBoundary>
+          <SessionValidator>
+            <ErrorBoundary>
+              <LCPOptimizer />
+              <BackForwardCacheOptimizer />
+              <ServiceWorkerErrorHandler />
+              <PerformanceMonitor />
+              <DarkTheme />
+              <header>
+                <Navigation />
+              </header>
+              <main>
+                <PageLoader />
+                {children}
+              </main>
+              <Footer />
+            </ErrorBoundary>
+          </SessionValidator>
         </SessionProviderWrapper>
       </body>
     </html>

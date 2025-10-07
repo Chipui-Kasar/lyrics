@@ -11,7 +11,7 @@ interface Lyric {
   status: string;
 }
 
-export default function AdminDashboard() {
+export default function ContributionsPage() {
   const { data: session } = useSession();
   const [drafts, setDrafts] = useState<Lyric[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,16 +81,11 @@ export default function AdminDashboard() {
         {/* Top header */}
         <header className="bg-white shadow-sm border-b px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Admin Dashboard
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Contributions</h1>
           </div>
         </header>
 
         <main className="p-8">
-          <h2 className="text-xl font-semibold mb-4">
-            Draft Lyrics for Review
-          </h2>
           <div className="space-y-4">
             {drafts.length > 0 ? (
               drafts.map((draft) => (

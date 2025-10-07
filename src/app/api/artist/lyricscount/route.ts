@@ -21,7 +21,17 @@ export async function GET(req: NextRequest) {
     );
     await connectMongoDB();
     const lyricsCounts = await Lyrics.aggregate([
-      { $match: { artistId: { $in: artistObjectIds } } },
+      {
+        $match: {
+          artistId: { $in: artistObjectIds },
+          $or: [
+            { status: "published" },
+            { status: { $exists: false } }, // Legacy lyrics without status
+            { status: null },
+            { status: "" },
+          ],
+        },
+      },
       { $group: { _id: "$artistId", count: { $sum: 1 } } },
     ]);
 

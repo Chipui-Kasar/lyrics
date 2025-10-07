@@ -16,10 +16,15 @@ export async function GET(req: NextRequest) {
     }
 
     await connectMongoDB();
-    const lyrics = await Lyrics.findOne({ _id: ID }).populate(
-      "artistId",
-      "name image"
-    );
+    const lyrics = await Lyrics.findOne({
+      _id: ID,
+      $or: [
+        { status: "published" },
+        { status: { $exists: false } }, // Legacy lyrics without status
+        { status: null },
+        { status: "" },
+      ],
+    }).populate("artistId", "name image");
 
     if (!lyrics) {
       return NextResponse.json({ error: "Lyrics not found" }, { status: 404 });

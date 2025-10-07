@@ -27,9 +27,14 @@ const lyricsSchema = new Schema(
     lyrics: { type: String, required: true },
     streamingLinks: { type: Object, default: {} },
     thumbnail: String,
-    contributedBy: String,
     view: { type: Number, default: 0 },
     featured: { type: Boolean, default: false }, // For featured lyrics
+    status: {
+      type: String,
+      enum: ["draft", "published"],
+      default: "draft",
+    },
+    submittedBy: { type: Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

@@ -1,33 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Lyrics } from "@/models/model";
+import { Artist, Lyrics } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function POST(req: Request) {
-  try {
-    const data = await req.json();
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    await connectMongoDB(true); // Use admin connection for write operations
+    const body = await req.json();
+    const { title, artistName, album, releaseYear, lyrics } = body;
+
+    if (!title || !artistName || !lyrics) {
+      return NextResponse.json(
+        { message: "Title, artist, and lyrics are required" },
+        { status: 400 }
+      );
     }
 
-    await connectMongoDB(true); // Admin access
+    let artist = await Artist.findOne({ name: artistName });
+    if (!artist) {
+      artist = new Artist({ name: artistName });
+      await artist.save();
+    }
 
-    const { _id, ...rest } = data;
-    await Lyrics.create(_id !== "" ? { _id, ...rest } : { ...rest });
-    return NextResponse.json(
-      { message: "Lyrics created successfully" },
-      { status: 201 }
-    );
+    const newLyric = new Lyrics({
+      title,
+      artistId: artist._id,
+      album,
+      releaseYear,
+      lyrics,
+      submittedBy: session.user.id,
+      status: "draft",
+    });
+
+    await newLyric.save();
+
+    return NextResponse.json(newLyric, { status: 201 });
   } catch (error) {
-    console.error("Error creating lyrics:", error);
+    console.error(error);
     return NextResponse.json(
-      {
-        error: "Error creating lyrics",
-        details: (error as Error).message,
-      },
+      { message: "Internal Server Error" },
       { status: 500 }
     );
   }
@@ -41,9 +58,17 @@ export async function GET(req: NextRequest) {
 
     const limit = limitParam ? Number(limitParam) : undefined;
     const sort = sortParam ? sortParam : undefined;
-    await connectMongoDB();
-    // Build query
-    const query = Lyrics.find().populate("artistId", "name image");
+    await connectMongoDB(false); // Explicitly use user connection for read operations
+
+    // Build query - fetch published lyrics and legacy lyrics without status field
+    const query = Lyrics.find({
+      $or: [
+        { status: "published" },
+        { status: { $exists: false } }, // Legacy lyrics without status field
+        { status: null }, // Lyrics with null status
+        { status: "" }, // Lyrics with empty status
+      ],
+    }).populate("artistId", "name image");
 
     if (sort) {
       query.sort({ [sort]: -1 }); // sort descending

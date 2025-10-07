@@ -1,5 +1,6 @@
 import ContributeLyrics from "@/components/component/ContributeLyrics/ContributeLyrics";
 import { generatePageMetadata } from "@/lib/utils";
+
 export const dynamic = "force-static";
 export const dynamicParams = false;
 

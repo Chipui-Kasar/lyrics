@@ -28,12 +28,24 @@ export async function GET(req: Request) {
     // Create case-insensitive regex for search
     const searchRegex = new RegExp(query, "i");
 
-    // Search lyrics with populated artist data
+    // Search lyrics with populated artist data - published and legacy lyrics
     const lyrics = await Lyrics.find({
-      $or: [
-        { title: { $regex: searchRegex } },
-        { lyrics: { $regex: searchRegex } },
-        { album: { $regex: searchRegex } },
+      $and: [
+        {
+          $or: [
+            { status: "published" },
+            { status: { $exists: false } }, // Legacy lyrics without status
+            { status: null },
+            { status: "" },
+          ],
+        },
+        {
+          $or: [
+            { title: { $regex: searchRegex } },
+            { lyrics: { $regex: searchRegex } },
+            { album: { $regex: searchRegex } },
+          ],
+        },
       ],
     })
       .populate("artistId", "name village")

@@ -25,11 +25,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Artist not found" }, { status: 404 });
     }
 
-    // Find lyrics using artist's _id
-    const lyrics = await Lyrics.find({ artistId: artist._id }).populate(
-      "artistId",
-      "name"
-    );
+    // Find lyrics using artist's _id - published and legacy lyrics
+    const lyrics = await Lyrics.find({
+      artistId: artist._id,
+      $or: [
+        { status: "published" },
+        { status: { $exists: false } }, // Legacy lyrics without status
+        { status: null },
+        { status: "" },
+      ],
+    }).populate("artistId", "name");
 
     return NextResponse.json(lyrics);
   } catch (error) {
