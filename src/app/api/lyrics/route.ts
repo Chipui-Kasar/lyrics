@@ -60,13 +60,18 @@ export async function GET(req: NextRequest) {
     const sort = sortParam ? sortParam : undefined;
     await connectMongoDB(false); // Explicitly use user connection for read operations
 
-    // Build query - fetch published lyrics and legacy lyrics without status field
+    // Build query - fetch published lyrics and legacy lyrics without status field, exclude drafts
     const query = Lyrics.find({
-      $or: [
-        { status: "published" },
-        { status: { $exists: false } }, // Legacy lyrics without status field
-        { status: null }, // Lyrics with null status
-        { status: "" }, // Lyrics with empty status
+      $and: [
+        { status: { $ne: "draft" } }, // Explicitly exclude drafts
+        {
+          $or: [
+            { status: "published" },
+            { status: { $exists: false } }, // Legacy lyrics without status field
+            { status: null }, // Lyrics with null status
+            { status: "" }, // Lyrics with empty status
+          ],
+        },
       ],
     }).populate("artistId", "name image");
 

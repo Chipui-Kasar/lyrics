@@ -24,11 +24,16 @@ export async function GET(req: NextRequest) {
       {
         $match: {
           artistId: { $in: artistObjectIds },
-          $or: [
-            { status: "published" },
-            { status: { $exists: false } }, // Legacy lyrics without status
-            { status: null },
-            { status: "" },
+          $and: [
+            { status: { $ne: "draft" } }, // Explicitly exclude drafts
+            {
+              $or: [
+                { status: "published" },
+                { status: { $exists: false } }, // Legacy lyrics without status
+                { status: null },
+                { status: "" },
+              ],
+            },
           ],
         },
       },

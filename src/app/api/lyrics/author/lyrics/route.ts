@@ -25,14 +25,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Artist not found" }, { status: 404 });
     }
 
-    // Find lyrics using artist's _id - published and legacy lyrics
+    // Find lyrics using artist's _id - published and legacy lyrics, exclude drafts
     const lyrics = await Lyrics.find({
       artistId: artist._id,
-      $or: [
-        { status: "published" },
-        { status: { $exists: false } }, // Legacy lyrics without status
-        { status: null },
-        { status: "" },
+      $and: [
+        { status: { $ne: "draft" } }, // Explicitly exclude drafts
+        {
+          $or: [
+            { status: "published" },
+            { status: { $exists: false } }, // Legacy lyrics without status
+            { status: null },
+            { status: "" },
+          ],
+        },
       ],
     }).populate("artistId", "name");
 

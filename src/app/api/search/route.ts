@@ -28,9 +28,10 @@ export async function GET(req: Request) {
     // Create case-insensitive regex for search
     const searchRegex = new RegExp(query, "i");
 
-    // Search lyrics with populated artist data - published and legacy lyrics
+    // Search lyrics with populated artist data - published and legacy lyrics, exclude drafts
     const lyrics = await Lyrics.find({
       $and: [
+        { status: { $ne: "draft" } }, // Explicitly exclude drafts
         {
           $or: [
             { status: "published" },

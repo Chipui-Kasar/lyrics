@@ -18,11 +18,16 @@ export async function GET(req: NextRequest) {
     await connectMongoDB();
     const lyrics = await Lyrics.findOne({
       _id: ID,
-      $or: [
-        { status: "published" },
-        { status: { $exists: false } }, // Legacy lyrics without status
-        { status: null },
-        { status: "" },
+      $and: [
+        { status: { $ne: "draft" } }, // Explicitly exclude drafts
+        {
+          $or: [
+            { status: "published" },
+            { status: { $exists: false } }, // Legacy lyrics without status
+            { status: null },
+            { status: "" },
+          ],
+        },
       ],
     }).populate("artistId", "name image");
 
