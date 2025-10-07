@@ -18,7 +18,7 @@ export interface ILyrics {
   album: string;
   releaseYear: number;
   lyrics: string;
-  streamingLinks: {
+  streamingLinks?: {
     spotify: string;
     youtube: string;
   };

@@ -197,8 +197,8 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       album: lyrics.album,
       releaseYear: lyrics.releaseYear,
       streamingLinks: {
-        youtube: lyrics.streamingLinks.youtube,
-        spotify: lyrics.streamingLinks.spotify,
+        youtube: lyrics.streamingLinks?.youtube || "",
+        spotify: lyrics.streamingLinks?.spotify || "",
       },
       contributedBy: lyrics.contributedBy,
       thumbnail: lyrics.thumbnail,
