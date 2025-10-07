@@ -29,7 +29,8 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
             </div>
           </div>
           <div className="flex flex-wrap w-full items-start gap-6">
-            {lyrics.streamingLinks?.youtube !== "" && lyrics.streamingLinks?.youtube ? (
+            {lyrics.streamingLinks?.youtube !== "" &&
+            lyrics.streamingLinks?.youtube ? (
               <YouTubePlayer videoUrl={lyrics.streamingLinks.youtube} />
             ) : (
               <Video
@@ -78,7 +79,8 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
               </div>
             </div>
             <div className="mt-4">
-              {(lyrics.streamingLinks?.youtube || lyrics.streamingLinks?.spotify) && (
+              {(lyrics.streamingLinks?.youtube ||
+                lyrics.streamingLinks?.spotify) && (
                 <Link
                   href={
                     lyrics.streamingLinks?.youtube ||

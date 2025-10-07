@@ -122,7 +122,9 @@ export async function generateStaticParams() {
     .filter((post: ILyrics) => post.artistId?.name) // Filter out posts without artist names
     .map((post: ILyrics) => ({
       lyricsID: post._id,
-      title_artist: `${slugMaker(post.title)}_${slugMaker(post.artistId?.name || "unknown")}`,
+      title_artist: `${slugMaker(post.title)}_${slugMaker(
+        post.artistId?.name || "unknown"
+      )}`,
     }));
 }
 
