@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    await connectMongoDB();
+    await connectMongoDB(true); // Use admin connection for admin operations
     const drafts = await Lyrics.find({ status: "draft" }).populate(
       "artistId",
       "name"

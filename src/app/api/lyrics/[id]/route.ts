@@ -15,25 +15,24 @@ export async function PUT(
   }
 
   try {
-    await connectMongoDB();
+    await connectMongoDB(); // Use admin connection for updates
     const { id } = params;
-    const { status } = await req.json();
+    const body = await req.json();
+    const { status } = body;
 
     if (!status || (status !== "published" && status !== "draft")) {
       return NextResponse.json({ message: "Invalid status" }, { status: 400 });
     }
-
     const lyric = await Lyrics.findByIdAndUpdate(id, { status }, { new: true });
-
     if (!lyric) {
       return NextResponse.json({ message: "Lyric not found" }, { status: 404 });
     }
 
     return NextResponse.json(lyric);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error("Error in PUT:", error.message, error.stack);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error", error: error.message },
       { status: 500 }
     );
   }
@@ -50,7 +49,7 @@ export async function DELETE(
   }
 
   try {
-    await connectMongoDB();
+    await connectMongoDB(true); // Use admin connection for deletes
     const { id } = params;
     await Lyrics.findByIdAndDelete(id);
     return NextResponse.json(

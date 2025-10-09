@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectMongoDB();
+    await connectMongoDB(true); // Use admin connection for admin operations
 
     const users = await User.find(
       {},
