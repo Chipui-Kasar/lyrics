@@ -334,16 +334,16 @@ const Navigation: React.FC = () => {
                       {session.user.name?.charAt(0)?.toUpperCase() || "U"}
                     </span>
                   </div>
-                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                  <ChevronDown className="w-4 h-4 text-gray-600 hidden md:block" />
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
+                  <div className="absolute right-0 mt-2 w-48 bg-muted dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50">
+                    <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-600">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {session.user.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {session.user.email}
                       </p>
                     </div>
@@ -351,7 +351,7 @@ const Navigation: React.FC = () => {
                       {session.user.role === "admin" && (
                         <Link
                           href="/admin"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <Settings className="w-4 h-4 mr-2" />
@@ -359,7 +359,7 @@ const Navigation: React.FC = () => {
                         </Link>
                       )}
                       <button
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setIsProfileOpen(false);
                           // Add edit profile functionality here
@@ -370,7 +370,7 @@ const Navigation: React.FC = () => {
                         Edit Profile
                       </button>
                       <button
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
                           setIsProfileOpen(false);
                           signOut({ callbackUrl: "/" });
@@ -384,19 +384,58 @@ const Navigation: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => signIn()}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  Sign In
-                </button>
-                <Link
-                  href="/signup"
-                  className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                >
-                  Sign Up
-                </Link>
+              <div>
+                {/* Desktop: Show both buttons */}
+                <div className="hidden md:flex items-center space-x-2">
+                  <button
+                    onClick={() => signIn()}
+                    className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Sign In
+                  </button>
+                  <Link
+                    href="/signup"
+                    className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+
+                {/* Mobile: Show single user icon with dropdown */}
+                <div className="md:hidden">
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    aria-label="User menu"
+                  >
+                    <User className="w-4 h-4 text-gray-600" />
+                  </button>
+
+                  {isProfileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50">
+                      <div className="py-1">
+                        <button
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => {
+                            setIsProfileOpen(false);
+                            signIn();
+                          }}
+                        >
+                          <User className="w-4 h-4 mr-2" />
+                          Sign In
+                        </button>
+                        <Link
+                          href="/signup"
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <User className="w-4 h-4 mr-2" />
+                          Sign Up
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
