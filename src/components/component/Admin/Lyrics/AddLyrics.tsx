@@ -200,7 +200,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
         youtube: lyrics.streamingLinks?.youtube || "",
         spotify: lyrics.streamingLinks?.spotify || "",
       },
-      contributedBy: lyrics.contributedBy,
+      contributedBy: lyrics.contributedBy || "",
       thumbnail: lyrics.thumbnail,
       lyrics: sanitizeAndDeduplicateHTML(lyrics.lyrics || ""),
       featured: lyrics.featured || false,

@@ -35,6 +35,7 @@ const lyricsSchema = new Schema(
       default: "draft",
     },
     submittedBy: { type: Schema.Types.ObjectId, ref: "User" },
+    contributedBy: String, // For display name of contributor
   },
   {
     timestamps: true,

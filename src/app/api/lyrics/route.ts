@@ -13,20 +13,54 @@ export async function POST(req: NextRequest) {
   try {
     await connectMongoDB(true); // Use admin connection for write operations
     const body = await req.json();
-    const { title, artistName, album, releaseYear, lyrics } = body;
+    const {
+      title,
+      artistName,
+      artistId,
+      album,
+      releaseYear,
+      lyrics,
+      streamingLinks,
+      thumbnail,
+      featured,
+      contributedBy,
+    } = body;
 
-    if (!title || !artistName || !lyrics) {
+    if (!title || !lyrics) {
       return NextResponse.json(
-        { message: "Title, artist, and lyrics are required" },
+        { message: "Title and lyrics are required" },
         { status: 400 }
       );
     }
 
-    let artist = await Artist.findOne({ name: artistName });
-    if (!artist) {
-      artist = new Artist({ name: artistName });
-      await artist.save();
+    let artist;
+
+    // Handle both admin form (artistId) and contribute form (artistName)
+    if (artistId) {
+      // Admin form: artistId is provided
+      artist = await Artist.findById(artistId);
+      if (!artist) {
+        return NextResponse.json(
+          { message: "Artist not found" },
+          { status: 400 }
+        );
+      }
+    } else if (artistName) {
+      // Contribute form: artistName is provided
+      artist = await Artist.findOne({ name: artistName });
+      if (!artist) {
+        artist = new Artist({ name: artistName });
+        await artist.save();
+      }
+    } else {
+      return NextResponse.json(
+        { message: "Artist name or artist ID is required" },
+        { status: 400 }
+      );
     }
+
+    // Set status based on user role - admin submissions are published, others are draft
+    const status = session.user.role === "admin" ? "published" : "draft";
 
     const newLyric = new Lyrics({
       title,
@@ -34,8 +68,12 @@ export async function POST(req: NextRequest) {
       album,
       releaseYear,
       lyrics,
+      streamingLinks: streamingLinks || {},
+      thumbnail: thumbnail || "",
+      featured: featured || false,
+      contributedBy: contributedBy || "",
       submittedBy: session.user.id,
-      status: "draft",
+      status: status,
     });
 
     await newLyric.save();
