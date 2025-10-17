@@ -23,7 +23,11 @@ const fetchLyric = cache(
     title: string,
     artist: string
   ): Promise<ILyrics | null> => {
-    return await getSingleLyrics(lyricsID, removeSlug(title), removeSlug(artist));
+    return await getSingleLyrics(
+      lyricsID,
+      removeSlug(title),
+      removeSlug(artist)
+    );
   }
 );
 

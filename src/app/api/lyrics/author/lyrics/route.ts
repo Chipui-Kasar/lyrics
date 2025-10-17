@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
     // Find artist by name (case-insensitive)
     const artist = await Artist.findOne({
-      name: { $regex: new RegExp(`^${artistName.replace(/-/g, " ")}$`, "i") }
+      name: { $regex: new RegExp(`^${artistName.replace(/-/g, " ")}$`, "i") },
     });
 
     if (!artist) {
