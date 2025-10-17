@@ -7,6 +7,7 @@ import {
   replaceAllHTMLTagsWithSpace,
   sanitizeAndDeduplicateHTML,
   slugMaker,
+  removeSlug,
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics, getSingleLyrics } from "@/service/allartists";
@@ -22,7 +23,7 @@ const fetchLyric = cache(
     title: string,
     artist: string
   ): Promise<ILyrics | null> => {
-    return await getSingleLyrics(lyricsID, title, artist);
+    return await getSingleLyrics(lyricsID, removeSlug(title), removeSlug(artist));
   }
 );
 

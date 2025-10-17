@@ -16,9 +16,9 @@ export async function GET(req: NextRequest) {
 
     await connectMongoDB();
 
-    // Find artist by name
+    // Find artist by name (case-insensitive)
     const artist = await Artist.findOne({
-      name: artistName.replace(/-/g, " "),
+      name: { $regex: new RegExp(`^${artistName.replace(/-/g, " ")}$`, "i") }
     });
 
     if (!artist) {

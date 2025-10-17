@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       }
     } else if (artistName) {
       // Contribute form: artistName is provided
-      artist = await Artist.findOne({ name: artistName });
+      artist = await Artist.findOne({ name: { $regex: new RegExp(`^${artistName}$`, "i") } });
       if (!artist) {
         artist = new Artist({ name: artistName });
         await artist.save();

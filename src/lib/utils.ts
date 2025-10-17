@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 
 //a function to convert space to - in a string
 export function slugMaker(str: string) {
-  return str.replace(/\s/g, "-");
+  return str.replace(/\s/g, "-").toLowerCase();
 }
 export function removeSlug(str: string) {
   return str.replace(/-/g, " ");

@@ -1,3 +1,4 @@
+import { slugMaker } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +18,7 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
         {artists.map((artist, key) => (
           <Link
             key={key}
-            href={`/artists/${artist.name.replace(/ /g, "-")}`}
+            href={`/artists/${slugMaker(artist.name)}`}
             className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
             prefetch={true}
             rel="noopener noreferrer"
