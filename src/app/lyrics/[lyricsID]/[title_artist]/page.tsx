@@ -10,7 +10,7 @@ import {
   removeSlug,
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
-import { getLyrics, getSingleLyrics } from "@/service/allartists";
+import { getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
 
@@ -120,17 +120,17 @@ const LyricsPage = async ({
   );
 };
 
-export async function generateStaticParams() {
-  const posts = await getLyrics();
+// export async function generateStaticParams() {
+//   const posts = await getLyrics();
 
-  return posts
-    .filter((post: ILyrics) => post.artistId?.name) // Filter out posts without artist names
-    .map((post: ILyrics) => ({
-      lyricsID: post._id,
-      title_artist: `${slugMaker(post.title)}_${slugMaker(
-        post.artistId?.name || "unknown"
-      )}`,
-    }));
-}
+//   return posts
+//     .filter((post: ILyrics) => post.artistId?.name) // Filter out posts without artist names
+//     .map((post: ILyrics) => ({
+//       lyricsID: post._id,
+//       title_artist: `${slugMaker(post.title)}_${slugMaker(
+//         post.artistId?.name || "unknown"
+//       )}`,
+//     }));
+// }
 
 export default LyricsPage;

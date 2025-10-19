@@ -12,13 +12,13 @@ const fetchLyricsCached = cache(async (): Promise<ILyrics[]> => {
 });
 
 // 🔹 Generate Static Params for SSG
-export async function generateStaticParams() {
-  const lyrics = await fetchLyricsCached();
+// export async function generateStaticParams() {
+//   const lyrics = await fetchLyricsCached();
 
-  return lyrics.map((lyric: ILyrics) => ({
-    id: lyric._id, // Assuming `_id` is the unique identifier
-  }));
-}
+//   return lyrics.map((lyric: ILyrics) => ({
+//     id: lyric._id, // Assuming `_id` is the unique identifier
+//   }));
+// }
 
 // ✅ Enhanced SEO Metadata using utility function
 export async function generateMetadata() {

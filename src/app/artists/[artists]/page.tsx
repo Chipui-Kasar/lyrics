@@ -1,8 +1,8 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
 import { generatePageMetadata, slugMaker, removeSlug } from "@/lib/utils";
-import { IArtists, ILyrics } from "@/models/IObjects";
+import { ILyrics } from "@/models/IObjects";
 import {
-  getAllArtists,
+  // getAllArtists,
   getSingleArtistWithSongCount,
 } from "@/service/allartists";
 import { cache } from "react";
@@ -17,12 +17,12 @@ const fetchFeaturedLyrics = cache(async (artistName: string) => {
 });
 
 // ✅ Pre-generate all artist paths for SSG
-export async function generateStaticParams() {
-  const artists = await getAllArtists();
-  return artists.map((artist: IArtists) => ({
-    artists: slugMaker(artist.name || ""),
-  }));
-}
+// export async function generateStaticParams() {
+//   const artists = await getAllArtists();
+//   return artists.map((artist: IArtists) => ({
+//     artists: slugMaker(artist.name || ""),
+//   }));
+// }
 
 // ✅ Enhanced dynamic metadata generation with structured data
 export async function generateMetadata({

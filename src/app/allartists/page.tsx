@@ -1,6 +1,6 @@
 import AllArtists from "@/components/component/AllArtists/AllArtitsts";
 import { generatePageMetadata } from "@/lib/utils";
-import { IArtists } from "@/models/IObjects";
+// import { IArtists } from "@/models/IObjects";
 import { getArtistsWithSongCount } from "@/service/allartists";
 export const dynamic = "force-static";
 export const revalidate = 300;
@@ -10,10 +10,10 @@ const fetchArtistsWithSongCount = async () => {
 };
 
 // ✅ Pre-generate static paths for SEO
-export const generateStaticParams = async () => {
-  const posts = await fetchArtistsWithSongCount();
-  return posts.map((post: IArtists) => ({ artists: post.name }));
-};
+// export const generateStaticParams = async () => {
+//   const posts = await fetchArtistsWithSongCount();
+//   return posts.map((post: IArtists) => ({ artists: post.name }));
+// };
 
 // ✅ Enhanced SEO Metadata with structured data
 export async function generateMetadata() {
