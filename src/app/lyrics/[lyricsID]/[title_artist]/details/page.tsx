@@ -14,7 +14,7 @@ import { getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
 
 export const dynamic = "force-static";
-export const revalidate = 300;
+export const revalidate = 31536000;
 
 // ✅ Cache DB fetches
 const fetchLyric = cache(

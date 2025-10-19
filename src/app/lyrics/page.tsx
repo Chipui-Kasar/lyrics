@@ -4,7 +4,7 @@ import { getLyrics } from "@/service/allartists";
 import { generatePageMetadata } from "@/lib/utils";
 import { cache } from "react";
 export const dynamic = "force-static";
-export const revalidate = 300; // 5 minutes
+export const revalidate = 3600; // 1 hour
 
 // Cache the lyrics fetch to prevent duplicate calls during the same request
 const fetchLyricsCached = cache(async (): Promise<ILyrics[]> => {

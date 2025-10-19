@@ -15,7 +15,7 @@ import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
 
 export const dynamic = "force-static";
-export const revalidate = 300; // 7 days
+export const revalidate = 31536000; // 1 year
 
 const fetchLyric = cache(
   async (
