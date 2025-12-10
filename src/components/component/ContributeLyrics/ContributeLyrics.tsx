@@ -41,8 +41,8 @@ const ContributeLyrics = () => {
       }
     };
 
-    fetchArtists();
-  }, []);
+    session && fetchArtists();
+  }, [session]);
 
   // Filter artists based on input
   useEffect(() => {
