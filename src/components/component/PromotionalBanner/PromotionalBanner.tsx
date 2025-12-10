@@ -195,11 +195,11 @@ const PromotionalBanner = () => {
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Content Section */}
             <div className="flex-1 text-center md:text-left">
-              <h2
+              <p
                 className={`text-2xl md:text-3xl font-bold mb-2 ${activeItem.textColor}`}
               >
                 {activeItem.title}
-              </h2>
+              </p>
               <p className={`text-lg mb-4 ${activeItem.textColor} opacity-90`}>
                 {activeItem.description}
               </p>
