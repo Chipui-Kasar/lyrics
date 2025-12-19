@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader } from "lucide-react";
 
 interface PageLoaderProps {
@@ -11,30 +11,41 @@ interface PageLoaderProps {
 const PageLoader: React.FC<PageLoaderProps> = ({ isLoading = false }) => {
   const pathname = usePathname();
   const [loading, setLoading] = useState(isLoading);
+  const timerRef = useRef<number | null>(null);
 
+  // Ensure spinner never persists after BFCache restore or page show
   useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      const link = target.closest("a");
-
-      if (
-        link &&
-        link.getAttribute("href")?.startsWith("/") &&
-        link.getAttribute("href") !== pathname
-      ) {
-        setLoading(true);
-      }
+    const handlePageShow = () => setLoading(false);
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") setLoading(false);
     };
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, []);
 
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
-  }, [pathname]);
-
+  // Show spinner briefly on route changes; auto-hide after a short delay
   useEffect(() => {
     if (isLoading) return;
     setLoading(true);
-    const timeout = setTimeout(() => setLoading(false), 100);
-    return () => clearTimeout(timeout);
+    // Clear any previous timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    timerRef.current = window.setTimeout(() => {
+      setLoading(false);
+      timerRef.current = null;
+    }, 200);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [pathname, isLoading]);
 
   if (!loading) return null;

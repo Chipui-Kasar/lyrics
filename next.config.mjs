@@ -159,6 +159,12 @@ const nextConfig = {
 
   // Remove powered by header
   poweredByHeader: false,
+  // Modularize imports to reduce bundle size (e.g., lodash)
+  modularizeImports: {
+    lodash: {
+      transform: "lodash/{{member}}",
+    },
+  },
 };
 
 export default nextConfig;

@@ -5,26 +5,31 @@ import {
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { HomeComponentSkeleton } from "@/components/ui/skeleton";
+import NextDynamic from "next/dynamic";
 
-// Lazy load promotional banner for better LCP
-const PromotionalBanner = lazy(
-  () => import("@/components/component/PromotionalBanner/PromotionalBanner")
+// Use Next.js dynamic imports instead of React.lazy for SSR pages
+const PromotionalBanner = NextDynamic(
+  () => import("@/components/component/PromotionalBanner/PromotionalBanner"),
+  { loading: () => null }
 );
 
-// Lazy load components to reduce initial bundle size
-const FeaturedLyrics = lazy(
-  () => import("@/components/component/FeaturedLyrics/FeaturedLyrics")
+const FeaturedLyrics = NextDynamic(
+  () => import("@/components/component/FeaturedLyrics/FeaturedLyrics"),
+  { loading: () => <HomeComponentSkeleton /> }
 );
-const PopularArtists = lazy(
-  () => import("@/components/component/PopularArtists/PopularArtists")
+const PopularArtists = NextDynamic(
+  () => import("@/components/component/PopularArtists/PopularArtists"),
+  { loading: () => <HomeComponentSkeleton /> }
 );
-const TopLyrics = lazy(
-  () => import("@/components/component/TopLyrics/toplyrics")
+const TopLyrics = NextDynamic(
+  () => import("@/components/component/TopLyrics/toplyrics"),
+  { loading: () => <HomeComponentSkeleton /> }
 );
-const ContributeLyrics = lazy(
-  () => import("@/components/component/ContributeLyrics/ContributeLyrics")
+const ContributeLyrics = NextDynamic(
+  () => import("@/components/component/ContributeLyrics/ContributeLyrics"),
+  { loading: () => <HomeComponentSkeleton /> }
 );
 
 export const dynamic = "force-static";
@@ -78,9 +83,7 @@ const HomePage = async () => {
   return (
     <div className="flex min-h-screen flex-col first-paint">
       {/* Lazy load promotional banner for better LCP */}
-      <Suspense fallback={null}>
-        <PromotionalBanner />
-      </Suspense>
+      <PromotionalBanner />
 
       <section
         className="critical-path above-fold container py-4 sm:py-6 md:py-8 m-auto"
@@ -98,9 +101,7 @@ const HomePage = async () => {
               <h2 id="featured-lyrics-heading" className="sr-only">
                 Featured Tangkhul Song Lyrics
               </h2>
-              <Suspense fallback={<HomeComponentSkeleton />}>
-                <FeaturedLyrics lyrics={featuredLyrics} />
-              </Suspense>
+              <FeaturedLyrics lyrics={featuredLyrics} />
             </section>
             <section
               aria-labelledby="popular-artists-heading"
@@ -109,13 +110,11 @@ const HomePage = async () => {
               <h2 id="popular-artists-heading" className="sr-only">
                 Popular Tangkhul Artists
               </h2>
-              <Suspense fallback={<HomeComponentSkeleton />}>
-                <PopularArtists
-                  artists={artists.filter(
-                    (artist: IArtists) => artist.name !== "Pamching Kasar"
-                  )}
-                />
-              </Suspense>
+              <PopularArtists
+                artists={artists.filter(
+                  (artist: IArtists) => artist.name !== "Pamching Kasar"
+                )}
+              />
             </section>
           </div>
           <aside
@@ -125,9 +124,7 @@ const HomePage = async () => {
             <h2 id="top-lyrics-heading" className="sr-only">
               Top Tangkhul Song Lyrics
             </h2>
-            <Suspense fallback={<HomeComponentSkeleton />}>
-              <TopLyrics lyrics={topLyrics} />
-            </Suspense>
+            <TopLyrics lyrics={topLyrics} />
           </aside>
         </div>
       </section>
@@ -138,9 +135,7 @@ const HomePage = async () => {
         <h2 id="contribute-heading" className="sr-only">
           Contribute Tangkhul Song Lyrics
         </h2>
-        <Suspense fallback={<HomeComponentSkeleton />}>
-          <ContributeLyrics />
-        </Suspense>
+        <ContributeLyrics />
       </section>
     </div>
   );

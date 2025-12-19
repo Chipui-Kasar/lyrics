@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ILyrics } from "@/models/IObjects";
 import { slugMaker } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
 interface AllLyricsProps {
   lyrics: ILyrics[];
 }
@@ -21,7 +20,7 @@ const AllLyrics = ({ lyrics }: AllLyricsProps) => {
             href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
               lyric.artistId?.name
             )}`}
-            prefetch={true}
+            prefetch={false}
             className="group flex items-center gap-4 rounded-lg bg-background p-2 transition-colors hover:bg-muted"
             key={key}
             rel="noopener noreferrer"

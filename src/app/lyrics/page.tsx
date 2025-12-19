@@ -1,4 +1,4 @@
-import AllLyrics from "@/components/component/AllLyrics/AllLyrics";
+import AllLyricsHydrated from "@/components/component/AllLyrics/AllLyricsHydrated";
 import { ILyrics } from "@/models/IObjects";
 import { getLyrics } from "@/service/allartists";
 import { generatePageMetadata } from "@/lib/utils";
@@ -54,8 +54,10 @@ const Lyrics = async () => {
     <div className="flex min-h-screen flex-col dark:bg-background">
       <main className="flex-1">
         <section className="container py-4 sm:py-8 md:py-10 m-auto">
-          <AllLyrics
-            lyrics={topLyrics.sort((a, b) => a.title.localeCompare(b.title))}
+          <AllLyricsHydrated
+            initialLyrics={topLyrics.sort((a, b) =>
+              a.title.localeCompare(b.title)
+            )}
           />
         </section>
       </main>

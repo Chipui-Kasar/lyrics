@@ -3,16 +3,11 @@ import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import Navigation from "@/components/component/Navigation/Navigation";
 import Footer from "@/components/component/Footer/Footer";
-import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
-import PageLoader from "@/components/component/Spinner/Spinner";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
 import SessionValidator from "@/components/SessionValidator";
 import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
-import PerformanceMonitor from "@/components/component/PerformanceMonitor/PerformanceMonitor";
-import ServiceWorkerErrorHandler from "@/components/component/ServiceWorkerErrorHandler/ServiceWorkerErrorHandler";
-import BackForwardCacheOptimizer from "@/components/component/BackForwardCacheOptimizer/BackForwardCacheOptimizer";
-import LCPOptimizer from "@/components/component/LCPOptimizer/LCPOptimizer";
 import Script from "next/script";
+import ClientShell from "@/components/component/ClientShell/ClientShell";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -171,7 +166,16 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <meta charSet="utf-8" />
-        {/* Font preloading */}
+        {/* Font preloading - preload as style then load async */}
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          as="style"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -192,14 +196,6 @@ export default function RootLayout({
           type="image/svg+xml"
         />
 
-        {/* Optimize LCP by preloading critical resources */}
-        <link
-          rel="preload"
-          href="/reference-music-logo.svg"
-          as="image"
-          type="image/svg+xml"
-        />
-
         {/* Critical CSS for LCP optimization */}
         <style
           dangerouslySetInnerHTML={{
@@ -207,6 +203,8 @@ export default function RootLayout({
             .above-fold { content-visibility: visible; contain: none; }
             .layout-stable { contain: layout style paint; }
             .skeleton-loading { background-color: hsl(200, 20%, 90%); }
+            /* Font fallback to reduce CLS */
+            body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
           `,
           }}
         />
@@ -264,18 +262,11 @@ export default function RootLayout({
         <SessionProviderWrapper>
           <SessionValidator>
             <ErrorBoundary>
-              <LCPOptimizer />
-              <BackForwardCacheOptimizer />
-              <ServiceWorkerErrorHandler />
-              <PerformanceMonitor />
-              <DarkTheme />
+              <ClientShell />
               <header>
                 <Navigation />
               </header>
-              <main>
-                <PageLoader />
-                {children}
-              </main>
+              <main>{children}</main>
               <Footer />
             </ErrorBoundary>
           </SessionValidator>
