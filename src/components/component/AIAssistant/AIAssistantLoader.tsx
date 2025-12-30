@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 // Dynamically import the actual AI Assistant
-const AIAssistant = dynamic(() => import('./AIAssistant'), {
+const AIAssistant = dynamic(() => import("./AIAssistant"), {
   ssr: false,
 });
 
