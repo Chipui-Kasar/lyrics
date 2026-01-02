@@ -100,7 +100,7 @@ ${artists
     (a: any) =>
       `- ${a.name}${a.village ? ` from ${a.village}` : ""}${
         a.genre?.length ? ` (${a.genre.join(", ")})` : ""
-      } [ID: ${a._id}, LINK: /artist-details/${a._id}]`
+      } [LINK: /artists/${slugMaker(a.name)}]`
   )
   .join("\n")}
 
@@ -125,7 +125,7 @@ ${specificResults
     (r: any) =>
       `- "${r.title}" by ${r.artistName}${
         r.album ? ` (${r.album})` : ""
-      } [ID: ${r._id}, LINK: /lyrics/${r._id}/${slugMaker(r.title)}_${slugMaker(
+      } [LINK: /lyrics/${r._id}/${slugMaker(r.title)}_${slugMaker(
         r.artistName
       )}]\n  Preview: ${r.lyrics.substring(0, 150)}...`
   )
@@ -163,15 +163,24 @@ RULES:
 7. If a question is outside scope, respond: "I can help only with information available on this website about Tangkhul lyrics, artists, and songs."
 8. Be clear, concise, and helpful
 9. Use bullet points for lists
-10. Reference specific pages when relevant (e.g., "Visit /artist-details/[artistId] to see more")
+10. Reference specific pages when relevant
 11. When mentioning a song, format it as: "Song Title" by Artist Name
+
+URL FORMATS (IMPORTANT - USE THESE EXACT PATTERNS):
+- Artist page: /artists/{artist-name-slug}
+- All artists page: /allartists
+- Lyrics page: /lyrics/{id}/{song-title-slug}_{artist-name-slug}
+- All lyrics page: /lyrics
+- Search page: /search?query={keyword}
 
 RESPONSE GUIDELINES:
 - Always cite actual data when available
-- ALWAYS include clickable links using the IDs and LINK paths provided in the data
-- Format links as: [Song Title](/lyrics/[id]/[slug-title]_[slug-artist]) or [Artist Name](/artist-details/[id])
-- Use the exact LINK path provided in the database context (e.g., LINK: /lyrics/123/song-title_artist-name)
-- Example: "Check out [Hallelujah](/lyrics/12345abc/hallelujah_john-doe) by [John Doe](/artist-details/67890def)"
+- ALWAYS include clickable links using the LINK paths provided in the data
+- Format links as: [Song Title](/lyrics/[id]/[slug-title]_[slug-artist]) or [Artist Name](/artists/[artist-slug])
+- Use the exact LINK path provided in the database context
+- Example: "Check out [Hallelujah](/lyrics/12345abc/hallelujah_john-doe) by [John Doe](/artists/john-doe)"
+- For all artists: [View all artists](/allartists)
+- For all lyrics: [Browse all lyrics](/lyrics)
 - For search page: [Search for more songs](/search?query=keyword)
 - If user searches for something specific, use the SEARCH RESULTS section
 - Mention album names and release years when available

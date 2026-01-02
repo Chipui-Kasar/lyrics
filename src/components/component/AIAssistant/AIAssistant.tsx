@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { X, Send, MessageCircle, Loader2 } from "lucide-react";
 
 interface Message {
@@ -17,6 +17,8 @@ export default function AIAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isInitialMount = useRef(true);
+  const isProcessing = useRef(false); // Prevent duplicate API calls
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -56,11 +58,14 @@ export default function AIAssistant() {
         },
       ]);
     }
+    // Mark initial mount as complete
+    isInitialMount.current = false;
   }, []);
 
-  // Save messages to localStorage whenever they change
+  // Save messages to localStorage whenever they change (skip initial mount)
   useEffect(() => {
-    if (messages.length > 0) {
+    // Don't save during initial mount to prevent loop
+    if (!isInitialMount.current && messages.length > 0) {
       localStorage.setItem("ai-chat-history", JSON.stringify(messages));
     }
   }, [messages]);
@@ -77,29 +82,19 @@ export default function AIAssistant() {
     }
   }, [isOpen]);
 
-  const getPageContext = () => {
-    return {
-      url: window.location.href,
-      title: document.title,
-      pageType: getPageType(),
-      contentSummary: getContentSummary(),
-    };
-  };
-
-  const getPageType = () => {
+  const getPageType = useCallback(() => {
     const pathname = window.location.pathname;
     if (pathname === "/" || pathname === "/home") return "Home Page";
     if (pathname.startsWith("/artists")) return "Artists Page";
     if (pathname.startsWith("/lyrics")) return "Lyrics Page";
-    if (pathname.startsWith("/artist-details")) return "Artist Details Page";
     if (pathname.startsWith("/search")) return "Search Page";
     if (pathname === "/about") return "About Page";
     if (pathname === "/contact") return "Contact Page";
     if (pathname === "/contribute") return "Contribute Page";
     return "Other Page";
-  };
+  }, []);
 
-  const getContentSummary = () => {
+  const getContentSummary = useCallback(() => {
     // Extract main headings
     const h1 = document.querySelector("h1")?.textContent || "";
     const h2Elements = document.querySelectorAll("h2");
@@ -109,10 +104,22 @@ export default function AIAssistant() {
       .join(", ");
 
     return `Main heading: ${h1}. Section headings: ${h2Texts}`;
-  };
+  }, []);
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  const getPageContext = useCallback(() => {
+    return {
+      url: window.location.href,
+      title: document.title,
+      pageType: getPageType(),
+      contentSummary: getContentSummary(),
+    };
+  }, [getPageType, getContentSummary]);
+
+  const handleSendMessage = useCallback(async () => {
+    if (!inputMessage.trim() || isLoading || isProcessing.current) return;
+
+    // Prevent duplicate calls
+    isProcessing.current = true;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -163,8 +170,9 @@ export default function AIAssistant() {
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      isProcessing.current = false; // Reset processing flag
     }
-  };
+  }, [inputMessage, isLoading, getPageContext]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -174,7 +182,7 @@ export default function AIAssistant() {
   };
 
   // Parse markdown links and convert to JSX
-  const parseMarkdownLinks = (text: string) => {
+  const parseMarkdownLinks = useCallback((text: string) => {
     const parts: (string | React.ReactElement)[] = [];
     let lastIndex = 0;
 
@@ -214,7 +222,7 @@ export default function AIAssistant() {
     }
 
     return parts.length > 0 ? parts : [text];
-  };
+  }, []);
 
   return (
     <>
@@ -261,14 +269,11 @@ export default function AIAssistant() {
       {/* Chat Panel */}
       {isOpen && (
         <div
-          className="fixed inset-4 md:bottom-6 md:left-6 md:inset-auto md:w-96 md:h-[600px] z-[9999] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700"
-          style={{ zIndex: 9999, backgroundColor: "white" }}
+          className="fixed inset-4 md:bottom-6 md:left-6 md:inset-auto md:w-96 md:h-[600px] z-[9999] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-[#79095c33] to-[#001fff29] dark:from-[#79095c55] dark:to-[#001fff44] backdrop-blur-xl"
+          style={{ zIndex: 9999 }}
         >
           {/* Header */}
-          <div
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between"
-            style={{ backgroundColor: "#3b82f6" }}
-          >
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <MessageCircle className="w-6 h-6" />
               <div>
@@ -286,10 +291,7 @@ export default function AIAssistant() {
           </div>
 
           {/* Messages */}
-          <div
-            className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800"
-            style={{ backgroundColor: "#f9fafb" }}
-          >
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -298,10 +300,10 @@ export default function AIAssistant() {
                 }`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 shadow-sm ${
                     msg.role === "user"
                       ? "bg-blue-600 text-white"
-                      : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-sm"
+                      : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                   }`}
                 >
                   <div className="text-sm whitespace-pre-wrap break-words">
@@ -327,7 +329,7 @@ export default function AIAssistant() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-white dark:bg-gray-700 rounded-2xl px-4 py-3 shadow-sm">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             )}
@@ -335,10 +337,7 @@ export default function AIAssistant() {
           </div>
 
           {/* Input */}
-          <div
-            className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
-            style={{ backgroundColor: "white" }}
-          >
+          <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
             <div className="flex gap-2">
               <input
                 ref={inputRef}
@@ -347,13 +346,13 @@ export default function AIAssistant() {
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about this website..."
-                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 disabled={isLoading}
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim() || isLoading}
-                className="bg-blue-600 text-white rounded-xl px-4 py-2.5 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-xl px-4 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
