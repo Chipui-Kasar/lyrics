@@ -12,7 +12,24 @@ import NextDynamic from "next/dynamic";
 // Use Next.js dynamic imports instead of React.lazy for SSR pages
 const PromotionalBanner = NextDynamic(
   () => import("@/components/component/PromotionalBanner/PromotionalBanner"),
-  { loading: () => null }
+  { 
+    loading: () => (
+      <section className="w-full bg-gray-50 dark:bg-gray-900 py-6 border-y border-gray-200 dark:border-gray-700" style={{ minHeight: '200px' }}>
+        <div className="container mx-auto px-4">
+          <div className="relative overflow-hidden rounded-xl shadow-lg bg-gradient-to-r from-green-500 to-teal-600 p-6 md:p-8" style={{ minHeight: '168px' }}>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <div className="h-8 bg-white/20 rounded mb-2 max-w-sm"></div>
+                <div className="h-6 bg-white/20 rounded mb-4 max-w-md"></div>
+                <div className="h-10 w-32 bg-white/20 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    ),
+    ssr: true
+  }
 );
 
 const FeaturedLyrics = NextDynamic(

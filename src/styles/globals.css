@@ -79,6 +79,7 @@
     text-rendering: optimizeSpeed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-synthesis: none;
   }
 
   /* Performance optimization for images */
@@ -130,6 +131,19 @@
 .font-loading-stable {
   font-display: swap;
   size-adjust: 100%;
+  ascent-override: 90%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+/* Prevent layout shifts from web fonts */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('Helvetica');
+  size-adjust: 106.5%;
+  ascent-override: 90%;
+  descent-override: 25%;
+  line-gap-override: 0%;
 }
 
 /* Critical path optimization */
