@@ -3,6 +3,10 @@
 import NextDynamic from "next/dynamic";
 
 // Defer client-only utilities to reduce First Load JS
+const AIAssistant = NextDynamic(
+  () => import("@/components/component/AIAssistant/AIAssistant"),
+  { ssr: false, loading: () => null }
+);
 const DarkTheme = NextDynamic(
   () => import("@/components/component/DarkTheme/DarkTheme"),
   { ssr: false, loading: () => null }
@@ -61,6 +65,7 @@ const OfflineCacheManager = NextDynamic(
 export default function ClientShell() {
   return (
     <>
+      <AIAssistant />
       <LCPOptimizer />
       <BackForwardCacheOptimizer />
       <ServiceWorkerErrorHandler />

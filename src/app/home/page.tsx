@@ -5,7 +5,6 @@ import {
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
-import { Suspense } from "react";
 import { HomeComponentSkeleton } from "@/components/ui/skeleton";
 import NextDynamic from "next/dynamic";
 

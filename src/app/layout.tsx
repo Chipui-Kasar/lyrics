@@ -8,10 +8,10 @@ import SessionValidator from "@/components/SessionValidator";
 import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
 import Script from "next/script";
 import ClientShell from "@/components/component/ClientShell/ClientShell";
-import AIAssistant from "@/components/component/AIAssistant/AIAssistant";
 
 const inter = Inter({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   preload: true,
   display: "swap",
   variable: "--font-inter",
@@ -167,35 +167,29 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <meta charSet="utf-8" />
-        {/* Font preloading - preload as style then load async */}
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          as="style"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
+        {/* Preconnect for external resources - high priority */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        
+        {/* Preload critical font files to reduce FCP/LCP */}
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
 
-        {/* DNS prefetch for external resources */}
+        {/* DNS prefetch for external resources - lower priority */}
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-        {/* Preload critical images */}
-        <link rel="preload" href="/ogImage.jpg" as="image" type="image/jpeg" />
-        <link
-          rel="preload"
-          href="/icon-512.svg"
-          as="image"
-          type="image/svg+xml"
-        />
+        {/* Preload only critical LCP image */}
+        <link rel="preload" href="/ogImage.jpg" as="image" type="image/jpeg" fetchPriority="high" />
 
         {/* Critical CSS for LCP optimization */}
         <style
@@ -224,9 +218,8 @@ export default function RootLayout({
         </noscript>
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           crossOrigin="anonymous"
-          async
         />
         <Script
           id="structured-data"
@@ -264,7 +257,6 @@ export default function RootLayout({
           <SessionValidator>
             <ErrorBoundary>
               <ClientShell />
-              <AIAssistant />
               <header>
                 <Navigation />
               </header>
