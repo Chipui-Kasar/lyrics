@@ -138,8 +138,8 @@
 
 /* Prevent layout shifts from web fonts */
 @font-face {
-  font-family: 'Inter Fallback';
-  src: local('Arial'), local('Helvetica');
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("Helvetica");
   size-adjust: 106.5%;
   ascent-override: 90%;
   descent-override: 25%;
