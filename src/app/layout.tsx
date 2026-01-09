@@ -174,7 +174,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        
+
         {/* Preload critical font files to reduce FCP/LCP */}
         <link
           rel="preload"
@@ -189,7 +189,13 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
         {/* Preload only critical LCP image */}
-        <link rel="preload" href="/ogImage.jpg" as="image" type="image/jpeg" fetchPriority="high" />
+        <link
+          rel="preload"
+          href="/ogImage.jpg"
+          as="image"
+          type="image/jpeg"
+          fetchPriority="high"
+        />
 
         {/* Critical CSS for LCP optimization */}
         <style
