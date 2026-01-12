@@ -1,0 +1,314 @@
+# Architecture Diagram: Caching System
+
+## System Overview
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│                         USER'S BROWSER                              │
+│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐  │
+│  │                    React Application                         │  │
+│  │                                                              │  │
+│  │  ┌──────────────┐         ┌─────────────┐                  │  │
+│  │  │ Pages        │────────▶│  Hydrated   │                  │  │
+│  │  │ /lyrics      │         │  Components │                  │  │
+│  │  │ /allartists  │         └──────┬──────┘                  │  │
+│  │  └──────────────┘                │                          │  │
+│  │                                   │                          │  │
+│  │                        ┌──────────▼──────────┐              │  │
+│  │                        │   Cache Service      │              │  │
+│  │                        │  cacheService.ts     │              │  │
+│  │                        └──────────┬──────────┘              │  │
+│  │                                   │                          │  │
+│  │                        ┌──────────▼──────────┐              │  │
+│  │                        │   IndexedDB Layer    │              │  │
+│  │                        │   indexedDB.ts       │              │  │
+│  │                        └──────────┬──────────┘              │  │
+│  │                                   │                          │  │
+│  └───────────────────────────────────┼──────────────────────────┘  │
+│                                      │                             │
+│  ┌───────────────────────────────────▼──────────────────────────┐  │
+│  │                    Browser IndexedDB                         │  │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                 │  │
+│  │  │ lyrics   │  │ artists  │  │ metadata │                 │  │
+│  │  │  store   │  │  store   │  │  store   │                 │  │
+│  │  └──────────┘  └──────────┘  └──────────┘                 │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                      │                             │
+└──────────────────────────────────────┼─────────────────────────────┘
+                                       │
+                                       │ Background Sync
+                                       │ (Every 5 min)
+                                       │
+                                       ▼
+┌────────────────────────────────────────────────────────────────────┐
+│                         YOUR SERVER                                 │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │                    Next.js API Routes                         │  │
+│  │  ┌────────────────┐         ┌────────────────┐              │  │
+│  │  │ /api/lyrics    │         │ /api/artist    │              │  │
+│  │  └────────┬───────┘         └────────┬───────┘              │  │
+│  └───────────┼──────────────────────────┼──────────────────────┘  │
+│              │                          │                          │
+│              └──────────┬───────────────┘                          │
+│                         │                                          │
+│  ┌──────────────────────▼──────────────────────┐                  │
+│  │            MongoDB Database                 │                  │
+│  │  ┌──────────────┐    ┌──────────────┐      │                  │
+│  │  │ Lyrics       │    │  Artists     │      │                  │
+│  │  │ Collection   │    │  Collection  │      │                  │
+│  │  └──────────────┘    └──────────────┘      │                  │
+│  └─────────────────────────────────────────────┘                  │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+## Data Flow: First Visit
+
+```
+User visits /lyrics
+       │
+       ▼
+┌──────────────────┐
+│  Server-Side     │  1. Next.js SSR fetches from MongoDB
+│  Rendering (SSR) │  2. Generates HTML with data
+└────────┬─────────┘  3. Sends to browser
+         │
+         ▼
+┌──────────────────┐
+│  HTML Arrives    │  User sees content immediately
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Client          │  4. React hydrates components
+│  Hydration       │  5. Runs useEffect
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Check           │  6. Check IndexedDB
+│  IndexedDB       │     → Empty? Fetch from API
+└────────┬─────────┘     → Exists? Use cached data
+         │
+         ▼
+┌──────────────────┐
+│  Fetch API       │  7. GET /api/lyrics
+│  (if empty)      │  8. Store in IndexedDB
+└────────┬─────────┘  9. Update UI
+         │
+         ▼
+┌──────────────────┐
+│  Cache Saved     │  Ready for next visit!
+└──────────────────┘
+```
+
+## Data Flow: Subsequent Visits
+
+```
+User visits /lyrics (again)
+       │
+       ▼
+┌──────────────────┐
+│  Check IndexedDB │  INSTANT ⚡ (5-10ms)
+│  → Found!        │  Data already there
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Display Data    │  User sees content IMMEDIATELY
+│  Instantly       │  No loading spinner!
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Background      │  Silently checks if cache stale
+│  Check Staleness │  If > 5 min old:
+└────────┬─────────┘     → Fetch fresh data
+         │                → Update cache
+         │                → Refresh UI (if changed)
+         ▼
+┌──────────────────┐
+│  Auto-Sync       │  Happens in background
+│  (every 5 min)   │  User doesn't notice
+└──────────────────┘
+```
+
+## Component Architecture
+
+```
+Root Layout (layout.tsx)
+│
+├── CacheInitializer ──────────┐
+│   (Auto-starts on app load)  │
+│                               │
+├── Pages                       │
+│   ├── /lyrics/page.tsx        │
+│   │   └── AllLyricsHydrated   │────┐
+│   │                           │    │
+│   └── /allartists/page.tsx    │    │
+│       └── AllArtistsHydrated  │────┤
+│                               │    │
+└── Admin Pages                 │    │
+    └── Forms ─────────────────┐│    │
+                               ││    │
+                               ▼▼    ▼
+                        ┌──────────────────┐
+                        │  Cache Service   │
+                        │                  │
+                        │  getCachedLyrics │
+                        │  updateCache     │
+                        │  syncAllData     │
+                        └────────┬─────────┘
+                                 │
+                                 ▼
+                        ┌──────────────────┐
+                        │   IndexedDB      │
+                        │                  │
+                        │  saveLyricsList  │
+                        │  getArtistsList  │
+                        └──────────────────┘
+```
+
+## Cache Lifecycle
+
+```
+┌─────────────────┐
+│  App Starts     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ CacheInitializer│  Check if IndexedDB has data
+│ Component       │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    │         │
+    ▼         ▼
+┌─────┐   ┌─────┐
+│Empty│   │Data │
+│     │   │Found│
+└──┬──┘   └──┬──┘
+   │         │
+   │         ▼
+   │    ┌─────────────┐
+   │    │ Use Cache   │
+   │    │ Display Now │
+   │    └──┬──────────┘
+   │       │
+   │       ▼
+   │    ┌─────────────┐
+   │    │ Background  │
+   │    │ Sync Start  │
+   │    └──┬──────────┘
+   │       │
+   └───────┘
+         │
+         ▼
+┌─────────────────┐
+│ Fetch Fresh     │
+│ from API        │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Save to Cache   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Update Display  │
+│ (if needed)     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Set 5min Timer  │
+│ for next sync   │
+└────────┬────────┘
+         │
+         └──────────┐
+                    │
+         ┌──────────┘
+         │
+         ▼
+    (Repeat sync)
+```
+
+## Admin Integration
+
+```
+Admin Creates/Edits Data
+         │
+         ▼
+┌─────────────────┐
+│ Submit Form     │  1. Save to MongoDB via API
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ API Success     │  2. Data saved in database
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Call            │  3. refreshLyricsCache()
+│ Cache Refresh   │     or refreshArtistsCache()
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Fetch Fresh     │  4. GET /api/lyrics
+│ from API        │     GET /api/artist
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Update IndexedDB│  5. Replace cached data
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ All Users Get   │  6. Next time users visit,
+│ Fresh Data      │     they see updated data!
+└─────────────────┘
+```
+
+## Key Features
+
+1. **📊 Dual Storage**
+
+   - Server: MongoDB (source of truth)
+   - Client: IndexedDB (fast cache)
+
+2. **⚡ Cache-First**
+
+   - Always check IndexedDB first
+   - Display immediately if found
+   - Fetch from API if missing
+
+3. **🔄 Background Sync**
+
+   - Updates cache every 5 minutes
+   - Doesn't block user interaction
+   - Happens silently
+
+4. **🎯 Smart Updates**
+
+   - Only syncs if data is stale
+   - Parallel fetching (lyrics + artists)
+   - Error handling built-in
+
+5. **👨‍💼 Admin Control**
+   - Force refresh after changes
+   - Ensures data consistency
+   - Simple API
+
+---
+
+This architecture provides the best of both worlds:
+
+- **Fast**: Instant loads from cache
+- **Fresh**: Auto-syncs in background
+- **Reliable**: Server-side rendering for SEO
+- **Offline**: Full functionality without network

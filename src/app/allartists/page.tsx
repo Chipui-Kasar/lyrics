@@ -1,4 +1,4 @@
-import AllArtists from "@/components/component/AllArtists/AllArtitsts";
+import AllArtistsHydrated from "@/components/component/AllArtists/AllArtistsHydrated";
 import { generatePageMetadata } from "@/lib/utils";
 // import { IArtists } from "@/models/IObjects";
 import { getArtistsWithSongCount } from "@/service/allartists";
@@ -44,5 +44,5 @@ export async function generateMetadata() {
 // ✅ Server Component for displaying all artists
 export default async function AllArtistsPage() {
   const artists = await fetchArtistsWithSongCount();
-  return <AllArtists artists={artists} />;
+  return <AllArtistsHydrated initialArtists={artists} />;
 }

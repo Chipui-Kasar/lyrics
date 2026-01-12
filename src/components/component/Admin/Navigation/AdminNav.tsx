@@ -9,6 +9,7 @@ import {
   Settings,
   Users,
   FileText,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,11 @@ const navItems: NavItem[] = [
     title: "Contributions",
     href: "/admin/contributions",
     icon: FileText,
+  },
+  {
+    title: "Extract Lyrics",
+    href: "/admin/extract-lyrics",
+    icon: Download,
   },
   {
     title: "Settings",

@@ -1,4 +1,6 @@
-import * as React from "react";
+"use client";
+
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 
 export interface YouTubePlayerProps {
@@ -6,11 +8,8 @@ export interface YouTubePlayerProps {
   className?: string; // Custom styles
 }
 
-const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
-  videoUrl,
-  className,
-}) => {
-  const videoId = React.useMemo(() => extractYouTubeId(videoUrl), [videoUrl]); // Extract video ID
+const YouTubePlayer = ({ videoUrl, className }: YouTubePlayerProps) => {
+  const videoId = useMemo(() => extractYouTubeId(videoUrl), [videoUrl]); // Extract video ID
 
   if (!videoId) {
     return <p className="text-red-500">❌ Invalid YouTube URL</p>;
