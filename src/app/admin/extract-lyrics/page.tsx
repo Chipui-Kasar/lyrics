@@ -23,11 +23,13 @@ interface ExtractedData {
 export default function ExtractLyricsPage() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
+  const [extractedData, setExtractedData] = useState<ExtractedData | null>(
+    null
+  );
   const [error, setError] = useState("");
   const [artists, setArtists] = useState<IArtists[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Form data
   const [formData, setFormData] = useState({
     title: "",
@@ -82,9 +84,9 @@ export default function ExtractLyricsPage() {
       }
 
       setExtractedData(data);
-      
+
       // Pre-fill form with extracted data
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         title: data.title,
         lyrics: data.lyrics,
@@ -137,7 +139,7 @@ export default function ExtractLyricsPage() {
       alert("Please enter a valid release year.");
       return;
     }
-    
+
     setSubmitting(true);
 
     const formattedData = {
@@ -193,7 +195,9 @@ export default function ExtractLyricsPage() {
 
           {/* URL Extraction Section */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Step 1: Extract from URL</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Step 1: Extract from URL
+            </h2>
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Input
@@ -234,7 +238,8 @@ export default function ExtractLyricsPage() {
                         Extracted Artist: {extractedData.artist}
                       </p>
                       <p className="text-sm text-blue-700 mt-1">
-                        Title and lyrics have been auto-filled below. Please select the matching artist and complete the form.
+                        Title and lyrics have been auto-filled below. Please
+                        select the matching artist and complete the form.
                       </p>
                     </div>
                   </div>
@@ -245,8 +250,10 @@ export default function ExtractLyricsPage() {
 
           {/* Lyrics Form Section */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Step 2: Complete & Submit Lyrics</h2>
-            
+            <h2 className="text-xl font-semibold mb-4">
+              Step 2: Complete & Submit Lyrics
+            </h2>
+
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid gap-2">
                 <Label htmlFor="title">Song Title</Label>
@@ -374,11 +381,7 @@ export default function ExtractLyricsPage() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex-1"
-                >
+                <Button type="submit" disabled={submitting} className="flex-1">
                   {submitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
