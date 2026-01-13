@@ -56,9 +56,10 @@ function getDB() {
 export async function saveLyricsList(list: LyricRecord[]) {
   const db = await getDB();
   const tx = db.transaction("lyrics", "readwrite");
-  for (const item of list) {
-    await tx.store.put(item);
-  }
+
+  // Batch operations for better performance
+  const promises = list.map((item) => tx.store.put(item));
+  await Promise.all(promises);
   await tx.done;
 }
 
@@ -100,9 +101,10 @@ export async function getMetadata(): Promise<MetadataRecord | null> {
 export async function saveArtistsList(list: ArtistRecord[]) {
   const db = await getDB();
   const tx = db.transaction("artists", "readwrite");
-  for (const item of list) {
-    await tx.store.put(item);
-  }
+
+  // Batch operations for better performance
+  const promises = list.map((item) => tx.store.put(item));
+  await Promise.all(promises);
   await tx.done;
 }
 

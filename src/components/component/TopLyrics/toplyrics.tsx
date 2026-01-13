@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavigationLink } from "@/components/NavigationLink";
 import { Button } from "../../ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import { ILyrics } from "@/models/IObjects";
@@ -15,7 +15,7 @@ const TopLyrics = ({ lyrics }: TopLyricsProps) => {
       </p>
       <div className="mt-6 grid gap-4">
         {lyrics.map((lyric, key) => (
-          <Link
+          <NavigationLink
             href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
               lyric.artistId?.name
             )}`}
@@ -43,7 +43,7 @@ const TopLyrics = ({ lyrics }: TopLyricsProps) => {
             >
               <ArrowRightIcon className="h-5 w-5" />
             </Button>
-          </Link>
+          </NavigationLink>
         ))}
       </div>
     </div>

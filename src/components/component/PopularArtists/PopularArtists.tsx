@@ -1,7 +1,7 @@
 import { slugMaker } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import Image from "next/image";
-import Link from "next/link";
+import { NavigationLink } from "@/components/NavigationLink";
 
 interface PopularArtistsProps {
   artists: IArtists[];
@@ -16,7 +16,7 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
       </p>
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {artists.map((artist, key) => (
-          <Link
+          <NavigationLink
             key={key}
             href={`/artists/${slugMaker(artist.name)}`}
             className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
@@ -37,7 +37,7 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
                 {/* {artist.songCount ?? 0} Lyrics */}
               </p>
             </div>
-          </Link>
+          </NavigationLink>
         ))}
       </div>
     </div>

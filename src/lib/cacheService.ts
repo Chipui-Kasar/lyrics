@@ -16,6 +16,54 @@ import {
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const STALE_DURATION = 60 * 60 * 1000; // 1 hour - when to show stale warning
 
+// Helper to check if cache needs update using lightweight metadata endpoint
+async function checkCacheFreshness(
+  type: "lyrics" | "artists"
+): Promise<boolean> {
+  try {
+    const metadata =
+      type === "lyrics" ? await getMetadata() : await getArtistsMetadata();
+    if (!metadata) return false;
+
+    // Use metadata endpoint (returns ~50-100 bytes vs 500KB+)
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/${type}/metadata`,
+      {
+        method: "GET",
+        headers: {
+          "If-None-Match": metadata.lastUpdated || "",
+          "Cache-Control": "no-cache",
+        },
+      }
+    );
+
+    // 304 = Not Modified (cache is fresh)
+    if (response.status === 304) {
+      console.log(`✅ ${type} cache is fresh (304 Not Modified)`);
+      return true;
+    }
+
+    // Check if server metadata matches our cache
+    if (response.ok) {
+      const serverMeta = await response.json();
+      const isFresh =
+        serverMeta.totalCount === metadata.totalCount &&
+        serverMeta.lastUpdated === metadata.lastUpdated;
+
+      if (isFresh) {
+        console.log(`✅ ${type} cache is fresh (metadata match)`);
+        return true;
+      }
+    }
+
+    console.log(`🔄 ${type} cache needs update`);
+    return false;
+  } catch (error) {
+    console.error(`Error checking ${type} freshness:`, error);
+    return false; // Assume stale on error
+  }
+}
+
 // ==================== LYRICS CACHING ====================
 
 export async function getCachedLyrics(): Promise<{
@@ -45,14 +93,26 @@ export async function getCachedLyrics(): Promise<{
 
 export async function updateLyricsCache(forceRefresh = false): Promise<void> {
   try {
-    // Check if cache is recent
+    // Check if cache is recent using lightweight check
     if (!forceRefresh) {
       const metadata = await getMetadata();
       const now = Date.now();
       const savedAt = metadata?.savedAt || 0;
 
+      // First check: Time-based (instant, no network)
       if (now - savedAt < CACHE_DURATION) {
-        console.log("Lyrics cache is fresh, skipping update");
+        console.log("✅ Lyrics cache is fresh (time-based), skipping update");
+        return;
+      }
+
+      // Second check: Metadata-based (minimal network ~50 bytes)
+      const isFresh = await checkCacheFreshness("lyrics");
+      if (isFresh) {
+        // Update savedAt to reset timer without fetching full data
+        await saveMetadata({
+          ...metadata!,
+          savedAt: Date.now(),
+        });
         return;
       }
     }
@@ -64,6 +124,7 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Accept-Encoding": "gzip, deflate, br", // Request compression
         },
       }
     );
@@ -73,6 +134,12 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
     }
 
     const lyrics = await response.json();
+
+    console.log(
+      `📦 Downloaded ${lyrics.length} lyrics (${Math.round(
+        JSON.stringify(lyrics).length / 1024
+      )}KB)`
+    );
 
     // Save to IndexedDB
     await saveLyricsList(lyrics);
@@ -117,14 +184,26 @@ export async function getCachedArtists(): Promise<{
 
 export async function updateArtistsCache(forceRefresh = false): Promise<void> {
   try {
-    // Check if cache is recent
+    // Check if cache is recent using lightweight check
     if (!forceRefresh) {
       const metadata = await getArtistsMetadata();
       const now = Date.now();
       const savedAt = metadata?.savedAt || 0;
 
+      // First check: Time-based (instant, no network)
       if (now - savedAt < CACHE_DURATION) {
-        console.log("Artists cache is fresh, skipping update");
+        console.log("✅ Artists cache is fresh (time-based), skipping update");
+        return;
+      }
+
+      // Second check: Metadata-based (minimal network ~50 bytes)
+      const isFresh = await checkCacheFreshness("artists");
+      if (isFresh) {
+        // Update savedAt to reset timer without fetching full data
+        await saveArtistsMetadata({
+          ...metadata!,
+          savedAt: Date.now(),
+        });
         return;
       }
     }
@@ -136,6 +215,7 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Accept-Encoding": "gzip, deflate, br", // Request compression
         },
       }
     );
@@ -145,6 +225,8 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
     }
 
     const artists = await response.json();
+
+    console.log(`📦 Downloaded ${artists.length} artists`);
 
     // Fetch song counts if artists exist
     if (artists.length > 0) {

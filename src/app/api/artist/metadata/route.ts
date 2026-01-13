@@ -1,41 +1,18 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Lyrics } from "@/models/model";
+import Artist from "@/models/model";
 
-// Returns minimal metadata for consistency checks
+// Returns minimal metadata for artists consistency checks (~50 bytes)
+// This endpoint is used to check if cache needs updating without downloading full data
 export async function GET() {
   try {
     await connectMongoDB(false);
 
-    // Count published (exclude drafts)
-    const totalCount = await Lyrics.countDocuments({
-      $and: [
-        { status: { $ne: "draft" } },
-        {
-          $or: [
-            { status: "published" },
-            { status: { $exists: false } },
-            { status: null },
-            { status: "" },
-          ],
-        },
-      ],
-    });
+    // Count all artists
+    const totalCount = await Artist.countDocuments();
 
-    // Latest updatedAt among published
-    const latest = await Lyrics.find({
-      $and: [
-        { status: { $ne: "draft" } },
-        {
-          $or: [
-            { status: "published" },
-            { status: { $exists: false } },
-            { status: null },
-            { status: "" },
-          ],
-        },
-      ],
-    })
+    // Latest updatedAt
+    const latest = await Artist.find()
       .sort({ updatedAt: -1 })
       .limit(1)
       .select({ updatedAt: 1 })

@@ -9,6 +9,7 @@ import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
 import Script from "next/script";
 import ClientShell from "@/components/component/ClientShell/ClientShell";
 import CacheInitializer from "@/components/CacheInitializer";
+import { NavigationLoader } from "@/components/NavigationLoader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -265,6 +266,7 @@ export default function RootLayout({
             <ErrorBoundary>
               <CacheInitializer />
               <ClientShell />
+              <NavigationLoader />
               <header>
                 <Navigation />
               </header>

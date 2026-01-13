@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavigationLink } from "@/components/NavigationLink";
 import { ILyrics } from "@/models/IObjects";
 import { slugMaker } from "@/lib/utils";
 interface AllLyricsProps {
@@ -16,7 +16,7 @@ const AllLyrics = ({ lyrics }: AllLyricsProps) => {
       </p>
       <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {lyrics.map((lyric, key) => (
-          <Link
+          <NavigationLink
             href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
               lyric.artistId?.name
             )}`}
@@ -36,7 +36,7 @@ const AllLyrics = ({ lyrics }: AllLyricsProps) => {
                 {/* ✅ No nested <Link> */}
               </p>
             </div>
-          </Link>
+          </NavigationLink>
         ))}
       </div>
     </div>
