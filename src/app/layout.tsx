@@ -8,7 +8,6 @@ import SessionValidator from "@/components/SessionValidator";
 import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
 import Script from "next/script";
 import ClientShell from "@/components/component/ClientShell/ClientShell";
-import CacheInitializer from "@/components/CacheInitializer";
 import { NavigationLoader } from "@/components/NavigationLoader";
 
 const inter = Inter({
@@ -264,7 +263,6 @@ export default function RootLayout({
         <SessionProviderWrapper>
           <SessionValidator>
             <ErrorBoundary>
-              <CacheInitializer />
               <ClientShell />
               <NavigationLoader />
               <header>

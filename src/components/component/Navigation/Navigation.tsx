@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { ILyrics } from "@/models/IObjects";
 import { useSession, signIn, signOut } from "next-auth/react";
 import {
@@ -32,7 +32,11 @@ const debounce = (func: (...args: any[]) => void, delay: number) => {
   return debouncedFunction;
 };
 
-const Navigation: React.FC = () => {
+// Cache search results to avoid redundant API calls
+const searchCache = new Map<string, ILyrics[]>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const Navigation: React.FC = React.memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLyrics, setFilteredLyrics] = useState<ILyrics[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,8 +45,9 @@ const Navigation: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Debounced search that handles both API calls and filtering
+  // Debounced search with caching
   const debouncedSearch = useCallback(
     debounce(async (query: string) => {
       if (query.length <= 2) {
@@ -51,8 +56,23 @@ const Navigation: React.FC = () => {
         return;
       }
 
+      // Check cache first
+      const cachedResult = searchCache.get(query.toLowerCase());
+      if (cachedResult) {
+        setFilteredLyrics(cachedResult);
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
+      
+      // Cancel previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      
       const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       try {
         const res = await fetch(
@@ -68,10 +88,8 @@ const Navigation: React.FC = () => {
 
         if (res.ok) {
           const data = await res.json();
-          // The API returns { lyrics, artists }, we want just lyrics
           const lyricsData = data.lyrics || [];
 
-          // Simple filtering like SearchResult component
           const searchRegex = new RegExp(query, "i");
           const filteredResults = lyricsData
             .filter((lyric: ILyrics) => {
@@ -88,7 +106,6 @@ const Navigation: React.FC = () => {
               );
             })
             .map((lyric: ILyrics) => {
-              // Check if the match was in lyrics content
               const lyricsContent = lyric.lyrics || "";
               const hasLyricsMatch = searchRegex.test(lyricsContent);
 
@@ -100,7 +117,15 @@ const Navigation: React.FC = () => {
                   : "",
               };
             })
-            .slice(0, 8); // Limit to 8 results
+            .slice(0, 8);
+
+          // Cache results
+          searchCache.set(query.toLowerCase(), filteredResults);
+          
+          // Clear old cache entries after 5 minutes
+          setTimeout(() => {
+            searchCache.delete(query.toLowerCase());
+          }, CACHE_DURATION);
 
           setFilteredLyrics(filteredResults);
         }
@@ -112,7 +137,7 @@ const Navigation: React.FC = () => {
       } finally {
         setIsLoading(false);
       }
-    }, 300),
+    }, 500), // Increased debounce to 500ms
     []
   );
 
@@ -136,16 +161,20 @@ const Navigation: React.FC = () => {
     };
   }, [isProfileOpen]);
 
-  // Cleanup debounced function on unmount
+  // Cleanup debounced function and abort controller on unmount
   useEffect(() => {
     return () => {
       debouncedSearch.cancel();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
   }, [debouncedSearch]);
 
   useEffect(() => {
     setSearchQuery("");
     setFilteredLyrics([]);
+    setIsSubmitted(false);
   }, [pathname]);
 
   const handleSearchChange = useCallback(
@@ -443,6 +472,8 @@ const Navigation: React.FC = () => {
       </div>
     </nav>
   );
-};
+});
+
+Navigation.displayName = 'Navigation';
 
 export default Navigation;

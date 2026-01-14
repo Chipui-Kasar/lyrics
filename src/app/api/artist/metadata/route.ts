@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import Artist from "@/models/model";
+import { Artist } from "@/models/model";
 
 // Returns minimal metadata for artists consistency checks (~50 bytes)
 // This endpoint is used to check if cache needs updating without downloading full data

@@ -1,26 +1,35 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
-import { useDeletedUserCheck } from "@/hooks/useDeletedUserCheck";
+import { useEffect, useRef } from "react";
 
 export default function SessionValidator({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Use the optimized deleted user check hook
-  useDeletedUserCheck();
-
   const { status } = useSession();
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      // If user becomes unauthenticated, clear local storage
-      localStorage.clear();
-      sessionStorage.clear();
+    // Only run once when component mounts and user is unauthenticated
+    if (status === "unauthenticated" && !hasInitialized.current) {
+      hasInitialized.current = true;
+      
+      // Defer to idle time to avoid blocking main thread
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+        }, { timeout: 2000 });
+      } else {
+        setTimeout(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+        }, 100);
+      }
     }
   }, [status]);
 
-  return <div>{children}</div>;
+  return <>{children}</>;
 }
