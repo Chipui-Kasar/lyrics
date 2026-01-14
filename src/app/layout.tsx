@@ -224,12 +224,6 @@ export default function RootLayout({
           </div>
         </noscript>
         <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-          data-ad-frequency-hint="30s"
-        />
-        <Script
           id="structured-data"
           type="application/ld+json"
           strategy="beforeInteractive"
@@ -261,21 +255,25 @@ export default function RootLayout({
             },
           })}
         </Script>
-        <div className="app-wrapper">
-          <SessionProviderWrapper>
-            <SessionValidator>
-              <ErrorBoundary>
-                <ClientShell />
-                <NavigationLoader />
-                <header>
-                  <Navigation />
-                </header>
-                <main>{children}</main>
-                <Footer />
-              </ErrorBoundary>
-            </SessionValidator>
-          </SessionProviderWrapper>
-        </div>
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+          data-ad-frequency-hint="30s"
+        />
+        <SessionProviderWrapper>
+          <SessionValidator>
+            <ErrorBoundary>
+              <ClientShell />
+              <NavigationLoader />
+              <header>
+                <Navigation />
+              </header>
+              <main>{children}</main>
+              <Footer />
+            </ErrorBoundary>
+          </SessionValidator>
+        </SessionProviderWrapper>
       </body>
     </html>
   );
