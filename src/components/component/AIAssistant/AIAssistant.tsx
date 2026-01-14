@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { X, Send, MessageCircle, Loader2 } from "lucide-react";
+import { X, Send, BotMessageSquare, Loader2 } from "lucide-react";
 
 interface Message {
   id: string;
@@ -243,7 +243,7 @@ export default function AIAssistant() {
           {/* Button with enhanced effects */}
           <button
             onClick={() => setIsOpen(true)}
-            className="relative bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-white rounded-full p-4 md:p-5 shadow-2xl hover:shadow-purple-500/50 transform hover:scale-110 hover:rotate-12 transition-all duration-500 ease-out animate-pulse-slow"
+            className="relative bg-gradient-to-r from-[#79095c33] to-[#001fff29] text-white rounded-full p-4 md:p-5 shadow-2xl hover:shadow-purple-500/50 transform hover:scale-110 hover:rotate-12 transition-all duration-500 ease-out animate-pulse-slow"
             aria-label="Open AI Assistant"
           >
             {/* Animated gradient border */}
@@ -251,7 +251,7 @@ export default function AIAssistant() {
 
             {/* Button content */}
             <div className="relative">
-              <MessageCircle className="w-6 h-6 md:w-7 md:h-7 drop-shadow-lg" />
+              <BotMessageSquare className="w-6 h-6 md:w-7 md:h-7 drop-shadow-lg" />
             </div>
 
             {/* Active indicator */}
@@ -275,7 +275,7 @@ export default function AIAssistant() {
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <MessageCircle className="w-6 h-6" />
+              <BotMessageSquare className="w-6 h-6" />
               <div>
                 <h3 className="font-semibold text-lg">AI Assistant</h3>
                 <p className="text-xs opacity-90">Here to help you navigate</p>

@@ -5,33 +5,11 @@ import {
   getFeaturedLyrics,
   getTopLyrics,
 } from "@/service/allartists";
-import NextDynamic from "next/dynamic";
-
-// Use Next.js dynamic imports with minimal loading states
-const PromotionalBanner = NextDynamic(
-  () => import("@/components/component/PromotionalBanner/PromotionalBanner"),
-  { ssr: true }
-);
-
-const FeaturedLyrics = NextDynamic(
-  () => import("@/components/component/FeaturedLyrics/FeaturedLyrics"),
-  { ssr: true }
-);
-
-const PopularArtists = NextDynamic(
-  () => import("@/components/component/PopularArtists/PopularArtists"),
-  { ssr: true }
-);
-
-const TopLyrics = NextDynamic(
-  () => import("@/components/component/TopLyrics/toplyrics"),
-  { ssr: true }
-);
-
-const ContributeLyrics = NextDynamic(
-  () => import("@/components/component/ContributeLyrics/ContributeLyrics"),
-  { ssr: true }
-);
+import PromotionalBanner from "@/components/component/PromotionalBanner/PromotionalBanner";
+import FeaturedLyrics from "@/components/component/FeaturedLyrics/FeaturedLyrics";
+import PopularArtists from "@/components/component/PopularArtists/PopularArtists";
+import TopLyrics from "@/components/component/TopLyrics/toplyrics";
+import ContributeLyrics from "@/components/component/ContributeLyrics/ContributeLyrics";
 
 export const dynamic = "force-static";
 export const revalidate = 300;
