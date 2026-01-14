@@ -34,13 +34,13 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const pathname = req.nextUrl.pathname;
-        
+
         // Always allow access to admin signin
         if (pathname === "/admin/signin") return true;
-        
+
         // Require admin role for admin routes
         if (pathname.startsWith("/admin")) return token?.role === "admin";
-        
+
         // Allow all other routes
         return true;
       },
@@ -49,7 +49,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    "/admin/:path*",
-  ],
+  matcher: ["/admin/:path*"],
 };

@@ -15,13 +15,16 @@ export default function SessionValidator({
     // Only run once when component mounts and user is unauthenticated
     if (status === "unauthenticated" && !hasInitialized.current) {
       hasInitialized.current = true;
-      
+
       // Defer to idle time to avoid blocking main thread
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => {
-          localStorage.clear();
-          sessionStorage.clear();
-        }, { timeout: 2000 });
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(
+          () => {
+            localStorage.clear();
+            sessionStorage.clear();
+          },
+          { timeout: 2000 }
+        );
       } else {
         setTimeout(() => {
           localStorage.clear();

@@ -14,7 +14,7 @@
     --primary: 271 81% 56%;
     --primary-foreground: 210 40% 98%;
   }
-  
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -27,7 +27,7 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -40,40 +40,40 @@
   .above-fold {
     content-visibility: visible;
   }
-  
+
   .below-fold {
     content-visibility: auto;
     contain-intrinsic-size: 0 500px;
   }
-  
+
   /* Reduce layout shift */
   .layout-stable {
     contain: layout style paint;
   }
-  
+
   /* Critical path optimization */
   .critical-path {
     content-visibility: visible;
     contain: none;
   }
-  
+
   .non-critical {
     content-visibility: auto;
   }
-  
+
   /* GPU acceleration for animations */
   .gpu-accelerated {
     transform: translateZ(0);
     will-change: transform;
   }
-  
+
   /* Skeleton loading */
   .skeleton-loading {
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     animation: loading 1.5s ease-in-out infinite;
   }
-  
+
   @keyframes loading {
     0% {
       background-position: 200% 0;
@@ -82,14 +82,14 @@
       background-position: -200% 0;
     }
   }
-  
+
   /* Optimize font rendering */
   .optimize-text {
     text-rendering: optimizeSpeed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   /* Reduce paint area */
   .isolate-paint {
     isolation: isolate;

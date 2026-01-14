@@ -10,7 +10,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { ILyrics } from "@/models/IObjects";
 import { useSession, signIn, signOut } from "next-auth/react";
 import {
@@ -65,12 +71,12 @@ const Navigation: React.FC = React.memo(() => {
       }
 
       setIsLoading(true);
-      
+
       // Cancel previous request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
@@ -121,7 +127,7 @@ const Navigation: React.FC = React.memo(() => {
 
           // Cache results
           searchCache.set(query.toLowerCase(), filteredResults);
-          
+
           // Clear old cache entries after 5 minutes
           setTimeout(() => {
             searchCache.delete(query.toLowerCase());
@@ -474,6 +480,6 @@ const Navigation: React.FC = React.memo(() => {
   );
 });
 
-Navigation.displayName = 'Navigation';
+Navigation.displayName = "Navigation";
 
 export default Navigation;
