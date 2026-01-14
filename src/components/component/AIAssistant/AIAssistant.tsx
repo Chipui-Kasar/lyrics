@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { X, Send, BotMessageSquare, Loader2 } from "lucide-react";
 
 interface Message {

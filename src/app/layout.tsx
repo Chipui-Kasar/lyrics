@@ -207,12 +207,6 @@ export default function RootLayout({
             .skeleton-loading { background-color: hsl(200, 20%, 90%); }
             /* Font fallback to reduce CLS */
             body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
-            /* Keep header at top */
-            .app-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
-            header { position: sticky; top: 0; z-index: 50; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-            main { flex: 1; }
-            /* Disable all auto-inserted ads */
-            ins.adsbygoogle[data-ad-status="unfilled"] { display: none !important; }
           `,
           }}
         />
@@ -231,7 +225,7 @@ export default function RootLayout({
         </noscript>
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           crossOrigin="anonymous"
           data-ad-frequency-hint="30s"
         />
