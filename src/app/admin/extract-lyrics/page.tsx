@@ -69,7 +69,8 @@ export default function ExtractLyricsPage() {
     setExtractedData(null);
 
     try {
-      const response = await fetch("/api/admin/extract-lyrics", {
+      // Fetch the HTML content from the URL
+      const response = await fetch(`/api/admin/scrape-lyrics`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,19 +78,62 @@ export default function ExtractLyricsPage() {
         body: JSON.stringify({ url }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || "Failed to extract lyrics");
+        throw new Error("Failed to fetch the page");
       }
 
-      setExtractedData(data);
+      const { html } = await response.json();
+
+      // Parse the HTML
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      // Extract song title - get the last span inside the h2
+      const titleDiv = doc.querySelector('div[id="comp-k8ynf7ed"]');
+      let title = "";
+      if (titleDiv) {
+        const spans = titleDiv.querySelectorAll(
+          "h2 span.wixui-rich-text__text"
+        );
+        if (spans.length > 0) {
+          title = spans[spans.length - 1].textContent?.trim() || "";
+        }
+      }
+
+      // Extract artist name - get the last span inside the h2
+      const artistDiv = doc.querySelector('div[id="comp-k8ynkzme"]');
+      let artist = "";
+      if (artistDiv) {
+        const spans = artistDiv.querySelectorAll(
+          "h2 span.wixui-rich-text__text"
+        );
+        if (spans.length > 0) {
+          artist = spans[spans.length - 1].textContent?.trim() || "";
+        }
+      }
+
+      // Extract lyrics
+      const lyricsDiv = doc.querySelector('div[id="comp-k8ynf7ez"]');
+      let lyrics = "";
+      if (lyricsDiv) {
+        lyrics = lyricsDiv.innerHTML?.trim() || "";
+      }
+
+      if (!title || !lyrics) {
+        throw new Error(
+          "Could not extract lyrics. Please check the URL and try again."
+        );
+      }
+
+      const extractedData = { title, artist, lyrics };
+      setExtractedData(extractedData);
 
       // Pre-fill form with extracted data
       setFormData((prev) => ({
         ...prev,
-        title: data.title,
-        lyrics: data.lyrics,
+        album: `${extractedData.title} - ${extractedData.artist}`,
+        title: extractedData.title,
+        lyrics: extractedData.lyrics,
       }));
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
