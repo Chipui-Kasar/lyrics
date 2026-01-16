@@ -97,7 +97,7 @@ export const getAllArtists = async () => {
 export const getArtistsWithSongCount = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
-      next: { revalidate: 604800 },
+      next: { revalidate: 3600 },
       cache: "force-cache",
     });
 
@@ -109,7 +109,10 @@ export const getArtistsWithSongCount = async () => {
     // Fetch song counts
     const artistIds = artists.map((artist: IArtists) => artist._id).join(",");
     const countRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artist/lyricscount?artistIds=${artistIds}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/artist/lyricscount?artistIds=${artistIds}`,
+      {
+        next: { revalidate: 3600 },
+      }
     );
 
     if (!countRes.ok)
