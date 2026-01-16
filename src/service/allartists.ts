@@ -36,7 +36,6 @@ export const getSingleLyrics = async (
         title,
       )}&artist=${encodeURIComponent(artist)}`,
       {
-        next: { revalidate: 300 }, // 5 minutes for individual lyrics
         headers: {
           Accept: "application/json",
         },
