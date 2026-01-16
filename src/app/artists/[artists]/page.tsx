@@ -8,7 +8,6 @@ import {
 import { cache } from "react";
 
 // Make the route statically rendered and revalidated weekly
-export const dynamic = "force-static";
 export const revalidate = 300;
 
 // Cache the lyrics fetch per artist
