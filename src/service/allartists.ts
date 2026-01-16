@@ -32,7 +32,7 @@ export const getSingleLyrics = async (
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?id=${id}`,
       {
-        cache: "no-store",
+        next: { revalidate: 3600 }, // 1 hour cache
         headers: {
           Accept: "application/json",
         },
@@ -40,6 +40,9 @@ export const getSingleLyrics = async (
     );
 
     if (!res.ok) {
+      console.error(
+        `Failed to fetch lyrics: ${res.status} - ${res.statusText}`,
+      );
       throw new Error(`HTTP error! status: ${res.status}`);
     }
 

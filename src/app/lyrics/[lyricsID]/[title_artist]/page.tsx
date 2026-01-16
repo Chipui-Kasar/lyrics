@@ -11,26 +11,27 @@ import {
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getSingleLyrics } from "@/service/allartists";
-import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
+export const revalidate = 3600; // 1 hour ISR
 
-// export const revalidate = 300; // 5 minutes
-
-const fetchLyric = cache(
-  async (
-    lyricsID: string,
-    title: string,
-    artist: string,
-  ): Promise<ILyrics | null> => {
+const fetchLyric = async (
+  lyricsID: string,
+  title: string,
+  artist: string,
+): Promise<ILyrics | null> => {
+  try {
     return await getSingleLyrics(
       lyricsID,
       removeSlug(title),
       removeSlug(artist),
     );
-  },
-);
+  } catch (error) {
+    console.error("Error in fetchLyric:", error);
+    return null;
+  }
+};
 
 export async function generateMetadata({
   params,
