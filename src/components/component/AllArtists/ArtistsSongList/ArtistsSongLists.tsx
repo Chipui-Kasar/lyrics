@@ -1,4 +1,3 @@
-"use client";
 import { NavigationLink } from "@/components/NavigationLink";
 
 import { ILyrics } from "@/models/IObjects";
@@ -20,22 +19,25 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
                 </tr>
               </thead>
               <tbody>
-                {lyrics.map((lyric, key) => (
-                  <tr className="border-b hover:bg-muted/20" key={key}>
-                    <td className="py-3 px-4 text-left">
-                      <NavigationLink
-                        href={`/lyrics/${lyric._id}/${slugMaker(
-                          lyric.title
-                        )}_${slugMaker(lyric.artistId?.name)}`}
-                        className="font-medium hover:underline"
-                        prefetch={true}
-                        rel="noopener noreferrer"
-                      >
-                        {lyric.title}
-                      </NavigationLink>
-                    </td>
-                  </tr>
-                ))}
+                {lyrics &&
+                  lyrics
+                    .sort((a, b) => a.title.localeCompare(b.title))
+                    .map((lyric, key) => (
+                      <tr className="border-b hover:bg-muted/20" key={key}>
+                        <td className="py-3 px-4 text-left">
+                          <NavigationLink
+                            href={`/lyrics/${lyric._id}/${slugMaker(
+                              lyric.title
+                            )}_${slugMaker(lyric.artistId?.name)}`}
+                            className="font-medium hover:underline"
+                            prefetch={true}
+                            rel="noopener noreferrer"
+                          >
+                            {lyric.title}
+                          </NavigationLink>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

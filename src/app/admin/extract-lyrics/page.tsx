@@ -6,13 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dropdown } from "@/components/ui/dropdown";
-import { RichTextEditor } from "@/components/ui/richTextEditor";
 import ImageUpload from "@/components/component/Admin/ImageUpload/ImageUpload";
 import { Loader2, ExternalLink, Info } from "lucide-react";
 import { getAllArtists } from "@/service/allartists";
 import { createLyrics } from "@/service/allartists";
 import { IArtists } from "@/models/IObjects";
-import { sanitizeAndDeduplicateHTML } from "@/lib/utils";
 
 interface ExtractedData {
   title: string;
@@ -40,7 +38,7 @@ export default function ExtractLyricsPage() {
       youtube: "",
       spotify: "",
     },
-    contributedBy: "",
+    contributedBy: "Admin",
     thumbnail: "",
     lyrics: "",
     featured: false,
@@ -88,40 +86,74 @@ export default function ExtractLyricsPage() {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, "text/html");
 
-      // Extract song title - get the last span inside the h2
-      const titleDiv = doc.querySelector('div[id="comp-k8ynf7ed"]');
+      // First, find the SITE_PAGES_TRANSITION_GROUP container
+      const transitionGroup = doc.getElementById("SITE_PAGES_TRANSITION_GROUP");
+
+      console.log("SITE_PAGES_TRANSITION_GROUP found:", !!transitionGroup);
+
       let title = "";
-      if (titleDiv) {
-        const spans = titleDiv.querySelectorAll(
-          "h2 span.wixui-rich-text__text"
-        );
-        if (spans.length > 0) {
-          title = spans[spans.length - 1].textContent?.trim() || "";
-        }
-      }
-
-      // Extract artist name - get the last span inside the h2
-      const artistDiv = doc.querySelector('div[id="comp-k8ynkzme"]');
       let artist = "";
-      if (artistDiv) {
-        const spans = artistDiv.querySelectorAll(
-          "h2 span.wixui-rich-text__text"
+      let lyrics = "";
+
+      if (!transitionGroup) {
+        throw new Error(
+          "Could not find SITE_PAGES_TRANSITION_GROUP container in the page."
         );
-        if (spans.length > 0) {
-          artist = spans[spans.length - 1].textContent?.trim() || "";
-        }
       }
 
-      // Extract lyrics
-      const lyricsDiv = doc.querySelector('div[id="comp-k8ynf7ez"]');
-      let lyrics = "";
-      if (lyricsDiv) {
-        lyrics = lyricsDiv.innerHTML?.trim() || "";
+      // Query for richTextElement divs within the container
+      const richTextElements = transitionGroup.querySelectorAll(
+        'div[data-testid="richTextElement"]'
+      );
+
+      console.log("Found richTextElements:", richTextElements.length);
+
+      if (richTextElements.length >= 3) {
+        richTextElements.forEach((el, idx) => {
+          // Check for lyrics (p tag content)
+          const pTags = el.querySelectorAll("p");
+          if (pTags.length > 0 && !lyrics) {
+            lyrics = el.innerHTML?.trim() || "";
+            console.log(`Element ${idx}: Identified as LYRICS (has p tags)`);
+            return;
+          }
+
+          // Check for title (font-size: 24px)
+          const titleElement = el.querySelector(
+            '[style*="font-size:24px"], [style*="font-size: 24px"]'
+          );
+          if (titleElement && !title) {
+            title = titleElement.textContent?.trim() || "";
+            console.log(
+              `Element ${idx}: Identified as TITLE (font-size: 24px) - "${title}"`
+            );
+            return;
+          }
+
+          // Check for artist (font-size: 20px)
+          const artistElement = el.querySelector(
+            '[style*="font-size:20px"], [style*="font-size: 20px"]'
+          );
+          if (artistElement && !artist) {
+            artist = artistElement.textContent?.trim() || "";
+            console.log(
+              `Element ${idx}: Identified as ARTIST (font-size: 20px) - "${artist}"`
+            );
+            return;
+          }
+
+          console.log(
+            `Element ${idx}: Not identified - ${el.textContent?.substring(
+              0,
+              50
+            )}`
+          );
+        });
       }
 
       if (!title || !lyrics) {
         throw new Error(
-          "Could not extract lyrics. Please check the URL and try again."
+          `Could not extract lyrics. Found ${richTextElements.length} richTextElements within SITE_PAGES_TRANSITION_GROUP. Check console for details.`
         );
       }
 
@@ -192,6 +224,7 @@ export default function ExtractLyricsPage() {
         youtube: formData.streamingLinks.youtube || "",
         spotify: formData.streamingLinks.spotify || "",
       },
+      contributedBy: "Admin",
     };
 
     try {
@@ -393,17 +426,10 @@ export default function ExtractLyricsPage() {
 
               <div className="grid gap-2">
                 <Label htmlFor="lyrics">Lyrics</Label>
-                <RichTextEditor
-                  name="lyrics"
-                  defaultValue={formData.lyrics}
-                  onChange={({ target }) =>
-                    handleChange({
-                      target: {
-                        name: "lyrics",
-                        value: sanitizeAndDeduplicateHTML(target.value),
-                      },
-                    })
-                  }
+
+                <div
+                  id="lyrics"
+                  dangerouslySetInnerHTML={{ __html: formData.lyrics }}
                 />
               </div>
 

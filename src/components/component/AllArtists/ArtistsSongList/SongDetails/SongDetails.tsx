@@ -3,7 +3,6 @@
  * @see https://v0.dev/t/kqDlEjkR9OG
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

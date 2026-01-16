@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 const About = () => {
   return (
     <div className="flex flex-col">
