@@ -14,8 +14,9 @@ import { getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
 
-export const dynamic = "force-static";
-export const revalidate = 300; // 5 minutes
+export const dynamic = "force-dynamic";
+
+// export const revalidate = 300; // 5 minutes
 
 const fetchLyric = cache(
   async (
