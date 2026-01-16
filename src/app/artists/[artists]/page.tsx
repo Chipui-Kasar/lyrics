@@ -8,7 +8,8 @@ import {
 import { cache } from "react";
 
 // Make the route statically rendered and revalidated weekly
-export const revalidate = 300;
+export const dynamic = "force-static";
+export const revalidate = 604800; // 1 week
 
 // Cache the lyrics fetch per artist
 const fetchFeaturedLyrics = cache(async (artistName: string) => {
@@ -73,7 +74,5 @@ export default async function ArtistPage({
 }) {
   const resolvedParams = await params; // Resolve the promise to get the actual params
   const lyrics = await fetchFeaturedLyrics(resolvedParams.artists);
-  console.log(lyrics);
-
   return <ArtistsSongLists lyrics={lyrics} />;
 }

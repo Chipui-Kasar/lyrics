@@ -1,5 +1,4 @@
 // app/lyrics/[lyricsID]/[title_artist]/page.tsx
-
 import { notFound } from "next/navigation";
 import Lyrics from "@/components/component/AllArtists/ArtistsSongList/Lyrics/Lyrics";
 import {
@@ -11,27 +10,25 @@ import {
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getSingleLyrics } from "@/service/allartists";
+import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
 
 export const dynamic = "force-static";
-export const revalidate = 3600; // 1 hour ISR
+export const revalidate = 31536000; // 1 year
 
-const fetchLyric = async (
-  lyricsID: string,
-  title: string,
-  artist: string,
-): Promise<ILyrics | null> => {
-  try {
+const fetchLyric = cache(
+  async (
+    lyricsID: string,
+    title: string,
+    artist: string,
+  ): Promise<ILyrics | null> => {
     return await getSingleLyrics(
       lyricsID,
       removeSlug(title),
       removeSlug(artist),
     );
-  } catch (error) {
-    console.error("Error in fetchLyric:", error);
-    return null;
-  }
-};
+  },
+);
 
 export async function generateMetadata({
   params,

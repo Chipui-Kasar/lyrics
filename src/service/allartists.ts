@@ -5,7 +5,10 @@ export const getLyrics = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?sort=title`,
       {
-        next: { revalidate: 300 }, // 5 minutes for better freshness
+        next: {
+          revalidate: 300,
+          tags: ["lyrics-all"],
+        },
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -30,9 +33,16 @@ export const getSingleLyrics = async (
 ) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?id=${id}`,
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/lyrics/author/singleLyrics?id=${id}&title=${encodeURIComponent(
+        title,
+      )}&artist=${encodeURIComponent(artist)}`,
       {
-        next: { revalidate: 3600 }, // 1 hour cache
+        next: {
+          revalidate: 3600,
+          tags: [`lyrics-${id}`],
+        },
         headers: {
           Accept: "application/json",
         },
@@ -40,9 +50,6 @@ export const getSingleLyrics = async (
     );
 
     if (!res.ok) {
-      console.error(
-        `Failed to fetch lyrics: ${res.status} - ${res.statusText}`,
-      );
       throw new Error(`HTTP error! status: ${res.status}`);
     }
 
@@ -57,7 +64,10 @@ export const getFeaturedLyrics = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2&sort=createdAt&featured=true`,
       {
-        next: { revalidate: 3600 },
+        next: {
+          revalidate: 3600,
+          tags: ["lyrics-featured"],
+        },
       },
     );
     return res.ok ? await res.json() : [];
@@ -72,7 +82,10 @@ export const getTopLyrics = async (limit?: number) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics${query}`,
       {
-        next: { revalidate: 3600 },
+        next: {
+          revalidate: 3600,
+          tags: ["lyrics-top"],
+        },
       },
     );
     return res.ok ? await res.json() : [];
@@ -84,8 +97,10 @@ export const getTopLyrics = async (limit?: number) => {
 export const getAllArtists = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
-      next: { revalidate: 3600 },
-      cache: "force-cache",
+      next: {
+        revalidate: 3600,
+        tags: ["artists-all"],
+      },
     });
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -96,8 +111,10 @@ export const getAllArtists = async () => {
 export const getArtistsWithSongCount = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
-      next: { revalidate: 3600 },
-      cache: "force-cache",
+      next: {
+        revalidate: 3600,
+        tags: ["artists-all"],
+      },
     });
 
     if (!res.ok) return [];
@@ -132,10 +149,14 @@ export const getArtistsWithSongCount = async () => {
 export const getSingleArtist = async () => {};
 export const getSingleArtistWithSongCount = async (artistName: string) => {
   try {
+    const artistSlug = artistName.toLowerCase().replace(/\s+/g, "-");
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/lyrics?artistName=${artistName}`,
       {
-        next: { revalidate: 604800 },
+        next: {
+          revalidate: 3600,
+          tags: [`artist-${artistSlug}`],
+        },
       },
     );
     return res.ok ? await res.json() : [];
@@ -150,7 +171,10 @@ export const searchLyrics = async (query: string) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/search?query=${query}`,
       {
-        next: { revalidate: 604800 },
+        next: {
+          revalidate: 3600,
+          tags: ["search"],
+        },
       },
     );
     return res.ok ? await res.json() : [];

@@ -3,6 +3,27 @@ import { connectMongoDB } from "@/lib/mongodb";
 import { Artist, Lyrics } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { revalidateTag } from "next/cache";
+
+// Helper function to revalidate relevant tags
+function revalidateLyricsCache(lyricsId?: string, artistName?: string) {
+  // Revalidate specific lyrics
+  if (lyricsId) {
+    revalidateTag(`lyrics-${lyricsId}`);
+  }
+
+  // Revalidate artist cache
+  if (artistName) {
+    const artistSlug = artistName.toLowerCase().replace(/\s+/g, "-");
+    revalidateTag(`artist-${artistSlug}`);
+  }
+
+  // Revalidate collection caches
+  revalidateTag("lyrics-all");
+  revalidateTag("lyrics-featured");
+  revalidateTag("lyrics-top");
+  revalidateTag("search");
+}
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -29,7 +50,7 @@ export async function POST(req: NextRequest) {
     if (!title || !lyrics) {
       return NextResponse.json(
         { message: "Title and lyrics are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -42,7 +63,7 @@ export async function POST(req: NextRequest) {
       if (!artist) {
         return NextResponse.json(
           { message: "Artist not found" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     } else if (artistName) {
@@ -57,7 +78,7 @@ export async function POST(req: NextRequest) {
     } else {
       return NextResponse.json(
         { message: "Artist name or artist ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -80,12 +101,15 @@ export async function POST(req: NextRequest) {
 
     await newLyric.save();
 
+    // Revalidate cache
+    revalidateLyricsCache(newLyric._id.toString(), artist.name);
+
     return NextResponse.json(newLyric, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -131,7 +155,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch lyrics", details: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -151,18 +175,27 @@ export async function DELETE(req: NextRequest) {
     }
 
     await connectMongoDB();
-    await Lyrics.findByIdAndDelete(id);
+    const deletedLyric = await Lyrics.findByIdAndDelete(id).populate(
+      "artistId",
+      "name",
+    );
+
+    // Revalidate cache
+    if (deletedLyric) {
+      revalidateLyricsCache(id, deletedLyric.artistId?.name);
+    }
+
     return NextResponse.json(
       { message: "Lyrics deleted successfully" },
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     console.error("Error deleting lyrics:", error);
     return NextResponse.json(
       { error: "Failed to delete lyrics", details: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -177,12 +210,20 @@ export async function PUT(req: NextRequest) {
 
     const { _id, ...rest } = await req.json();
     await connectMongoDB(true); // Admin access
-    await Lyrics.findByIdAndUpdate(_id, rest);
+    const updatedLyric = await Lyrics.findByIdAndUpdate(_id, rest, {
+      new: true,
+    }).populate("artistId", "name");
+
+    // Revalidate cache
+    if (updatedLyric) {
+      revalidateLyricsCache(_id, updatedLyric.artistId?.name);
+    }
+
     return NextResponse.json({ message: "Lyrics updated successfully" });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to update lyrics" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

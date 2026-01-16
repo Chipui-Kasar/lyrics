@@ -1,3 +1,5 @@
+"use client";
+
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { YouTubePlayer } from "@/components/ui/video";

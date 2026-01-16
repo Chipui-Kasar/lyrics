@@ -149,12 +149,12 @@ export const highlightFuzzyMatch = (text: string, query: string): string => {
   if (textLower.includes(queryLower)) {
     const regex = new RegExp(
       query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-      "gi"
+      "gi",
     );
     return text.replace(
       regex,
       (match) =>
-        `<span class="bg-yellow-200 text-yellow-800 font-semibold">${match}</span>`
+        `<span class="bg-yellow-200 text-yellow-800 font-semibold">${match}</span>`,
     );
   }
 
@@ -168,7 +168,7 @@ export const highlightFuzzyMatch = (text: string, query: string): string => {
     if (queryWord.length >= 2) {
       const partialRegex = new RegExp(
         `\\b\\w*${queryWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\w*`,
-        "gi"
+        "gi",
       );
       result = result.replace(partialRegex, (match) => {
         if (match.toLowerCase().includes(queryWord.toLowerCase())) {
@@ -258,7 +258,7 @@ export const replaceAllHTMLTagsWithSpace = (html: string): string => {
 // Fuzzy matching utilities
 export const calculateLevenshteinDistance = (
   str1: string,
-  str2: string
+  str2: string,
 ): number => {
   const matrix = Array(str2.length + 1)
     .fill(null)
@@ -273,7 +273,7 @@ export const calculateLevenshteinDistance = (
       matrix[j][i] = Math.min(
         matrix[j][i - 1] + 1,
         matrix[j - 1][i] + 1,
-        matrix[j - 1][i - 1] + indicator
+        matrix[j - 1][i - 1] + indicator,
       );
     }
   }
@@ -339,7 +339,7 @@ export const calculateSimilarity = (query: string, text: string): number => {
 export const getMatchingLyricsExcerpt = (
   lyrics: string,
   query: string,
-  maxLines: number = 2
+  maxLines: number = 2,
 ): string => {
   if (!lyrics || !query) return "";
 
