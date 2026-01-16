@@ -30,12 +30,9 @@ export const getSingleLyrics = async (
 ) => {
   try {
     const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/api/lyrics/author/singleLyrics?id=${id}&title=${encodeURIComponent(
-        title,
-      )}&artist=${encodeURIComponent(artist)}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/singleLyrics?id=${id}`,
       {
+        cache: "no-store",
         headers: {
           Accept: "application/json",
         },

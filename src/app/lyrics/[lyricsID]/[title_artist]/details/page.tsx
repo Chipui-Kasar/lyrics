@@ -13,8 +13,8 @@ import { ILyrics } from "@/models/IObjects";
 import { getSingleLyrics } from "@/service/allartists";
 import { cache } from "react";
 
-export const dynamic = "force-static";
-export const revalidate = 300; // 5 minutes
+export const dynamic = "force-dynamic";
+// export const revalidate = 300; // 5 minutes
 
 // ✅ Cache DB fetches
 const fetchLyric = cache(
