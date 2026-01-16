@@ -15,20 +15,20 @@ import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
 
 export const dynamic = "force-static";
-export const revalidate = 31536000; // 1 year
+export const revalidate = 300; // 5 minutes
 
 const fetchLyric = cache(
   async (
     lyricsID: string,
     title: string,
-    artist: string
+    artist: string,
   ): Promise<ILyrics | null> => {
     return await getSingleLyrics(
       lyricsID,
       removeSlug(title),
-      removeSlug(artist)
+      removeSlug(artist),
     );
-  }
+  },
 );
 
 export async function generateMetadata({
@@ -53,19 +53,19 @@ export async function generateMetadata({
   const albumName = lyric.album || "Single";
   const lyricsPreview =
     replaceAllHTMLTagsWithSpace(
-      sanitizeAndDeduplicateHTML(lyric.lyrics)
+      sanitizeAndDeduplicateHTML(lyric.lyrics),
     )?.slice(0, 155) || "Traditional Tangkhul song";
 
   return generatePageMetadata({
     title: `${songTitle} by ${artistName} - Lyrics | ${songTitle} Lyrics`,
     description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context. Tangkhul song lyrics translation`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
-      songTitle
+      songTitle,
     )}_${slugMaker(artistName)}`,
     image: `${
       lyric.thumbnail && lyric.thumbnail !== ""
         ? lyric.thumbnail
-        : lyric.artistId?.image ?? "/ogImage.jpg"
+        : (lyric.artistId?.image ?? "/ogImage.jpg")
     }`,
     keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul song lyrics translation, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
   });
@@ -103,7 +103,7 @@ const LyricsPage = async ({
     inLanguage: "tkh",
     description: `Traditional Tangkhul song "${songTitle}" by ${artistName} | Tangkhul Lyrics | Tangkhul lyrics translation`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
-      songTitle
+      songTitle,
     )}_${slugMaker(artistName)}`,
     datePublished: lyric.createdAt || new Date().toISOString(),
     publisher: {

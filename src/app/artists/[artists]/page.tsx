@@ -73,5 +73,7 @@ export default async function ArtistPage({
 }) {
   const resolvedParams = await params; // Resolve the promise to get the actual params
   const lyrics = await fetchFeaturedLyrics(resolvedParams.artists);
+  console.log(lyrics);
+
   return <ArtistsSongLists lyrics={lyrics} />;
 }

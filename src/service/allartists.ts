@@ -10,7 +10,7 @@ export const getLyrics = async () => {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (!res.ok) {
@@ -26,21 +26,21 @@ export const getLyrics = async () => {
 export const getSingleLyrics = async (
   id: string,
   title: string,
-  artist: string
+  artist: string,
 ) => {
   try {
     const res = await fetch(
       `${
         process.env.NEXT_PUBLIC_API_URL
       }/api/lyrics/author/singleLyrics?id=${id}&title=${encodeURIComponent(
-        title
+        title,
       )}&artist=${encodeURIComponent(artist)}`,
       {
         next: { revalidate: 300 }, // 5 minutes for individual lyrics
         headers: {
           Accept: "application/json",
         },
-      }
+      },
     );
 
     if (!res.ok) {
@@ -59,7 +59,7 @@ export const getFeaturedLyrics = async () => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?limit=2&sort=createdAt&featured=true`,
       {
         next: { revalidate: 3600 },
-      }
+      },
     );
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -74,7 +74,7 @@ export const getTopLyrics = async (limit?: number) => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics${query}`,
       {
         next: { revalidate: 3600 },
-      }
+      },
     );
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -112,7 +112,7 @@ export const getArtistsWithSongCount = async () => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/artist/lyricscount?artistIds=${artistIds}`,
       {
         next: { revalidate: 3600 },
-      }
+      },
     );
 
     if (!countRes.ok)
@@ -137,7 +137,7 @@ export const getSingleArtistWithSongCount = async (artistName: string) => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/lyrics?artistName=${artistName}`,
       {
         next: { revalidate: 604800 },
-      }
+      },
     );
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -152,7 +152,7 @@ export const searchLyrics = async (query: string) => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/search?query=${query}`,
       {
         next: { revalidate: 604800 },
-      }
+      },
     );
     return res.ok ? await res.json() : [];
   } catch (error) {
@@ -169,7 +169,7 @@ export const createArtist = async (
     image: string;
     village: string;
   },
-  method?: string
+  method?: string,
 ) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
@@ -211,7 +211,7 @@ export const deleteArtist = async (id: string) => {
       {
         method: "DELETE",
         credentials: "include", // only if you're using sessions/cookies
-      }
+      },
     );
     return res.ok ? await res.json() : null;
   } catch (error) {
@@ -266,7 +266,7 @@ export const deleteLyrics = async (id: string) => {
       {
         method: "DELETE",
         credentials: "include", // only if you're using sessions/cookies
-      }
+      },
     );
     return res.ok ? await res.json() : null;
   } catch (error) {
