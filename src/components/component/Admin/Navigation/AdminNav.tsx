@@ -2,6 +2,7 @@
 import type * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   LayoutDashboard,
   LogOut,
@@ -10,6 +11,8 @@ import {
   Users,
   FileText,
   Download,
+  Menu,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -55,44 +58,80 @@ const navItems: NavItem[] = [
 
 export default function AdminNavigation() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <aside className="w-64 bg-gray-800 text-white min-h-screen flex flex-col">
-      <div className="p-4 border-b border-gray-700">
-        <h2 className="text-xl font-bold">Admin Panel</h2>
-      </div>
-      <nav className="flex-1 mt-4">
-        <ul className="space-y-1">
-          {navItems.map((item) => (
-            <li key={item.title}>
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex items-center px-4 py-3 text-sm font-medium transition-colors",
-                  pathname === item.href
-                    ? "bg-gray-700 text-white border-r-2 border-blue-400"
-                    : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                )}
-              >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      <div className="p-4 border-t border-gray-700">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full text-gray-800 bg-white hover:bg-gray-100"
-          onClick={() => signOut({ callbackUrl: "/" })}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
-      </div>
-    </aside>
+    <>
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden fixed left-4 z-50 bg-gray-800 text-white hover:bg-gray-700"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <Menu className="h-6 w-6" />
+        )}
+      </Button>
+
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          "w-64 text-white min-h-screen flex flex-col transition-transform duration-300 z-40",
+          "fixed lg:static left-0",
+          "bg-gradient-to-r from-[#ff88e0] to-[#00ffe6]",
+          isMobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        )}
+      >
+        <div className="p-4 border-b border-gray-700">
+          <h2 className="text-xl font-bold">Admin Panel</h2>
+        </div>
+        <nav className="flex-1 mt-4 overflow-y-auto">
+          <ul className="space-y-1">
+            {navItems.map((item) => (
+              <li key={item.title}>
+                <Link
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium transition-colors",
+                    pathname === item.href
+                      ? "bg-gray-700 text-white border-r-2 border-blue-400"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                  )}
+                >
+                  <item.icon className="mr-3 h-5 w-5" />
+                  {item.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="p-4 border-t border-gray-700">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-gray-800 bg-white hover:bg-gray-100"
+            onClick={() => signOut({ callbackUrl: "/" })}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+      </aside>
+    </>
   );
 }
 
