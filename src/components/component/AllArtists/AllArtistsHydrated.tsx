@@ -44,7 +44,7 @@ export default function AllArtistsHydrated({ initialArtists }: Props) {
           // No cache - save SSR data in background (non-blocking)
           console.log(
             "Caching SSR artists in background...",
-            initialArtists.length
+            initialArtists.length,
           );
           Promise.all([
             saveArtistsList(initialArtists as any),
@@ -81,7 +81,11 @@ export default function AllArtistsHydrated({ initialArtists }: Props) {
 
   return (
     <section className="container py-4 sm:py-8 md:py-10 m-auto">
-      <PopularArtists artists={artists} />
+      <PopularArtists
+        artists={artists
+          .filter((artist: IArtists) => artist.name !== "Pamching Kasar")
+          .sort((a, b) => a.name.localeCompare(b.name))}
+      />
     </section>
   );
 }
