@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chromium } from "playwright";
 
 export async function POST(request: NextRequest) {
+  // Prevent Playwright from running on Vercel
+  if (process.env.VERCEL) {
+    return NextResponse.json(
+      {
+        error:
+          "Playwright scraping is not available in production. Please use the extract-lyrics endpoint instead, or run this locally.",
+      },
+      { status: 503 },
+    );
+  }
+
+  // Dynamic import to prevent bundling issues
+  const { chromium } = await import("playwright");
+
   let browser;
   try {
     const { url } = await request.json();
@@ -16,7 +29,7 @@ export async function POST(request: NextRequest) {
     } catch (e) {
       return NextResponse.json(
         { error: "Invalid URL format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +68,7 @@ export async function POST(request: NextRequest) {
         error:
           error instanceof Error ? error.message : "Failed to scrape lyrics",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
