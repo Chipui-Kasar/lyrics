@@ -24,6 +24,7 @@ import {
   slugMaker,
   highlightFuzzyMatch,
   getMatchingLyricsExcerpt,
+  calculateSimilarity,
 } from "@/lib/utils";
 import Form from "next/form";
 
@@ -89,14 +90,14 @@ const Navigation: React.FC = React.memo(() => {
               "Cache-Control":
                 "public, max-age=300, stale-while-revalidate=600",
             },
-          }
+          },
         );
 
         if (res.ok) {
           const data = await res.json();
           const lyricsData = data.lyrics || [];
 
-          const searchRegex = new RegExp(query, "i");
+          // Use calculateSimilarity from utils for fuzzy matching
           const filteredResults = lyricsData
             .filter((lyric: ILyrics) => {
               const title = lyric.title || "";
@@ -104,16 +105,18 @@ const Navigation: React.FC = React.memo(() => {
               const album = lyric.album || "";
               const lyricsContent = lyric.lyrics || "";
 
+              // Use calculateSimilarity with threshold
               return (
-                searchRegex.test(title) ||
-                searchRegex.test(artist) ||
-                searchRegex.test(album) ||
-                searchRegex.test(lyricsContent)
+                calculateSimilarity(query, title) > 0.3 ||
+                calculateSimilarity(query, artist) > 0.3 ||
+                calculateSimilarity(query, album) > 0.3 ||
+                calculateSimilarity(query, lyricsContent) > 0.2
               );
             })
             .map((lyric: ILyrics) => {
               const lyricsContent = lyric.lyrics || "";
-              const hasLyricsMatch = searchRegex.test(lyricsContent);
+              const hasLyricsMatch =
+                calculateSimilarity(query, lyricsContent) > 0.2;
 
               return {
                 ...lyric,
@@ -144,7 +147,7 @@ const Navigation: React.FC = React.memo(() => {
         setIsLoading(false);
       }
     }, 500), // Increased debounce to 500ms
-    []
+    [],
   );
 
   // Close profile dropdown when clicking outside
@@ -190,7 +193,7 @@ const Navigation: React.FC = React.memo(() => {
       setIsSubmitted(false); // Reset submitted state when typing
       debouncedSearch(value);
     },
-    [debouncedSearch]
+    [debouncedSearch],
   );
 
   const handleResultClick = useCallback(
@@ -199,7 +202,7 @@ const Navigation: React.FC = React.memo(() => {
       setSearchQuery("");
       setFilteredLyrics([]);
     },
-    [router]
+    [router],
   );
 
   return (
@@ -259,7 +262,7 @@ const Navigation: React.FC = React.memo(() => {
               (filteredLyrics.length > 0 ||
                 isLoading ||
                 (searchQuery.length > 2 && !isLoading)) && (
-                <ul className="search-dropdown absolute left-0 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto backdrop-blur-sm">
+                <ul className="search-dropdown absolute left-0 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto backdrop-blur-xl">
                   {isLoading ? (
                     <li className="p-3 text-center text-gray-500">
                       <div className="flex items-center justify-center gap-2">
@@ -283,7 +286,7 @@ const Navigation: React.FC = React.memo(() => {
                             handleResultClick(
                               lyric._id,
                               lyric.title,
-                              lyric.artistId?.name
+                              lyric.artistId?.name,
                             )
                           }
                           className="cursor-pointer hover:bg-gray-100 transition text-sm p-3 border-b border-gray-100 last:border-b-0 relative"
@@ -299,8 +302,8 @@ const Navigation: React.FC = React.memo(() => {
                                           .split(/\s+/)
                                           .slice(0, 8)
                                           .join(" "),
-                                        searchQuery
-                                      )
+                                        searchQuery,
+                                      ),
                                     ),
                                   }}
                                 />
@@ -311,7 +314,7 @@ const Navigation: React.FC = React.memo(() => {
                                   dangerouslySetInnerHTML={{
                                     __html: highlightFuzzyMatch(
                                       artistName,
-                                      searchQuery
+                                      searchQuery,
                                     ),
                                   }}
                                 />

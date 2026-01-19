@@ -68,7 +68,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
   // Separate current page results
   const currentLyrics = currentResults.filter((item) => item.type === "lyric");
   const currentArtists = currentResults.filter(
-    (item) => item.type === "artist"
+    (item) => item.type === "artist",
   );
 
   // Determine what results to show and create result summary
@@ -80,12 +80,12 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
     const resultTypes = [];
     if (totalLyricsResults > 0) {
       resultTypes.push(
-        `${totalLyricsResults} song${totalLyricsResults !== 1 ? "s" : ""}`
+        `${totalLyricsResults} song${totalLyricsResults !== 1 ? "s" : ""}`,
       );
     }
     if (totalArtistsResults > 0) {
       resultTypes.push(
-        `${totalArtistsResults} artist${totalArtistsResults !== 1 ? "s" : ""}`
+        `${totalArtistsResults} artist${totalArtistsResults !== 1 ? "s" : ""}`,
       );
     }
 
@@ -109,7 +109,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search for songs, artists, or lyrics..."
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="flex h-15 border px-3 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-full bg-muted pl-8 pr-4 py-3 focus:bg-background bg-gradient-to-r from-[#79095c33] to-[#001fff29]"
             />
             <button
               type="submit"
@@ -174,7 +174,7 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                       return (
                         <Link
                           href={`/lyrics/${lyric._id}/${slugMaker(
-                            lyric.title
+                            lyric.title,
                           )}_${slugMaker(lyric.artistId?.name)}`}
                           className="group"
                           prefetch={true}
@@ -198,16 +198,16 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                                   __html: highlightRegex
                                     ? highlightFuzzyMatch(
                                         sanitizeAndDeduplicateHTML(
-                                          matchingLine.replace(/<[^>]+>/g, "")
+                                          matchingLine.replace(/<[^>]+>/g, ""),
                                         ).replace(
                                           highlightRegex,
                                           (match) =>
-                                            `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
+                                            `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`,
                                         ),
-                                        removeSlug(params)
+                                        removeSlug(params),
                                       )
                                     : sanitizeAndDeduplicateHTML(
-                                        matchingLine.replace(/<[^>]+>/g, "")
+                                        matchingLine.replace(/<[^>]+>/g, ""),
                                       ),
                                 }}
                               />
@@ -240,13 +240,13 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                                     __html: highlightRegex
                                       ? highlightFuzzyMatch(
                                           sanitizeAndDeduplicateHTML(
-                                            artist.name
+                                            artist.name,
                                           ).replace(
                                             highlightRegex,
                                             (match) =>
-                                              `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
+                                              `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`,
                                           ),
-                                          removeSlug(params)
+                                          removeSlug(params),
                                         )
                                       : sanitizeAndDeduplicateHTML(artist.name),
                                   }}
@@ -257,16 +257,16 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                                     __html: highlightRegex
                                       ? highlightFuzzyMatch(
                                           sanitizeAndDeduplicateHTML(
-                                            artist.village
+                                            artist.village,
                                           ).replace(
                                             highlightRegex,
                                             (match) =>
-                                              `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`
+                                              `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`,
                                           ),
-                                          removeSlug(params)
+                                          removeSlug(params),
                                         )
                                       : sanitizeAndDeduplicateHTML(
-                                          artist.village
+                                          artist.village,
                                         ),
                                   }}
                                 />
