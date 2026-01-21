@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     template: "%s | Tangkhul Lyrics",
   },
   description:
-    "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics. | Tangkhul Lyrics Translation",
+    "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics. | TANGKHUL LYRICS Translation",
   applicationName: "Tangkhul Lyrics",
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -115,9 +115,9 @@ export const metadata: Metadata = {
     url: "https://tangkhullyrics.com",
     siteName: "Tangkhul Lyrics",
     title:
-      "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics | Tangkhul Lyrics Translation",
+      "Tangkhul Lyrics - Best Collection of TANGKHUL SONG LYRICS | TANGKHUL LYRICS Translation",
     description:
-      "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists.",
+      "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists.",
     images: [
       {
         url: "/ogImage.jpg",
@@ -133,9 +133,9 @@ export const metadata: Metadata = {
     site: "@TangkhulLyrics",
     creator: "@TangkhulLyrics",
     title:
-      "Tangkhul Lyrics - Best Collection of Tangkhul Song Lyrics | Tangkhul Lyrics Translation",
+      "Tangkhul Lyrics - Best Collection of TANGKHUL SONG LYRICS | TANGKHUL LYRICS Translation",
     description:
-      "Discover the largest collection of Tangkhul song lyrics online. Find trending hits, traditional favorites, and new releases.",
+      "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases.",
     images: ["/ogImage.jpg"],
   },
   verification: {
