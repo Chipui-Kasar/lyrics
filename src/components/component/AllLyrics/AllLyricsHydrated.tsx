@@ -1,91 +1,148 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import AllLyrics from "./AllLyrics";
 import type { ILyrics } from "@/models/IObjects";
-import { getCachedLyrics, updateLyricsCache } from "@/lib/cacheService";
-import { saveLyricsList, saveMetadata } from "@/lib/indexedDB";
 
 interface Props {
   initialLyrics: ILyrics[];
+  initialPagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 }
 
-export default function AllLyricsHydrated({ initialLyrics }: Props) {
+export default function AllLyricsHydrated({
+  initialLyrics,
+  initialPagination,
+}: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [lyrics, setLyrics] = useState<ILyrics[]>(initialLyrics || []);
+  const [pagination, setPagination] = useState(initialPagination);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
+  const cacheRef = useRef<
+    Record<
+      number,
+      {
+        items: ILyrics[];
+        pagination: Props["initialPagination"];
+      }
+    >
+  >({
+    [initialPagination.page]: {
+      items: initialLyrics || [],
+      pagination: initialPagination,
+    },
+  });
+
+  const pageFromUrl = useMemo(() => {
+    const raw = searchParams.get("page");
+    const parsed = raw ? Number(raw) : initialPagination.page;
+    if (!parsed || Number.isNaN(parsed) || parsed < 1) {
+      return initialPagination.page;
+    }
+    return parsed;
+  }, [searchParams, initialPagination.page]);
+
+  const fetchPage = useCallback(
+    async (page: number) => {
+      abortRef.current?.abort();
+      requestIdRef.current += 1;
+      const requestId = requestIdRef.current;
+
+      const cached = cacheRef.current[page];
+      if (cached) {
+        setIsLoading(false);
+        setLyrics(cached.items);
+        setPagination(cached.pagination);
+        return;
+      }
+
+      setIsLoading(true);
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      try {
+        const params = new URLSearchParams();
+        params.set("page", String(page));
+        params.set("limit", String(initialPagination.limit));
+        params.set("sort", "title");
+        params.set("order", "asc");
+        params.set("fields", "summary");
+
+        const res = await fetch(`/api/lyrics?${params.toString()}`, {
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          throw new Error(`Failed to fetch lyrics page: ${res.status}`);
+        }
+
+        const data = await res.json();
+        if (!data?.items || !data?.pagination) {
+          throw new Error("Invalid paginated response");
+        }
+
+        cacheRef.current[page] = {
+          items: data.items,
+          pagination: data.pagination,
+        };
+
+        setLyrics(data.items);
+        setPagination(data.pagination);
+      } catch (error) {
+        if ((error as Error).name === "AbortError") return;
+        console.error("Error loading lyrics page:", error);
+      } finally {
+        if (requestId === requestIdRef.current) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [initialPagination.limit]
+  );
 
   useEffect(() => {
-    let cancelled = false;
+    if (pageFromUrl === pagination.page && lyrics.length > 0) return;
+    fetchPage(pageFromUrl);
+  }, [fetchPage, pageFromUrl, pagination.page, lyrics.length]);
 
-    // Fast path: Try to get cached data without blocking
-    getCachedLyrics()
-      .then(({ data: cachedLyrics, isStale }) => {
-        if (cancelled) return;
-
-        if (cachedLyrics && cachedLyrics.length > 0) {
-          // Use cached data
-          setLyrics(
-            (cachedLyrics as ILyrics[])
-              .slice()
-              .sort((a, b) => a.title.localeCompare(b.title))
-          );
-
-          // Update in background if stale (don't await)
-          if (isStale) {
-            console.log("Cache is stale, updating in background...");
-            updateLyricsCache(true)
-              .then(() => {
-                if (!cancelled) {
-                  getCachedLyrics().then(({ data: freshLyrics }) => {
-                    if (freshLyrics && freshLyrics.length > 0) {
-                      setLyrics(
-                        (freshLyrics as ILyrics[])
-                          .slice()
-                          .sort((a, b) => a.title.localeCompare(b.title))
-                      );
-                    }
-                  });
-                }
-              })
-              .catch((err) => console.error("Background update failed:", err));
-          }
-        } else if (initialLyrics && initialLyrics.length > 0) {
-          // No cache - save SSR data in background (non-blocking)
-          console.log(
-            "Caching SSR data in background...",
-            initialLyrics.length
-          );
-          Promise.all([
-            saveLyricsList(initialLyrics as any),
-            saveMetadata({
-              totalCount: initialLyrics.length,
-              lastUpdated: new Date().toISOString(),
-              savedAt: Date.now(),
-            }),
-          ])
-            .then(() => {
-              console.log("✅ SSR data cached");
-            })
-            .catch((err) => console.error("Cache save failed:", err));
-
-          // Use SSR data immediately
-          if (!cancelled) {
-            setLyrics(initialLyrics);
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Error loading lyrics:", error);
-        // Fallback to initialLyrics
-        if (!cancelled && initialLyrics && initialLyrics.length > 0) {
-          setLyrics(initialLyrics);
-        }
-      });
-
-    // Cleanup
+  useEffect(() => {
     return () => {
-      cancelled = true;
+      abortRef.current?.abort();
     };
-  }, []); // Empty deps - only run once
+  }, []);
 
-  return <AllLyrics lyrics={lyrics} />;
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (page <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(page));
+    }
+
+    const queryString = params.toString();
+    router.push(queryString ? `?${queryString}` : "/lyrics", { scroll: true });
+  };
+
+  return (
+    <AllLyrics
+      lyrics={lyrics}
+      isLoading={isLoading}
+      pagination={{
+        currentPage: pagination.page,
+        totalPages: pagination.totalPages,
+        totalCount: pagination.totalCount,
+        pageSize: pagination.limit,
+        onPageChange: handlePageChange,
+      }}
+    />
+  );
 }

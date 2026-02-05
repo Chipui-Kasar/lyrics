@@ -118,14 +118,30 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const limitParam = url.searchParams.get("limit");
+    const pageParam = url.searchParams.get("page");
     const sortParam = url.searchParams.get("sort");
+    const orderParam = url.searchParams.get("order");
+    const fieldsParam = url.searchParams.get("fields");
 
-    const limit = limitParam ? Number(limitParam) : undefined;
+    const DEFAULT_LIMIT = 60;
+    const MAX_LIMIT = 200;
+
+    const parsedLimit = limitParam ? Number(limitParam) : undefined;
+    const limit =
+      typeof parsedLimit === "number" && !Number.isNaN(parsedLimit)
+        ? Math.min(Math.max(parsedLimit, 1), MAX_LIMIT)
+        : undefined;
+    const parsedPage = pageParam ? Number(pageParam) : undefined;
+    const page =
+      typeof parsedPage === "number" && !Number.isNaN(parsedPage)
+        ? Math.max(parsedPage, 1)
+        : undefined;
     const sort = sortParam ? sortParam : undefined;
+    const order = orderParam === "asc" ? 1 : -1;
     await connectMongoDB(false); // Explicitly use user connection for read operations
 
     // Build query - fetch published lyrics and legacy lyrics without status field, exclude drafts
-    const query = Lyrics.find({
+    const filters: Record<string, unknown> = {
       $and: [
         { status: { $ne: "draft" } }, // Explicitly exclude drafts
         {
@@ -137,20 +153,55 @@ export async function GET(req: NextRequest) {
           ],
         },
       ],
-    }).populate("artistId", "name image");
+    };
+
+    if (url.searchParams.get("featured")) {
+      filters.featured = true;
+    }
+
+    const query = Lyrics.find(filters).populate("artistId", "name image");
 
     if (sort) {
-      query.sort({ [sort]: -1 }); // sort descending
+      query.sort({ [sort]: order }); // default desc unless order=asc
     }
 
-    if (limit) {
+    if (fieldsParam === "summary") {
+      query.select({
+        title: 1,
+        artistId: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      });
+    }
+
+    if (page) {
+      const pageLimit = limit ?? DEFAULT_LIMIT;
+      const skip = (page - 1) * pageLimit;
+      query.limit(pageLimit).skip(skip);
+    } else if (limit) {
       query.limit(limit);
     }
-    if (url.searchParams.get("featured")) {
-      query.where({ featured: true });
+
+    const lyrics = await query.lean().exec();
+
+    if (page) {
+      const pageLimit = limit ?? DEFAULT_LIMIT;
+      const totalCount = await Lyrics.countDocuments(filters);
+      const totalPages = Math.max(1, Math.ceil(totalCount / pageLimit));
+
+      return NextResponse.json({
+        items: lyrics,
+        pagination: {
+          page,
+          limit: pageLimit,
+          totalCount,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      });
     }
 
-    const lyrics = await query.exec();
     return NextResponse.json(lyrics);
   } catch (error) {
     return NextResponse.json(

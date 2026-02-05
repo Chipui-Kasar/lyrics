@@ -1,5 +1,19 @@
 import { IArtists, ILyrics } from "@/models/IObjects";
 
+export interface LyricsPagination {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+export interface LyricsPageResponse {
+  items: ILyrics[];
+  pagination: LyricsPagination;
+}
+
 export const getLyrics = async () => {
   try {
     const res = await fetch(
@@ -24,6 +38,67 @@ export const getLyrics = async () => {
   } catch (error) {
     console.error("Error fetching lyrics:", error);
     return [];
+  }
+};
+
+export const getLyricsPage = async ({
+  page = 1,
+  limit = 60,
+  sort = "title",
+  order = "asc",
+  fields = "summary",
+}: {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  order?: "asc" | "desc";
+  fields?: "summary" | "full";
+} = {}): Promise<LyricsPageResponse> => {
+  try {
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("limit", String(limit));
+    if (sort) params.set("sort", sort);
+    if (order) params.set("order", order);
+    if (fields) params.set("fields", fields);
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics?${params.toString()}`,
+      {
+        next: {
+          revalidate: 300,
+          tags: ["lyrics-all"],
+        },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = (await res.json()) as LyricsPageResponse;
+    if (!data?.items || !data.pagination) {
+      throw new Error("Invalid paginated lyrics response");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching paginated lyrics:", error);
+    return {
+      items: [],
+      pagination: {
+        page,
+        limit,
+        totalCount: 0,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
+    };
   }
 };
 export const getSingleLyrics = async (

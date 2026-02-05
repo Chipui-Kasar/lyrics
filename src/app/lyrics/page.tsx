@@ -1,15 +1,8 @@
 import AllLyricsHydrated from "@/components/component/AllLyrics/AllLyricsHydrated";
-import { ILyrics } from "@/models/IObjects";
-import { getLyrics } from "@/service/allartists";
+import { getLyricsPage } from "@/service/allartists";
 import { generatePageMetadata } from "@/lib/utils";
-import { cache } from "react";
 export const dynamic = "force-static";
 export const revalidate = 3600; // 1 hour
-
-// Cache the lyrics fetch to prevent duplicate calls during the same request
-const fetchLyricsCached = cache(async (): Promise<ILyrics[]> => {
-  return await getLyrics();
-});
 
 // 🔹 Generate Static Params for SSG
 // export async function generateStaticParams() {
@@ -48,16 +41,22 @@ export async function generateMetadata() {
 
 // ✅ Page Component
 const Lyrics = async () => {
-  const topLyrics = await fetchLyricsCached();
+  const PAGE_SIZE = 60;
+  const pageData = await getLyricsPage({
+    page: 1,
+    limit: PAGE_SIZE,
+    sort: "title",
+    order: "asc",
+    fields: "summary",
+  });
 
   return (
     <div className="flex min-h-screen flex-col dark:bg-background">
       <main className="flex-1">
         <section className="container py-4 sm:py-8 md:py-10 m-auto">
           <AllLyricsHydrated
-            initialLyrics={topLyrics.sort((a, b) =>
-              a.title.localeCompare(b.title)
-            )}
+            initialLyrics={pageData.items}
+            initialPagination={pageData.pagination}
           />
         </section>
       </main>
