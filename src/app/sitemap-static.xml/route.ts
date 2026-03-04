@@ -10,8 +10,10 @@ export async function GET() {
   try {
     // PERFORMANCE FIX: Use stable date rounded to revalidate period
     // This ensures ISR cache is effective - date only changes once per day
-    const lastmod = new Date(Math.floor(Date.now() / (86400 * 1000)) * 86400 * 1000).toISOString();
-    
+    const lastmod = new Date(
+      Math.floor(Date.now() / (86400 * 1000)) * 86400 * 1000,
+    ).toISOString();
+
     // Static pages sitemap
     const staticPages = [
       {
@@ -69,7 +71,7 @@ ${staticPages
     <changefreq>${item.changefreq}</changefreq>
     <priority>${item.priority}</priority>
     <mobile:mobile/>
-  </url>`
+  </url>`,
   )
   .join("\n")}
 </urlset>`;
@@ -85,7 +87,9 @@ ${staticPages
   } catch (error) {
     console.error("Static sitemap generation error:", error);
 
-    const fallbackDate = new Date(Math.floor(Date.now() / (86400 * 1000)) * 86400 * 1000).toISOString();
+    const fallbackDate = new Date(
+      Math.floor(Date.now() / (86400 * 1000)) * 86400 * 1000,
+    ).toISOString();
     const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

@@ -11,8 +11,10 @@ export async function GET() {
   try {
     // PERFORMANCE FIX: Use stable date rounded to revalidate period
     // This ensures ISR cache is effective and doesn't create unique content on each render
-    const lastmod = new Date(Math.floor(Date.now() / (43200 * 1000)) * 43200 * 1000).toISOString();
-    
+    const lastmod = new Date(
+      Math.floor(Date.now() / (43200 * 1000)) * 43200 * 1000,
+    ).toISOString();
+
     // Create sitemap index with multiple sitemaps for better scalability
     const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -43,7 +45,9 @@ export async function GET() {
   } catch (error) {
     console.error("Sitemap index generation error:", error);
 
-    const fallbackDate = new Date(Math.floor(Date.now() / (43200 * 1000)) * 43200 * 1000).toISOString();
+    const fallbackDate = new Date(
+      Math.floor(Date.now() / (43200 * 1000)) * 43200 * 1000,
+    ).toISOString();
     // Fallback sitemap index
     const fallbackIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

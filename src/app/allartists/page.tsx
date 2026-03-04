@@ -4,7 +4,7 @@ import { generatePageMetadata } from "@/lib/utils";
 import { getArtistsWithSongCount } from "@/service/allartists";
 export const dynamic = "force-static";
 // PERFORMANCE FIX: Increased from 300s to reduce ISR writes
-// Artists list changes infrequently, longer cache is appropriate  
+// Artists list changes infrequently, longer cache is appropriate
 export const revalidate = 3600; // 1 hour
 // ✅ Fetch artists with song counts
 const fetchArtistsWithSongCount = async () => {

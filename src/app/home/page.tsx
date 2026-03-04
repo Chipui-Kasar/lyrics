@@ -93,7 +93,7 @@ const HomePage = async () => {
               </h2>
               <PopularArtists
                 artists={artists.filter(
-                  (artist: IArtists) => artist.name !== "Pamching Kasar"
+                  (artist: IArtists) => artist.name !== "Pamching Kasar",
                 )}
               />
             </section>

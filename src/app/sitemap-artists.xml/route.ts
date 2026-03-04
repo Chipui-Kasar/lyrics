@@ -29,7 +29,7 @@ ${artistPages
     <changefreq>${item.changefreq}</changefreq>
     <priority>${item.priority}</priority>
     <mobile:mobile/>
-  </url>`
+  </url>`,
   )
   .join("\n")}
 </urlset>`;

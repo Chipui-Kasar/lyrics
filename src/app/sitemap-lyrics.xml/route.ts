@@ -25,7 +25,7 @@ export async function GET() {
     const lyricPages = currentChunk.flatMap((lyric: any) => [
       {
         url: `/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
-          lyric.artistId?.name || ""
+          lyric.artistId?.name || "",
         )}`,
         priority: "0.8",
         changefreq: "weekly",
@@ -45,7 +45,7 @@ ${lyricPages
     <changefreq>${item.changefreq}</changefreq>
     <priority>${item.priority}</priority>
     <mobile:mobile/>
-  </url>`
+  </url>`,
   )
   .join("\n")}
 </urlset>`;
