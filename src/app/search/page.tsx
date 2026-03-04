@@ -1,7 +1,9 @@
 import SearchClient from "@/components/component/SearchResult/SearchClient";
 import { generatePageMetadata } from "@/lib/utils";
 export const dynamic = "force-static";
-export const revalidate = 300;
+// PERFORMANCE FIX: Increased from 300s to reduce ISR writes on high-traffic search page
+// Search results are user-specific but the page shell can be cached longer
+export const revalidate = 1800; // 30 minutes
 
 // ✅ Enhanced SEO Metadata using utility function
 export async function generateMetadata() {

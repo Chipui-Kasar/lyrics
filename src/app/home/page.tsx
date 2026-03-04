@@ -12,7 +12,9 @@ import TopLyrics from "@/components/component/TopLyrics/toplyrics";
 import ContributeLyrics from "@/components/component/ContributeLyrics/ContributeLyrics";
 
 export const dynamic = "force-static";
-export const revalidate = 300;
+// PERFORMANCE FIX: Increased from 300s to reduce ISR writes
+// Featured/top content doesn't change frequently enough to justify 5-minute cache
+export const revalidate = 1800; // 30 minutes
 
 const fetchHomeData = async () => {
   try {

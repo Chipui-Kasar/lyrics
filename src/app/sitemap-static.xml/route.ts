@@ -1,54 +1,60 @@
 import { slugMaker } from "@/lib/utils";
 
 const BASE_URL = "https://tangkhullyrics.com";
-export const dynamic = "force-dynamic";
-export const revalidate = 3600;
+// CRITICAL FIX: Removed force-dynamic to prevent ISR write on every crawler request
+// Static pages never change, use very long cache
+export const dynamic = "force-static";
+export const revalidate = 86400; // 24 hours - static pages rarely change
 
 export async function GET() {
   try {
+    // PERFORMANCE FIX: Use stable date rounded to revalidate period
+    // This ensures ISR cache is effective - date only changes once per day
+    const lastmod = new Date(Math.floor(Date.now() / (86400 * 1000)) * 86400 * 1000).toISOString();
+    
     // Static pages sitemap
     const staticPages = [
       {
         url: "/",
         priority: "1.0",
         changefreq: "daily",
-        lastmod: new Date().toISOString(),
+        lastmod,
       },
       {
         url: "/about",
         priority: "0.8",
         changefreq: "monthly",
-        lastmod: new Date().toISOString(),
+        lastmod,
       },
       {
         url: "/contact",
         priority: "0.7",
         changefreq: "monthly",
-        lastmod: new Date().toISOString(),
+        lastmod,
       },
       {
         url: "/lyrics",
         priority: "0.9",
         changefreq: "daily",
-        lastmod: new Date().toISOString(),
+        lastmod,
       },
       {
         url: "/search",
         priority: "0.8",
         changefreq: "weekly",
-        lastmod: new Date().toISOString(),
+        lastmod,
       },
       {
         url: "/allartists",
         priority: "0.9",
         changefreq: "weekly",
-        lastmod: new Date().toISOString(),
+        lastmod,
       },
       {
         url: "/contribute",
         priority: "0.7",
         changefreq: "monthly",
-        lastmod: new Date().toISOString(),
+        lastmod,
       },
     ];
 
@@ -71,18 +77,20 @@ ${staticPages
     return new Response(xml, {
       headers: {
         "Content-Type": "application/xml",
+        // PERFORMANCE FIX: Updated Cache-Control to match revalidate=86400 (24h)
         "Cache-Control":
-          "public, max-age=3600, s-maxage=7200, stale-while-revalidate=86400",
+          "public, max-age=86400, s-maxage=172800, stale-while-revalidate=604800",
       },
     });
   } catch (error) {
     console.error("Static sitemap generation error:", error);
 
+    const fallbackDate = new Date(Math.floor(Date.now() / (86400 * 1000)) * 86400 * 1000).toISOString();
     const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>${BASE_URL}/</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
+    <lastmod>${fallbackDate}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -91,7 +99,7 @@ ${staticPages
     return new Response(fallbackXml, {
       headers: {
         "Content-Type": "application/xml",
-        "Cache-Control": "public, max-age=3600",
+        "Cache-Control": "public, max-age=86400, s-maxage=172800",
       },
     });
   }

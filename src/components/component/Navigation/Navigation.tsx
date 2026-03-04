@@ -236,7 +236,11 @@ const Navigation: React.FC = React.memo(() => {
                 e.preventDefault();
                 setIsSubmitted(true);
                 setFilteredLyrics([]);
-                router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+                window.open(
+                  `/search?query=${encodeURIComponent(searchQuery)}`,
+                  "_self",
+                );
+                // router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
               }}
             >
               <Input

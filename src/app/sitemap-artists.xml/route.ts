@@ -2,8 +2,10 @@ import { slugMaker } from "@/lib/utils";
 import { getAllArtists } from "@/service/allartists";
 
 const BASE_URL = "https://tangkhullyrics.com";
-export const dynamic = "force-dynamic";
-export const revalidate = 7200; // 2 hours for artists (less dynamic)
+// CRITICAL FIX: Removed force-dynamic to prevent ISR write on every crawler request
+// Artist data changes infrequently, use longer cache
+export const dynamic = "force-static";
+export const revalidate = 43200; // 12 hours - artists are added infrequently
 
 export async function GET() {
   try {
@@ -35,8 +37,9 @@ ${artistPages
     return new Response(xml, {
       headers: {
         "Content-Type": "application/xml",
+        // PERFORMANCE FIX: Updated Cache-Control to match revalidate=43200 (12h)
         "Cache-Control":
-          "public, max-age=7200, s-maxage=14400, stale-while-revalidate=86400",
+          "public, max-age=43200, s-maxage=86400, stale-while-revalidate=172800",
       },
     });
   } catch (error) {
@@ -55,7 +58,7 @@ ${artistPages
     return new Response(fallbackXml, {
       headers: {
         "Content-Type": "application/xml",
-        "Cache-Control": "public, max-age=7200",
+        "Cache-Control": "public, max-age=43200, s-maxage=86400",
       },
     });
   }

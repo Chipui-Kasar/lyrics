@@ -2,8 +2,10 @@ import { slugMaker } from "@/lib/utils";
 import { getLyrics } from "@/service/allartists";
 
 const BASE_URL = "https://tangkhullyrics.com";
-export const dynamic = "force-dynamic";
-export const revalidate = 1800; // 30 minutes for lyrics (more dynamic)
+// CRITICAL FIX: Removed force-dynamic to prevent ISR write on every crawler request
+// ISR will cache and only regenerate after revalidate period
+export const dynamic = "force-static";
+export const revalidate = 21600; // 6 hours - sitemaps don't need frequent updates
 
 export async function GET() {
   try {
@@ -51,8 +53,9 @@ ${lyricPages
     return new Response(xml, {
       headers: {
         "Content-Type": "application/xml",
+        // PERFORMANCE FIX: Updated Cache-Control to match revalidate=21600 (6h)
         "Cache-Control":
-          "public, max-age=1800, s-maxage=3600, stale-while-revalidate=86400",
+          "public, max-age=21600, s-maxage=43200, stale-while-revalidate=86400",
       },
     });
   } catch (error) {
@@ -71,7 +74,7 @@ ${lyricPages
     return new Response(fallbackXml, {
       headers: {
         "Content-Type": "application/xml",
-        "Cache-Control": "public, max-age=1800",
+        "Cache-Control": "public, max-age=21600, s-maxage=43200",
       },
     });
   }
