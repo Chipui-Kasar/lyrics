@@ -1,7 +1,7 @@
+import { slugMaker } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import { NavigationLink } from "@/components/NavigationLink";
 
 interface PopularArtistsProps {
   artists: IArtists[];
@@ -10,33 +10,34 @@ interface PopularArtistsProps {
 const PopularArtists = ({ artists }: PopularArtistsProps) => {
   return (
     <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
-      <h2 className="text-2xl font-bold">Popular Artists</h2>
+      <h2 className="text-2xl font-bold">Browse by Artists</h2>
       <p className="mt-2 text-muted-foreground">
         Explore the most popular artists on our platform.
       </p>
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {artists.map((artist, key) => (
-          <Link
+          <NavigationLink
             key={key}
-            href={`/artists/${artist.name.replace(/ /g, "-")}`}
+            href={`/artists/${slugMaker(artist.name)}`}
             className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
             prefetch={true}
+            rel="noopener noreferrer"
           >
             <Image
               src={artist.image || "/placeholder-user.jpg"}
               width={64}
               height={64}
               alt={artist.name}
-              className="h-16 w-16 object-cover"
+              className="h-12 w-12 object-cover"
               style={{ borderRadius: "50%" }}
             />
             <div className="text-center">
-              <h3 className="text-sm font-medium">{artist.name}</h3>
+              <h3 className="text-xs font-medium">{artist.name}</h3>
               <p className="text-xs text-muted-foreground">
-                {artist.songCount ?? 0} Lyrics
+                {artist.songCount ? `${artist.songCount} Songs` : ""}
               </p>
             </div>
-          </Link>
+          </NavigationLink>
         ))}
       </div>
     </div>

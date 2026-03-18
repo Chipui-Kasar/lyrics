@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +9,10 @@ import {
   getAllArtists,
   updateArtist,
 } from "@/service/allartists";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import PageLoader from "../../Spinner/Spinner";
+import ImageUpload from "../ImageUpload/ImageUpload";
+import Image from "next/image";
 
 const AddArtists = () => {
   const [formData, setFormData] = useState<{
@@ -25,6 +29,9 @@ const AddArtists = () => {
     image: "",
     village: "",
   });
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   // ✅ Handle text inputs
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -45,6 +52,14 @@ const AddArtists = () => {
     }));
   };
 
+  // Handle image upload/URL change
+  const handleImageChange = (imageUrl: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: imageUrl,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -53,6 +68,14 @@ const AddArtists = () => {
       alert("Please add artist name.");
       return;
     }
+    if (isSameArtistExists(formData.name)) {
+      const confirmAdd = window.confirm(
+        "Artist with this name already exists. Do you still want to add?"
+      );
+      if (!confirmAdd) return;
+    }
+
+    setLoading(true);
 
     // Format the data properly
     const formattedData = {
@@ -78,16 +101,22 @@ const AddArtists = () => {
           village: "",
         });
         loadArtists();
+        setLoading(false);
       } else {
         alert("Failed to add artist.");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error submitting artist:", error);
       alert("An error occurred while submitting the artist.");
+      setLoading(false);
     }
   };
-
-  const [artists, setArtists] = useState([]);
+  const isSameArtistExists = (artistName: string) => {
+    return artists.some(
+      (a: IArtists) => a.name.toLowerCase() === artistName.toLowerCase()
+    );
+  };
 
   useEffect(() => {
     loadArtists();
@@ -102,12 +131,17 @@ const AddArtists = () => {
     setFormData(artist);
   };
   // const handleDelete = async (artistId: string) => {
-  //   try {
-  //     await deleteArtist(artistId);
-  //     loadArtists();
-  //     alert("Artist deleted successfully!");
-  //   } catch (error) {
-  //     console.error("Error deleting artist:", error);
+  //   const secretWord = prompt("Please enter 'DELETE' to confirm deletion:");
+  //   if (secretWord === process.env.SECRET_WORD) {
+  //     try {
+  //       await deleteArtist(artistId);
+  //       loadArtists();
+  //       alert("Artist deleted successfully!");
+  //     } catch (error) {
+  //       console.error("Error deleting artist:", error);
+  //     }
+  //   } else {
+  //     alert("Deletion cancelled.");
   //   }
   // };
 
@@ -176,6 +210,12 @@ const AddArtists = () => {
               onChange={handleChange}
             />
           </div>
+          <ImageUpload
+            currentImageUrl={formData.image}
+            onImageUploaded={handleImageChange}
+            label="Profile Photo"
+            placeholder="Enter the artist profile photo URL"
+          />
           <div className="flex justify-end">
             <Button type="submit">Submit</Button>
           </div>
@@ -187,6 +227,7 @@ const AddArtists = () => {
         <thead>
           <tr className="bg-gray-200">
             <th className="border p-2">ID</th>
+            <th className="border p-2">Image</th>
             <th className="border p-2">Name</th>
             <th className="border p-2">Genre</th>
             <th className="border p-2">Village</th>
@@ -197,6 +238,25 @@ const AddArtists = () => {
           {artists.map((artist: IArtists) => (
             <tr key={artist._id} className="border-b">
               <td className="border p-2">{artist._id}</td>
+              <td className="border p-2">
+                {artist.image ? (
+                  <Image
+                    src={artist.image}
+                    alt={artist.name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-cover rounded-full"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "/placeholder-user.jpg";
+                    }}
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-gray-500">No Image</span>
+                  </div>
+                )}
+              </td>
               <td className="border p-2">{artist.name}</td>
               <td className="border p-2">{artist.genre.join(", ")}</td>
               <td className="border p-2">{artist.village}</td>
@@ -208,6 +268,7 @@ const AddArtists = () => {
           ))}
         </tbody>
       </table>
+      {loading && <PageLoader isLoading={loading} />}
     </section>
   );
 };

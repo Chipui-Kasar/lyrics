@@ -1,6 +1,5 @@
 "use client";
-import Link from "next/link";
-import React from "react";
+import { NavigationLink } from "@/components/NavigationLink";
 import { Button } from "../../ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import { ILyrics } from "@/models/IObjects";
@@ -19,33 +18,36 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
       </p>
       <div className="mt-6 grid gap-4">
         {lyrics.map((lyric, key) => (
-          <Link
-            href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}~${slugMaker(
+          <NavigationLink
+            href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
               lyric.artistId?.name
             )}`}
             prefetch={true}
-            className="group flex items-center gap-4 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
+            className="group relative flex items-center gap-4 rounded-lg border border-yellow-400 bg-yellow-50 p-4 shadow transition hover:bg-yellow-100 hover:shadow-md"
             key={key}
+            rel="noopener noreferrer"
           >
+            <span className="text-yellow-400 text-xl absolute left-[-10px] top-[-10px]">
+              ⭐
+            </span>
             <div className="flex-1">
-              <h3 className="font-medium">{lyric.title}</h3>{" "}
-              {/* ✅ Removed nested <Link> */}
+              <h3 className="font-medium">{lyric.title}</h3>
               <p className="text-sm text-muted-foreground">
                 by{" "}
                 <span className="font-medium">
                   {lyric.artistId?.name ?? "Unknown Artist"}
-                </span>{" "}
-                {/* ✅ No nested <Link> */}
+                </span>
               </p>
             </div>
             <Button
               variant="ghost"
               size="icon"
               className="group-hover:opacity-100"
+              aria-label="View Lyrics"
             >
               <ArrowRightIcon className="h-5 w-5" />
             </Button>
-          </Link>
+          </NavigationLink>
         ))}
       </div>
     </div>

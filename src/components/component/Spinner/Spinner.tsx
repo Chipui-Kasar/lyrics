@@ -1,56 +1,58 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader } from "lucide-react";
 
-const PageLoader = () => {
-  const pathname = usePathname(); // Detect route changes
-  const [loading, setLoading] = useState(false);
+interface PageLoaderProps {
+  isLoading?: boolean;
+}
 
+const PageLoader: React.FC<PageLoaderProps> = ({ isLoading = false }) => {
+  const pathname = usePathname();
+  const [loading, setLoading] = useState(isLoading);
+  const timerRef = useRef<number | null>(null);
+
+  // Ensure spinner never persists after BFCache restore or page show
   useEffect(() => {
-    // Handle clicks on internal links only, except for the current page link
-    const handleClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      const link = target.closest("a");
+    const handlePageShow = () => setLoading(false);
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") setLoading(false);
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, []);
 
-      if (
-        link &&
-        link.getAttribute("href")?.startsWith("/") &&
-        link.getAttribute("href") !== pathname
-      ) {
-        setLoading(true);
+  // Show spinner briefly on route changes; auto-hide after a short delay
+  useEffect(() => {
+    if (isLoading) return;
+    setLoading(true);
+    // Clear any previous timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    timerRef.current = window.setTimeout(() => {
+      setLoading(false);
+      timerRef.current = null;
+    }, 200);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
     };
+  }, [pathname, isLoading]);
 
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
-  }, [pathname]);
+  if (!loading) return null;
 
-  useEffect(() => {
-    // Trigger loader on route change
-    setLoading(true);
-    const timeout = setTimeout(() => setLoading(false), 100);
-
-    return () => clearTimeout(timeout);
-  }, [pathname]);
-
-  //   if (!loading) return null;
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center rounded-lg shadow-lg 
-      bg-gradient-to-r from-[#79095c33] to-[#001fff29] 
-      transition-all duration-700 ease-in-out
-      ${
-        loading
-          ? "opacity-100 scale-100"
-          : "opacity-0 scale-95 pointer-events-none"
-      }
-    `}
-    >
-      {loading && (
-        <Loader className="h-12 w-12 animate-spin text-white drop-shadow-lg" />
-      )}
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-r from-[#79095c33] to-[#001fff29] z-50">
+      <Loader className="h-12 w-12 animate-spin text-white drop-shadow-lg" />
     </div>
   );
 };

@@ -8,11 +8,22 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ILyrics } from "@/models/IObjects";
-import NotFound from "@/app/not-found";
-import { handleShare, slugMaker } from "@/lib/utils";
+import { notFound } from "next/navigation";
+import {
+  handleShare,
+  slugMaker,
+  sanitizeAndDeduplicateHTML,
+} from "@/lib/utils";
+import { useMemo } from "react";
 
 export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
-  if (!songLyrics._id) return <NotFound />;
+  if (!songLyrics._id) notFound();
+
+  // Memoize the sanitized lyrics to ensure consistent rendering
+  const sanitizedLyrics = useMemo(
+    () => sanitizeAndDeduplicateHTML(songLyrics.lyrics || ""),
+    [songLyrics.lyrics],
+  );
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="flex-1 py-12">
@@ -38,9 +49,10 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
               </Button>
               <Link
                 href={`/lyrics/${songLyrics._id}/${slugMaker(
-                  songLyrics.title
-                )}~${slugMaker(songLyrics.artistId?.name)}`}
+                  songLyrics.title,
+                )}_${slugMaker(songLyrics.artistId?.name)}`}
                 prefetch={true}
+                rel="noopener noreferrer"
               >
                 <Button>View Lyrics</Button>
               </Link>
@@ -65,9 +77,9 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
               <p
                 className="text-sm text-muted-foreground"
                 dangerouslySetInnerHTML={{
-                  __html: songLyrics.lyrics?.replace(/\n/g, "<br/>"),
+                  __html: sanitizedLyrics,
                 }}
-              ></p>
+              />
             </div>
           </div>
         </div>

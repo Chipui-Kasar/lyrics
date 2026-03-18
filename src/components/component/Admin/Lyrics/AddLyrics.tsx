@@ -3,10 +3,19 @@ import { Dropdown } from "@/components/ui/dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/richTextEditor";
-import { sanitizeAndDeduplicateHTML } from "@/lib/utils";
+import { sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
 import { IArtists, ILyrics } from "@/models/IObjects";
-import { createLyrics, getLyrics, updateLyrics } from "@/service/allartists";
-import React, { useEffect, useState } from "react";
+import {
+  createLyrics,
+  deleteLyrics,
+  getLyrics,
+  updateLyrics,
+} from "@/service/allartists";
+import { useEffect, useState } from "react";
+import PageLoader from "../../Spinner/Spinner";
+import ImageUpload from "../ImageUpload/ImageUpload";
+import Link from "next/link";
+import Image from "next/image";
 // import { ObjectId } from "mongodb";
 
 const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
@@ -22,6 +31,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     contributedBy: "",
     thumbnail: "",
     lyrics: "",
+    featured: false,
     _id: "",
   });
   const [lyrics, setLyrics] = useState([]);
@@ -29,6 +39,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     Record<string, boolean>
   >({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchLyrics();
@@ -64,6 +75,14 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
     }));
   };
 
+  // Handle thumbnail upload/URL change
+  const handleThumbnailChange = (imageUrl: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      thumbnail: imageUrl,
+    }));
+  };
+
   // ✅ Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,6 +98,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       alert("Please enter a valid release year.");
       return;
     }
+    setLoading(true);
 
     // Format the data properly
     const formattedData = {
@@ -114,14 +134,18 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           lyrics: "",
           thumbnail: "",
           contributedBy: "",
+          featured: false,
           _id: "",
         });
+        setLoading(false);
       } else {
         alert("Failed to add lyrics.");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error submitting lyrics:", error);
       alert("An error occurred while submitting the lyrics.");
+      setLoading(false);
     }
   };
 
@@ -137,7 +161,8 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
         .filter(
           (lyric) =>
             lyric.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            lyric.lyrics?.toLowerCase().includes(searchQuery.toLowerCase())
+            lyric.lyrics?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            lyric.featured
         )
         .reduce((acc, lyric) => {
           const artistName = lyric.artistId.name;
@@ -172,14 +197,36 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
       album: lyrics.album,
       releaseYear: lyrics.releaseYear,
       streamingLinks: {
-        youtube: lyrics.streamingLinks.youtube,
-        spotify: lyrics.streamingLinks.spotify,
+        youtube: lyrics.streamingLinks?.youtube || "",
+        spotify: lyrics.streamingLinks?.spotify || "",
       },
-      contributedBy: lyrics.contributedBy,
+      contributedBy: lyrics.contributedBy || "",
       thumbnail: lyrics.thumbnail,
       lyrics: sanitizeAndDeduplicateHTML(lyrics.lyrics || ""),
+      featured: lyrics.featured || false,
       _id: lyrics._id,
     });
+  };
+  const deleteLyric = async (lyricId: string) => {
+    const wonderfulWord = new Date().toDateString().replace(/\s/g, "");
+
+    const secretWord = prompt("Please enter 'DELETE' to confirm deletion:");
+    if (secretWord === wonderfulWord) {
+      try {
+        await deleteLyrics(lyricId).then((e) => {
+          if (!e) {
+            alert("Failed to delete lyrics");
+          } else {
+            fetchLyrics();
+            alert("Artist deleted successfully!");
+          }
+        });
+      } catch (error) {
+        console.error("Error deleting artist:", error);
+      }
+    } else {
+      alert("Deletion cancelled.");
+    }
   };
 
   return (
@@ -262,6 +309,14 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               className="mb-2"
             />
           </div>
+
+          {/* ✅ Thumbnail Upload */}
+          <ImageUpload
+            currentImageUrl={formData.thumbnail}
+            onImageUploaded={handleThumbnailChange}
+            label="Song Thumbnail"
+            placeholder="Enter the song thumbnail URL"
+          />
           <div className="grid gap-2">
             <Label htmlFor="contributedBy">Contributed By</Label>
             <Input
@@ -282,11 +337,48 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
               defaultValue={formData.lyrics ?? ""}
               onChange={({ target }) =>
                 handleChange({
-                  target: { name: "lyrics", value: target.value },
+                  target: {
+                    name: "lyrics",
+                    value: sanitizeAndDeduplicateHTML(target.value),
+                  },
                 })
               }
             />
           </div>
+          <div className="grid gap-2">
+            <Label htmlFor="featured">Featured Lyrics?</Label>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={formData.featured}
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, featured: !prev.featured }))
+              }
+              className={`
+                relative inline-flex h-6 w-11 items-center
+                rounded-full rounded-lg border border-gray-400
+                transition-colors duration-300
+                ${formData.featured ? "bg-white" : "bg-gray-300"}
+              `}
+            >
+              <span
+                className={`absolute left-0.5 text-sm text-muted-foreground ${
+                  formData.featured ? "translate-x-0" : "translate-x-5"
+                }`}
+              >
+                {formData.featured ? "Yes" : "No"}
+              </span>
+              <span
+                className={`
+                  absolute left-0.5 
+                  inline-block h-5 w-5 rounded-lg bg-background shadow
+                  transform transition-transform duration-300
+                  ${formData.featured ? "translate-x-5" : "translate-x-0"}
+                `}
+              />
+            </button>
+          </div>
+
           <div className="grid gap-2">
             <Label htmlFor="_id">Song ID (Deleted Song ID)</Label>
             <Input
@@ -332,6 +424,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                   <thead>
                     <tr className="bg-gray-100">
                       <th className="border p-2">ID</th>
+                      <th className="border p-2">Thumbnail</th>
                       <th className="border p-2">Title</th>
                       <th className="border p-2">Contributed By</th>
                       <th className="border p-2">Action</th>
@@ -341,11 +434,49 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
                     {artistLyrics.map((lyric) => (
                       <tr key={lyric._id} className="border-t">
                         <td className="border p-2">{lyric._id}</td>
-                        <td className="border p-2">{lyric.title}</td>
+                        <td className="border p-2">
+                          {lyric.thumbnail ? (
+                            <Image
+                              src={lyric.thumbnail}
+                              alt={lyric.title}
+                              width={48}
+                              height={48}
+                              className="w-12 h-12 object-cover rounded"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  "/placeholder.svg";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                              <span className="text-xs text-gray-500">
+                                No Image
+                              </span>
+                            </div>
+                          )}
+                        </td>
+                        <td className="border p-2">
+                          <Link
+                            href={`/lyrics/${lyric._id}/${slugMaker(
+                              lyric.title
+                            )}_${slugMaker(lyric.artistId?.name || "unknown")}`}
+                            // target="_blank"
+                            prefetch={false}
+                            className={`${
+                              lyric.featured ? "text-accent bg-primary" : ""
+                            } hover:underline`}
+                            rel="noopener noreferrer"
+                          >
+                            {lyric.title}
+                          </Link>
+                        </td>
                         <td className="border p-2">{lyric.contributedBy}</td>
                         <td className="border p-2">
                           <Button onClick={() => handleEdit(lyric)}>
                             Edit
+                          </Button>
+                          <Button onClick={() => deleteLyric(lyric._id)}>
+                            Delete
                           </Button>
                         </td>
                       </tr>
@@ -357,6 +488,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           )
         )}
       </div>
+      {loading && <PageLoader isLoading={loading} />}
     </section>
   );
 };

@@ -1,75 +1,277 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import Navigation from "@/components/component/Navigation/Navigation";
 import Footer from "@/components/component/Footer/Footer";
-import DarkTheme from "@/components/component/DarkTheme/DarkTheme";
-import PageLoader from "@/components/component/Spinner/Spinner";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
-// const ico = require("../../public/tangkhullyrics.ico");
+import SessionValidator from "@/components/SessionValidator";
+import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
+import Script from "next/script";
+import ClientShell from "@/components/component/ClientShell/ClientShell";
+import { NavigationLoader } from "@/components/NavigationLoader";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  preload: true,
+  display: "swap",
+  variable: "--font-inter",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Arial",
+    "sans-serif",
+  ],
+  adjustFontFallback: true, // Reduce layout shift
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
+  colorScheme: "light dark",
+};
 
 export const metadata: Metadata = {
-  title: "Tangkhul Song Lyrics",
+  title: {
+    default: "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists",
+    template: "%s | Tangkhul Song Lyrics",
+  },
   description:
-    "Tangkhul Lyrics | Tangkhul Laa Lyrics | Tangkhul Songs Lyrics | Tangkhul Lyrical Oasis",
-  // viewport: "width=device-width, initial-scale=1.0",
-  robots: "index, follow",
-  metadataBase: new URL("https://tangkhullyrics.com/"),
-  authors: [{ name: "Tangkhul Lyrics", url: "https://tangkhullyrics.com/" }],
+    "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics. | TANGKHUL LYRICS Translation",
+  applicationName: "Tangkhul Song Lyrics",
+  referrer: "origin-when-cross-origin",
+  keywords: [
+    "Tangkhul lyrics",
+    "Tangkhul artists",
+    "Tangkhul lyrics translation",
+    "Tangkhul songs",
+    "Tangkhul music",
+    "Tangkhul Laa lyrics",
+    "Manipur songs",
+    "Northeast India music",
+    "Tribal songs",
+    "Traditional music",
+    "Contemporary Tangkhul music",
+    "Tangkhul song lyrics translation",
+    "Tangkhul song meanings",
+  ],
+  authors: [
+    { name: "Tangkhul Lyrics Team", url: "https://tangkhullyrics.com/about" },
+  ],
   creator: "Tangkhul Lyrics",
   publisher: "Tangkhul Lyrics",
-  icons: {
-    icon: "/tangkhullyrics.ico",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
+  metadataBase: new URL("https://tangkhullyrics.com"),
+  alternates: {
+    canonical: "https://tangkhullyrics.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon-32.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+      { url: "/icon-512.svg", sizes: "512x512", type: "image/svg+xml" },
+      { url: "/tangkhullyrics.ico", sizes: "46x46", type: "image/x-icon" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.svg", sizes: "180x180", type: "image/svg+xml" },
+    ],
+    shortcut: "/tangkhullyrics.ico",
+    other: [
+      {
+        rel: "mask-icon",
+        url: "/safari-pinned-tab.svg",
+        color: "#667eea",
+      },
+    ],
+  },
+  manifest: "/manifest.json",
   openGraph: {
     type: "website",
-    url: "https://tangkhullyrics.com/",
-    title: "Tangkhul Song Lyrics",
+    locale: "en_US",
+    url: "https://tangkhullyrics.com",
+    siteName: "Tangkhul Song Lyrics",
+    title: "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
     description:
-      "Explore the rich and vibrant world of Tangkhul song lyrics, where tradition meets melody. Dive into our extensive collection of Tangkhul Laa Lyrics and immerse yourself in the Tangkhul lyrical oasis.",
+      "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists.",
     images: [
       {
         url: "/ogImage.jpg",
         width: 1200,
         height: 630,
-        alt: "Tangkhul Song Lyrics",
+        alt: "Tangkhul Song Lyrics Collection",
+        type: "image/jpeg",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    site: "@TangkhulLyrics",
+    creator: "@TangkhulLyrics",
+    title: "Tangkhul Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
+    description:
+      "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases.",
+    images: ["/ogImage.jpg"],
+  },
   verification: {
     google: "QThzXenD8T7A0SAtb_L2qOy3Wzbw72-7AJfE3vQbxIA",
+    yandex: "27e339faa60d25cd",
   },
+  category: "music",
+  classification: "Music & Entertainment",
   other: {
-    keywords:
-      "lyrics, tangkhul, tangkhul lyrics, tangkhul laa, tangkhul laa lyrics",
+    "google-adsense-account": "ca-pub-1569774903364815",
+    "msapplication-TileColor": "#FAD4F1",
+    "theme-color": "#ffffff",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-title": "Tangkhul Lyrics",
+    "mobile-web-app-capable": "yes",
+    "msapplication-config": "/browserconfig.xml",
   },
 };
+
 export const dynamic = "force-static";
-export const revalidate = 604800;
+export const revalidate = 3600; // Increased to 1 hour for better caching
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
-    <html lang="en">
-      <body className={`${inter.className}`}>
-        <SessionProviderWrapper>
-          <DarkTheme />
-          <header>
-            <Navigation />
-          </header>
-          <div>
-            <PageLoader />
-            {children}
+    <html lang="en" className={inter.variable}>
+      <head>
+        <meta charSet="utf-8" />
+        {/* Preconnect for external resources - high priority */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+
+        {/* Preload critical font files to reduce FCP/LCP */}
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+
+        {/* DNS prefetch for external resources - lower priority */}
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+        {/* Preload only critical LCP image */}
+        <link
+          rel="preload"
+          href="/ogImage.jpg"
+          as="image"
+          type="image/jpeg"
+          fetchPriority="high"
+        />
+
+        {/* Critical CSS for LCP optimization */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            .above-fold { content-visibility: visible; contain: none; }
+            .layout-stable { contain: layout style paint; }
+            .skeleton-loading { background-color: hsl(200, 20%, 90%); }
+            /* Font fallback to reduce CLS */
+            body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+          `,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased">
+        <noscript>
+          <div
+            style={{
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: "#f3f4f6",
+            }}
+          >
+            JavaScript is required for the best experience on Tangkhul Lyrics.
           </div>
-          <footer>
-            <Footer />
-          </footer>
+        </noscript>
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Tangkhul Lyrics",
+            alternateName: "tangkhullyrics.com",
+            description:
+              "The largest collection of Tangkhul song lyrics online",
+            url: "https://tangkhullyrics.com",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate:
+                  "https://tangkhullyrics.com/search?query={search_term_string}",
+              },
+              "query-input": "required name=search_term_string",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "Tangkhul Lyrics",
+              url: "https://tangkhullyrics.com",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://tangkhullyrics.com/ogImage.jpg",
+              },
+            },
+          })}
+        </Script>
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+          data-ad-frequency-hint="30s"
+        />
+        <SessionProviderWrapper>
+          <SessionValidator>
+            <ErrorBoundary>
+              <ClientShell />
+              <NavigationLoader />
+              <header>
+                <Navigation />
+              </header>
+              <main>{children}</main>
+              <Footer />
+            </ErrorBoundary>
+          </SessionValidator>
         </SessionProviderWrapper>
       </body>
     </html>

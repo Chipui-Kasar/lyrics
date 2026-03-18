@@ -1,4 +1,3 @@
-import React from "react";
 import PopularArtists from "../PopularArtists/PopularArtists";
 import { IArtists } from "@/models/IObjects";
 

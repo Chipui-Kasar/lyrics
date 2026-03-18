@@ -18,13 +18,14 @@ export interface ILyrics {
   album: string;
   releaseYear: number;
   lyrics: string;
-  streamingLinks: {
+  streamingLinks?: {
     spotify: string;
     youtube: string;
   };
   thumbnail: string;
   _id: string;
   contributedBy: string;
+  featured?: boolean; // ✅ Add this line
   createdAt?: Date;
   view?: number; // ✅ Add this line
 }

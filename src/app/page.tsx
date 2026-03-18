@@ -1,8 +1,6 @@
-import HomePage from "./(pages)/home/page";
-// import RootLayout from "./layout";
+import HomePage from "./home/page";
 
-export const dynamic = "force-static";
-export const revalidate = 604800;
+export { generateMetadata, dynamic, revalidate } from "./home/page";
 
 export default function MainPage() {
   return <HomePage />;

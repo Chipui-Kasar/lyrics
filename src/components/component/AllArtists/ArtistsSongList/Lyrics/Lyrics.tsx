@@ -1,5 +1,6 @@
 "use client";
-import NotFound from "@/app/not-found";
+
+import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { YouTubePlayer } from "@/components/ui/video";
 import { handleShare, sanitizeAndDeduplicateHTML } from "@/lib/utils";
@@ -8,7 +9,7 @@ import { Video } from "lucide-react";
 import Link from "next/link";
 
 const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
-  if (!lyrics._id) return <NotFound />;
+  if (!lyrics._id) notFound();
   const escapeApostrophe = (text: string) => {
     return text?.replace(/'/g, "&apos;");
   };
@@ -29,7 +30,8 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
             </div>
           </div>
           <div className="flex flex-wrap w-full items-start gap-6">
-            {lyrics.streamingLinks.youtube !== "" ? (
+            {lyrics.streamingLinks?.youtube !== "" &&
+            lyrics.streamingLinks?.youtube ? (
               <YouTubePlayer videoUrl={lyrics.streamingLinks.youtube} />
             ) : (
               <Video
@@ -78,16 +80,22 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
               </div>
             </div>
             <div className="mt-4">
-              <Link
-                href={
-                  lyrics.streamingLinks?.youtube ||
-                  lyrics.streamingLinks?.spotify
-                }
-                className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-                prefetch={true}
-              >
-                Stream now
-              </Link>
+              {(lyrics.streamingLinks?.youtube ||
+                lyrics.streamingLinks?.spotify) && (
+                <Link
+                  href={
+                    lyrics.streamingLinks?.youtube ||
+                    lyrics.streamingLinks?.spotify ||
+                    "#"
+                  }
+                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                  prefetch={false}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Stream now
+                </Link>
+              )}
             </div>
           </div>
         </div>

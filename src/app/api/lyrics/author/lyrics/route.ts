@@ -16,20 +16,30 @@ export async function GET(req: NextRequest) {
 
     await connectMongoDB();
 
-    // Find artist by name
+    // Find artist by name (case-insensitive)
     const artist = await Artist.findOne({
-      name: artistName.replace(/-/g, " "),
+      name: { $regex: new RegExp(`^${artistName.replace(/-/g, " ")}$`, "i") },
     });
 
     if (!artist) {
       return NextResponse.json({ error: "Artist not found" }, { status: 404 });
     }
 
-    // Find lyrics using artist's _id
-    const lyrics = await Lyrics.find({ artistId: artist._id }).populate(
-      "artistId",
-      "name"
-    );
+    // Find lyrics using artist's _id - published and legacy lyrics, exclude drafts
+    const lyrics = await Lyrics.find({
+      artistId: artist._id,
+      $and: [
+        { status: { $ne: "draft" } }, // Explicitly exclude drafts
+        {
+          $or: [
+            { status: "published" },
+            { status: { $exists: false } }, // Legacy lyrics without status
+            { status: null },
+            { status: "" },
+          ],
+        },
+      ],
+    }).populate("artistId", "name");
 
     return NextResponse.json(lyrics);
   } catch (error) {

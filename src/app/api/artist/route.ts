@@ -3,18 +3,42 @@ import { connectMongoDB } from "@/lib/mongodb";
 import { Artist } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { revalidateTag } from "next/cache";
+
+// Helper function to revalidate artist cache
+function revalidateArtistCache(artistName?: string) {
+  // Revalidate specific artist
+  if (artistName) {
+    const artistSlug = artistName.toLowerCase().replace(/\s+/g, "-");
+    revalidateTag(`artist-${artistSlug}`);
+  }
+
+  // Revalidate collection caches
+  revalidateTag("artists-all");
+  revalidateTag("search");
+}
 
 export async function POST(req: Request) {
-  const { name, genre, socialLinks, village } = await req.json();
+  const { name, genre, socialLinks, village, image } = await req.json();
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   await connectMongoDB(true);
-  await Artist.create({ name, genre, socialLinks, village });
+  const newArtist = await Artist.create({
+    name,
+    genre,
+    socialLinks,
+    village,
+    image,
+  });
+
+  // Revalidate cache
+  revalidateArtistCache(name);
+
   return NextResponse.json(
     { message: "Artist created successfully" },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
@@ -40,17 +64,22 @@ export async function DELETE(req: NextRequest) {
     }
 
     await connectMongoDB(true);
-    await Artist.findByIdAndDelete(id);
+    const deletedArtist = await Artist.findByIdAndDelete(id);
+
+    // Revalidate cache
+    if (deletedArtist) {
+      revalidateArtistCache(deletedArtist.name);
+    }
 
     return NextResponse.json(
       { message: "Artist deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("DELETE error:", error);
     return NextResponse.json(
       { error: "Failed to delete artist" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -63,29 +92,36 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { _id, name, genre, socialLinks, village } = await req.json();
+    const { _id, name, genre, socialLinks, village, image } = await req.json();
 
     if (!_id) {
       return NextResponse.json(
         { error: "Artist ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     await connectMongoDB(true);
 
+    const oldArtist = await Artist.findById(_id);
     const updatedArtist = await Artist.findByIdAndUpdate(
       _id,
-      { name, genre, socialLinks, village },
-      { new: true }
+      { name, genre, socialLinks, village, image },
+      { new: true },
     );
+
+    // Revalidate cache for both old and new names (in case name changed)
+    if (oldArtist && oldArtist.name !== name) {
+      revalidateArtistCache(oldArtist.name);
+    }
+    revalidateArtistCache(name);
 
     return NextResponse.json(updatedArtist, { status: 200 });
   } catch (error) {
     console.error("PUT error:", error);
     return NextResponse.json(
       { error: "Failed to update artist" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

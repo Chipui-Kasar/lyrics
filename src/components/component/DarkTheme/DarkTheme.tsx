@@ -1,6 +1,6 @@
 "use client";
 import { Toggle } from "@/components/ui/toggle";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const DarkTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState<any>(null);
@@ -26,7 +26,7 @@ const DarkTheme = () => {
     return null; // Or return a loader if you have one
   }
   return (
-    <div className="fixed bottom-4 right-4">
+    <div className="fixed bottom-4 right-4 z-[1000]">
       <Toggle
         aria-label="Toggle dark mode"
         onClick={() => setIsDarkMode((prevState: boolean) => !prevState)}
