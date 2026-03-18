@@ -41,12 +41,12 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Tangkhul Song Lyrics | Best Collection of Tangkhul Music",
-    template: "%s | Tangkhul Lyrics",
+    default: "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists",
+    template: "%s | Tangkhul Song Lyrics",
   },
   description:
     "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics. | TANGKHUL LYRICS Translation",
-  applicationName: "Tangkhul Lyrics",
+  applicationName: "Tangkhul Song Lyrics",
   referrer: "origin-when-cross-origin",
   keywords: [
     "Tangkhul lyrics",
@@ -113,9 +113,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://tangkhullyrics.com",
-    siteName: "Tangkhul Lyrics",
-    title:
-      "Tangkhul Lyrics - Best Collection of TANGKHUL SONG LYRICS | TANGKHUL LYRICS Translation",
+    siteName: "Tangkhul Song Lyrics",
+    title: "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
     description:
       "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists.",
     images: [
@@ -132,8 +131,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@TangkhulLyrics",
     creator: "@TangkhulLyrics",
-    title:
-      "Tangkhul Lyrics - Best Collection of TANGKHUL SONG LYRICS | TANGKHUL LYRICS Translation",
+    title: "Tangkhul Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
     description:
       "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases.",
     images: ["/ogImage.jpg"],
@@ -232,6 +230,7 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "Tangkhul Lyrics",
+            alternateName: "tangkhullyrics.com",
             description:
               "The largest collection of Tangkhul song lyrics online",
             url: "https://tangkhullyrics.com",

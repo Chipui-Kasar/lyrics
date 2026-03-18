@@ -19,7 +19,8 @@ export async function generateMetadata() {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://tangkhullyrics.com/search?q={search_term_string}",
+        urlTemplate:
+          "https://tangkhullyrics.com/search?query={search_term_string}",
         actionPlatform: [
           "http://schema.org/DesktopWebPlatform",
           "http://schema.org/IOSPlatform",

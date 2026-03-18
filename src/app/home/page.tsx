@@ -36,7 +36,7 @@ const fetchHomeData = async () => {
 export async function generateMetadata() {
   return generatePageMetadata({
     title:
-      "Tangkhul Lyrics - Best Collection of Tangkhul Songs & Artists | Cultural Music Heritage",
+      "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
     description:
       "🎵 Discover 1000+ authentic Tangkhul song lyrics online. Browse trending hits, traditional favorites & new releases from top Tangkhul artists. Updated daily with accurate translations. Preserve cultural heritage through music!",
     url: "https://tangkhullyrics.com",
@@ -51,7 +51,7 @@ export async function generateMetadata() {
       url: "https://tangkhullyrics.com",
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://tangkhullyrics.com/search?q={search_term_string}",
+        target: "https://tangkhullyrics.com/search?query={search_term_string}",
         "query-input": "required name=search_term_string",
       },
     },

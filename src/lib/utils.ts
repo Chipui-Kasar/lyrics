@@ -55,7 +55,11 @@ export function generatePageMetadata({
     title.length > 60 ? title.substring(0, 57) + "..." : title;
 
   return {
-    title: optimizedTitle,
+    // Use an absolute title so route-level metadata doesn't get the layout
+    // template appended a second time.
+    title: {
+      absolute: optimizedTitle,
+    },
     description: optimizedDescription,
     keywords: Array.isArray(keywords) ? keywords : keywords.split(", "),
     metadataBase: new URL("https://tangkhullyrics.com"),
