@@ -76,15 +76,6 @@ const HomePage = async () => {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="col-span-2 grid gap-4">
             <section
-              aria-labelledby="featured-lyrics-heading"
-              className="critical-path"
-            >
-              <h2 id="featured-lyrics-heading" className="sr-only">
-                Featured Tangkhul Song Lyrics
-              </h2>
-              <FeaturedLyrics lyrics={featuredLyrics} />
-            </section>
-            <section
               aria-labelledby="popular-artists-heading"
               className="below-fold non-critical"
             >
@@ -100,8 +91,17 @@ const HomePage = async () => {
           </div>
           <aside
             aria-labelledby="top-lyrics-heading"
-            className="col-span-2 md:col-span-2 lg:col-span-1 below-fold"
+            className="col-span-2 md:col-span-2 lg:col-span-1 below-fold non-critical"
           >
+            <section
+              aria-labelledby="featured-lyrics-heading"
+              className="critical-path mb-6"
+            >
+              <h2 id="featured-lyrics-heading" className="sr-only">
+                Featured Tangkhul Song Lyrics
+              </h2>
+              <FeaturedLyrics lyrics={featuredLyrics} />
+            </section>
             <h2 id="top-lyrics-heading" className="sr-only">
               Top Tangkhul Song Lyrics
             </h2>

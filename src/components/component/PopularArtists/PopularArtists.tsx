@@ -25,10 +25,10 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
           >
             <Image
               src={artist.image || "/placeholder-user.jpg"}
-              width={64}
-              height={64}
+              width={44}
+              height={44}
               alt={artist.name}
-              className="h-12 w-12 object-cover"
+              className="h-9 w-9 object-cover"
               style={{ borderRadius: "50%" }}
             />
             <div className="text-center">

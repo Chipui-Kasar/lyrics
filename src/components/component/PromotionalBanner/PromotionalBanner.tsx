@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -65,7 +63,7 @@ const PromotionalBanner = () => {
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
-        prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1
+        prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1,
       );
       setProgress(0); // Reset progress when changing slide
     }, 5000); // Change slide every 5 seconds
@@ -92,14 +90,14 @@ const PromotionalBanner = () => {
   // Navigation functions
   const goToNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1
+      prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1,
     );
     setProgress(0); // Reset progress
   };
 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? promotionalItems.length - 1 : prevIndex - 1
+      prevIndex === 0 ? promotionalItems.length - 1 : prevIndex - 1,
     );
     setProgress(0); // Reset progress
   };

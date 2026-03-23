@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import PageLoader from "../Spinner/Spinner";
+import Contact from "../Contact/Contact";
 
 interface Artist {
   _id: string;
@@ -51,7 +52,7 @@ const ContributeLyrics = () => {
       setShowDropdown(false);
     } else {
       const filtered = artists.filter((artist) =>
-        artist.name.toLowerCase().includes(artistsName.toLowerCase())
+        artist.name.toLowerCase().includes(artistsName.toLowerCase()),
       );
       setFilteredArtists(filtered);
       setShowDropdown(filtered.length > 0);
@@ -78,7 +79,7 @@ const ContributeLyrics = () => {
       }
     } catch (error) {
       setSubmitStatus(
-        "Session validation failed. Please try signing in again."
+        "Session validation failed. Please try signing in again.",
       );
       return;
     }
@@ -146,11 +147,12 @@ const ContributeLyrics = () => {
 
         {!session ? (
           <div className="mt-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
-            Please{" "}
+            You're not{" "}
             <a href="/admin/signin" className="font-bold underline">
-              sign in
+              signed in
             </a>{" "}
-            to contribute lyrics.
+            contribute via this form.
+            <Contact />
           </div>
         ) : (
           <div className="mt-6 grid gap-4">
