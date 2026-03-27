@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: facebookexternalhit
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: Twitterbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+Host: https://tangkhullyrics.com
+Sitemap: https://tangkhullyrics.com/sitemap.xml
