@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { connectMongoDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
@@ -49,6 +50,10 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
   ],
   session: {
     strategy: "jwt",
@@ -56,6 +61,44 @@ export const authOptions: NextAuthOptions = {
     updateAge: 24 * 60 * 60, // Refresh token every 24 hours
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          await connectMongoDB(true);
+          const existingUser = await User.findOne({ email: user.email });
+          if (!existingUser) {
+            // Register a new user
+            const newUser = new User({
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              authProvider: "google",
+              googleId: account.providerAccountId,
+              role: "user", // Default role
+            });
+            await newUser.save();
+            user.id = newUser._id.toString();
+            // @ts-ignore
+            user.role = newUser.role;
+          } else {
+            // Link existing user if they somehow use google with same email
+            if (!existingUser.googleId) {
+              existingUser.googleId = account.providerAccountId;
+              existingUser.authProvider = "google";
+              existingUser.image = user.image || existingUser.image;
+              await existingUser.save();
+            }
+            user.id = existingUser._id.toString();
+            // @ts-ignore
+            user.role = existingUser.role;
+          }
+        } catch (error) {
+          console.error("Error saving Google user:", error);
+          return false; // deny signin
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -119,7 +162,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/admin/signin",
+    signIn: "/auth/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

@@ -46,7 +46,7 @@ export default function SettingsPage() {
       const sessionCheck = await fetch("/api/validate-session");
       if (!sessionCheck.ok) {
         alert("Your session has expired. Please sign in again.");
-        window.location.href = "/admin/signin";
+        window.location.href = "/auth/signin";
         return;
       }
 
@@ -81,7 +81,7 @@ export default function SettingsPage() {
       const sessionCheck = await fetch("/api/validate-session");
       if (!sessionCheck.ok) {
         alert("Your session has expired. Please sign in again.");
-        window.location.href = "/admin/signin";
+        window.location.href = "/auth/signin";
         return;
       }
 

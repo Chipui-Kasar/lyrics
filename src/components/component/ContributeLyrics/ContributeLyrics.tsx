@@ -73,7 +73,7 @@ const ContributeLyrics = () => {
       if (!sessionCheck.ok) {
         setSubmitStatus("Your session has expired. Please sign in again.");
         setTimeout(() => {
-          router.push("/admin/signin");
+          router.push("/auth/signin");
         }, 2000);
         return;
       }
@@ -148,7 +148,7 @@ const ContributeLyrics = () => {
         {!session ? (
           <div className="mt-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
             You're not{" "}
-            <a href="/admin/signin" className="font-bold underline">
+            <a href="/auth/signin" className="font-bold underline">
               signed in
             </a>{" "}
             contribute via this form.
