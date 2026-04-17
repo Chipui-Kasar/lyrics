@@ -1,5 +1,5 @@
 // app/lyrics/[lyricsID]/[title_artist]/page.tsx
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Lyrics from "@/components/component/AllArtists/ArtistsSongList/Lyrics/Lyrics";
 import {
   generatePageMetadata,
@@ -85,6 +85,12 @@ const LyricsPage = async ({
 
   const songTitle = lyric.title || "Untitled";
   const artistName = lyric.artistId?.name || "Unknown Artist";
+
+  // Ensure the URL uses the proper slug format
+  const expectedSlug = `${slugMaker(songTitle)}_${slugMaker(artistName)}`;
+  if (resolvedParams.title_artist !== expectedSlug) {
+    permanentRedirect(`/lyrics/${lyric._id}/${expectedSlug}`);
+  }
 
   const structuredData = {
     "@context": "https://schema.org",

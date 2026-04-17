@@ -1,5 +1,6 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
 import { generatePageMetadata, slugMaker, removeSlug } from "@/lib/utils";
+import { permanentRedirect } from "next/navigation";
 import { ILyrics } from "@/models/IObjects";
 import {
   // getAllArtists,
@@ -73,6 +74,13 @@ export default async function ArtistPage({
   params: Promise<{ artists: string }>;
 }) {
   const resolvedParams = await params; // Resolve the promise to get the actual params
-  const lyrics = await fetchFeaturedLyrics(resolvedParams.artists);
+  
+  // Ensure the URL uses the proper slug format
+  const expectedSlug = slugMaker(resolvedParams.artists);
+  if (resolvedParams.artists !== expectedSlug) {
+    permanentRedirect(`/artists/${expectedSlug}`);
+  }
+
+  const lyrics = await fetchFeaturedLyrics(expectedSlug);
   return <ArtistsSongLists lyrics={lyrics} />;
 }
