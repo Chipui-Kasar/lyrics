@@ -11,10 +11,6 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
 
-  // Don't wrap signin page with AdminGuard
-  if (pathname === "/admin/signin") {
-    return <>{children}</>;
-  }
 
   // Wrap all other admin pages with AdminGuard
   return <AdminGuard>{children}</AdminGuard>;

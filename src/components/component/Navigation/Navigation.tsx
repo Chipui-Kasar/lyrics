@@ -436,7 +436,7 @@ const Navigation: React.FC = React.memo(() => {
                     Sign In
                   </button>
                   <Link
-                    href="/signup"
+                    href="/auth/signup"
                     className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                   >
                     Sign Up
@@ -467,7 +467,7 @@ const Navigation: React.FC = React.memo(() => {
                           Sign In
                         </button>
                         <Link
-                          href="/signup"
+                          href="/auth/signup"
                           className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => setIsProfileOpen(false)}
                         >

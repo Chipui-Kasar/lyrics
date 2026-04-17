@@ -13,7 +13,21 @@ const UserSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required."],
+      required: false, // Optional for Google OAuth users
+    },
+    authProvider: {
+      type: String,
+      enum: ["credentials", "google"],
+      default: "credentials",
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Only unique if present
+    },
+    image: {
+      type: String,
+      required: false,
     },
     role: {
       type: String,
@@ -27,7 +41,7 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const User = models.User || model("User", UserSchema);

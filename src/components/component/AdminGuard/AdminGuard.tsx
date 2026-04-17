@@ -17,7 +17,7 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
     if (status === "loading") return; // Still loading
 
     if (status === "unauthenticated") {
-      router.replace("/admin/signin");
+      router.replace("/auth/signin");
       return;
     }
 
