@@ -7,27 +7,27 @@ export default function robots(): MetadataRoute.Robots {
         {
           userAgent: "*",
           allow: "/",
-          disallow: ["/admin/", "/api/", "/_next/", "/private/"],
+          disallow: ["/admin/", "/api/", "/_next/", "/private/", "/search"],
         },
         {
           userAgent: "Googlebot",
           allow: "/",
-          disallow: ["/admin/", "/api/"],
+          disallow: ["/admin/", "/api/", "/search"],
         },
         {
           userAgent: "Bingbot",
           allow: "/",
-          disallow: ["/admin/", "/api/"],
+          disallow: ["/admin/", "/api/", "/search"],
         },
         {
           userAgent: "facebookexternalhit",
           allow: "/",
-          disallow: ["/admin/", "/api/"],
+          disallow: ["/admin/", "/api/", "/search"],
         },
         {
           userAgent: "Twitterbot",
           allow: "/",
-          disallow: ["/admin/", "/api/"],
+          disallow: ["/admin/", "/api/", "/search"],
         },
       ],
       sitemap: "https://tangkhullyrics.com/sitemap.xml",
@@ -41,7 +41,7 @@ export default function robots(): MetadataRoute.Robots {
         {
           userAgent: "*",
           allow: "/",
-          disallow: ["/admin/", "/api/"],
+          disallow: ["/admin/", "/api/", "/search"],
         },
       ],
       sitemap: "https://tangkhullyrics.com/sitemap.xml",

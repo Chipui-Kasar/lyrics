@@ -1,6 +1,5 @@
 // app/lyrics/[lyricsID]/[title_artist]/details/page.tsx
 import { notFound, permanentRedirect } from "next/navigation";
-import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
 import {
   generatePageMetadata,
   replaceAllHTMLTagsWithSpace,
@@ -127,6 +126,6 @@ export default async function SongDetailsPage({
   const songTitle = songLyrics.title || "Untitled";
   const artistName = songLyrics.artistId?.name || "Unknown Artist";
   const expectedSlug = `${slugMaker(songTitle)}_${slugMaker(artistName)}`;
-  
+
   permanentRedirect(`/lyrics/${songLyrics._id}/${expectedSlug}`);
 }

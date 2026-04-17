@@ -1,6 +1,6 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
 import { generatePageMetadata, slugMaker, removeSlug } from "@/lib/utils";
-import { permanentRedirect } from "next/navigation";
+import { permanentRedirect, notFound } from "next/navigation";
 import { ILyrics } from "@/models/IObjects";
 import {
   // getAllArtists,
@@ -82,5 +82,10 @@ export default async function ArtistPage({
   }
 
   const lyrics = await fetchFeaturedLyrics(expectedSlug);
+  
+  if (!lyrics || lyrics.length === 0) {
+    notFound();
+  }
+
   return <ArtistsSongLists lyrics={lyrics} />;
 }
