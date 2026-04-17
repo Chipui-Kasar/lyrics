@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dropdown } from "@/components/ui/dropdown";
 import ImageUpload from "@/components/component/Admin/ImageUpload/ImageUpload";
+import SitemapTracker from "@/components/component/Admin/SitemapTracker/SitemapTracker";
 import { Loader2, ExternalLink, Info } from "lucide-react";
 import { getAllArtists } from "@/service/allartists";
 import { createLyrics } from "@/service/allartists";
@@ -203,6 +204,12 @@ export default function ExtractLyricsPage() {
     }));
   };
 
+  const handleUseTrackedLink = (trackedUrl: string) => {
+    setUrl(trackedUrl);
+    setError("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -267,212 +274,225 @@ export default function ExtractLyricsPage() {
     <div className="flex min-h-screen bg-gray-100">
       <AdminNavigation />
       <main className="flex-1 p-4 sm:p-6 lg:p-8 lg:ml-0">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">Extract & Add Lyrics</h1>
 
-          {/* URL Extraction Section */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">
-              Step 1: Extract from URL
-            </h2>
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  type="url"
-                  placeholder="https://example.com/song-lyrics"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleExtract()}
-                  className="flex-1"
-                />
-                <Button
-                  onClick={handleExtract}
-                  disabled={loading || !url.trim()}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Extracting...
-                    </>
-                  ) : (
-                    "Extract"
-                  )}
-                </Button>
-              </div>
-
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-800">
-                  {error}
-                </div>
-              )}
-
-              {extractedData && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
-                  <div className="flex items-start gap-2">
-                    <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-blue-900">
-                        Extracted Artist: {extractedData.artist}
-                      </p>
-                      <p className="text-sm text-blue-700 mt-1">
-                        Title and lyrics have been auto-filled below. Please
-                        select the matching artist and complete the form.
-                      </p>
-                    </div>
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(320px,380px)] items-start">
+            <div className="space-y-6">
+              {/* URL Extraction Section */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold mb-4">
+                  Step 1: Extract from URL
+                </h2>
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      type="url"
+                      placeholder="https://example.com/song-lyrics"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleExtract()}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={handleExtract}
+                      disabled={loading || !url.trim()}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Extracting...
+                        </>
+                      ) : (
+                        "Extract"
+                      )}
+                    </Button>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
 
-          {/* Lyrics Form Section */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">
-              Step 2: Complete & Submit Lyrics
-            </h2>
-
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="grid gap-2">
-                <Label htmlFor="title">Song Title</Label>
-                <Input
-                  id="title"
-                  name="title"
-                  placeholder="Enter the song title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="artistId">Select Artist</Label>
-                <Input
-                  id="artistId"
-                  name="artistId"
-                  placeholder="Enter the artist name"
-                  value={formData.artistId}
-                  onChange={handleChange}
-                  disabled
-                />
-                <Dropdown
-                  options={generateDropdownOptions(artists)}
-                  value={formData.artistId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, artistId: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="album">Album</Label>
-                <Input
-                  id="album"
-                  name="album"
-                  placeholder="Enter the album name"
-                  value={formData.album}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="releaseYear">Release Year</Label>
-                <Input
-                  id="releaseYear"
-                  name="releaseYear"
-                  type="number"
-                  placeholder="Enter the song release year"
-                  value={Number(formData.releaseYear)}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Streaming Links</Label>
-                <Input
-                  id="youtube"
-                  name="youtube"
-                  placeholder="YouTube URL"
-                  value={formData.streamingLinks.youtube}
-                  onChange={handleStreamingLinksChange}
-                  className="mb-2"
-                />
-                <Input
-                  id="spotify"
-                  name="spotify"
-                  placeholder="Spotify URL"
-                  value={formData.streamingLinks.spotify}
-                  onChange={handleStreamingLinksChange}
-                />
-              </div>
-
-              <ImageUpload
-                currentImageUrl={formData.thumbnail}
-                onImageUploaded={handleThumbnailChange}
-                label="Song Thumbnail"
-                placeholder="Enter the song thumbnail URL"
-              />
-
-              <div className="grid gap-2">
-                <Label htmlFor="contributedBy">Contributed By</Label>
-                <Input
-                  id="contributedBy"
-                  name="contributedBy"
-                  type="text"
-                  placeholder="Contributed By"
-                  value={formData.contributedBy}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="lyrics">Lyrics</Label>
-
-                <div
-                  id="lyrics"
-                  dangerouslySetInnerHTML={{ __html: formData.lyrics }}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="featured">Featured Lyrics?</Label>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormData({ ...formData, featured: !formData.featured })
-                  }
-                  className={`px-4 py-2 rounded ${
-                    formData.featured
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {formData.featured ? "Yes" : "No"}
-                </button>
-              </div>
-
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" disabled={submitting} className="flex-1">
-                  {submitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Add Lyrics"
+                  {error && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-800">
+                      {error}
+                    </div>
                   )}
-                </Button>
-                {url && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => window.open(url, "_blank")}
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View Source
-                  </Button>
-                )}
+
+                  {extractedData && (
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                      <div className="flex items-start gap-2">
+                        <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-blue-900">
+                            Extracted Artist: {extractedData.artist}
+                          </p>
+                          <p className="text-sm text-blue-700 mt-1">
+                            Title and lyrics have been auto-filled below. Please
+                            select the matching artist and complete the form.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </form>
+
+              {/* Lyrics Form Section */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold mb-4">
+                  Step 2: Complete & Submit Lyrics
+                </h2>
+
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                  <div className="grid gap-2">
+                    <Label htmlFor="title">Song Title</Label>
+                    <Input
+                      id="title"
+                      name="title"
+                      placeholder="Enter the song title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="artistId">Select Artist</Label>
+                    <Input
+                      id="artistId"
+                      name="artistId"
+                      placeholder="Enter the artist name"
+                      value={formData.artistId}
+                      onChange={handleChange}
+                      disabled
+                    />
+                    <Dropdown
+                      options={generateDropdownOptions(artists)}
+                      value={formData.artistId}
+                      onChange={(e) =>
+                        setFormData({ ...formData, artistId: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="album">Album</Label>
+                    <Input
+                      id="album"
+                      name="album"
+                      placeholder="Enter the album name"
+                      value={formData.album}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="releaseYear">Release Year</Label>
+                    <Input
+                      id="releaseYear"
+                      name="releaseYear"
+                      type="number"
+                      placeholder="Enter the song release year"
+                      value={Number(formData.releaseYear)}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label>Streaming Links</Label>
+                    <Input
+                      id="youtube"
+                      name="youtube"
+                      placeholder="YouTube URL"
+                      value={formData.streamingLinks.youtube}
+                      onChange={handleStreamingLinksChange}
+                      className="mb-2"
+                    />
+                    <Input
+                      id="spotify"
+                      name="spotify"
+                      placeholder="Spotify URL"
+                      value={formData.streamingLinks.spotify}
+                      onChange={handleStreamingLinksChange}
+                    />
+                  </div>
+
+                  <ImageUpload
+                    currentImageUrl={formData.thumbnail}
+                    onImageUploaded={handleThumbnailChange}
+                    label="Song Thumbnail"
+                    placeholder="Enter the song thumbnail URL"
+                  />
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="contributedBy">Contributed By</Label>
+                    <Input
+                      id="contributedBy"
+                      name="contributedBy"
+                      type="text"
+                      placeholder="Contributed By"
+                      value={formData.contributedBy}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="lyrics">Lyrics</Label>
+
+                    <div
+                      id="lyrics"
+                      dangerouslySetInnerHTML={{ __html: formData.lyrics }}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="featured">Featured Lyrics?</Label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          featured: !formData.featured,
+                        })
+                      }
+                      className={`px-4 py-2 rounded ${
+                        formData.featured
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      {formData.featured ? "Yes" : "No"}
+                    </button>
+                  </div>
+
+                  <div className="flex gap-2 pt-4">
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      className="flex-1"
+                    >
+                      {submitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        "Add Lyrics"
+                      )}
+                    </Button>
+                    {url && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => window.open(url, "_blank")}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        View Source
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <SitemapTracker onSelectLink={handleUseTrackedLink} />
           </div>
         </div>
       </main>
