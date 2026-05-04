@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     }
 
     await connectMongoDB();
-    const lyrics = await Lyrics.findOne({
+    const lyrics = (await Lyrics.findOne({
       _id: ID,
       $and: [
         { status: { $ne: "draft" } }, // Explicitly exclude drafts
@@ -29,13 +29,33 @@ export async function GET(req: NextRequest) {
           ],
         },
       ],
-    }).populate("artistId", "name image");
+    })
+      .populate("artistId", "name image")
+      .lean()) as { updatedAt?: Date; _id?: unknown } | null;
 
     if (!lyrics) {
       return NextResponse.json({ error: "Lyrics not found" }, { status: 404 });
     }
 
-    return NextResponse.json(lyrics);
+    const updatedAt = lyrics.updatedAt?.toISOString?.() || "";
+    const etag = updatedAt ? `"${updatedAt}"` : `"${ID}"`;
+
+    if (req.headers.get("if-none-match") === etag) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      });
+    }
+
+    return NextResponse.json(lyrics, {
+      headers: {
+        ETag: etag,
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    });
   } catch (error) {
     console.error("Error fetching lyrics:", error);
     return NextResponse.json(

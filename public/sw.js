@@ -6,7 +6,7 @@
   - Stale-while-revalidate for assets and API
 */
 
-const VERSION = "v1.0.0";
+const VERSION = "v2.0.0";
 const PAGE_CACHE = `pages-${VERSION}`;
 const ASSET_CACHE = `assets-${VERSION}`;
 const API_CACHE = `api-${VERSION}`;
@@ -98,24 +98,39 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // API responses: Stale-while-revalidate (cache JSON)
+  function isContentApi(pathname) {
+    return (
+      pathname.startsWith("/api/lyrics") ||
+      pathname.startsWith("/api/artist") ||
+      pathname.startsWith("/api/search")
+    );
+  }
+
+  // Content API responses: network-first with a short timeout and cache fallback.
+  // The app-level IndexedDB cache still controls instant repeat renders.
   if (isSameOrigin(request.url) && url.pathname.startsWith("/api/")) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(API_CACHE);
         const cached = await cache.match(request);
-        const networkPromise = fetch(request)
-          .then(async (res) => {
-            // Cache only successful responses
-            if (res && res.ok) {
-              await cache.put(request, res.clone()).catch(() => {});
-            }
-            return res;
-          })
-          .catch(() => null);
+        const timeoutMs = isContentApi(url.pathname) ? 2500 : 800;
+        const timeout = new Promise((resolve) =>
+          setTimeout(() => resolve(null), timeoutMs)
+        );
+        const networkPromise = fetch(request).then(async (res) => {
+          if (res && res.ok) {
+            await cache.put(request, res.clone()).catch(() => {});
+          }
+          return res;
+        });
+        const networkResponse = await Promise.race([
+          networkPromise.catch(() => null),
+          timeout,
+        ]);
         return (
+          networkResponse ||
           cached ||
-          networkPromise ||
+          (await networkPromise.catch(() => null)) ||
           new Response(JSON.stringify({ offline: true }), {
             status: 200,
             headers: { "Content-Type": "application/json" },

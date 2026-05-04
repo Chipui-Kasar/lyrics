@@ -6,7 +6,8 @@ import {
   replaceAllHTMLTagsWithSpace,
   sanitizeAndDeduplicateHTML,
   slugMaker,
-  removeSlug,
+  splitTitleArtistSlug,
+  areEquivalentSlugs,
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getSingleLyrics } from "@/service/allartists";
@@ -22,11 +23,7 @@ const fetchLyric = cache(
     title: string,
     artist: string,
   ): Promise<ILyrics | null> => {
-    return await getSingleLyrics(
-      lyricsID,
-      removeSlug(title),
-      removeSlug(artist),
-    );
+    return await getSingleLyrics(lyricsID, title, artist);
   },
 );
 
@@ -36,7 +33,7 @@ export async function generateMetadata({
   params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
   const resolvedParams = await params;
-  const [title, artist] = resolvedParams.title_artist.split("_");
+  const { title, artist } = splitTitleArtistSlug(resolvedParams.title_artist);
   const lyric = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
   if (!lyric) {
@@ -76,7 +73,7 @@ const LyricsPage = async ({
   params: Promise<{ lyricsID: string; title_artist: string }>;
 }) => {
   const resolvedParams = await params;
-  const [title, artist] = resolvedParams.title_artist.split("_");
+  const { title, artist } = splitTitleArtistSlug(resolvedParams.title_artist);
   const lyric = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
   if (!lyric) {
@@ -88,7 +85,7 @@ const LyricsPage = async ({
 
   // Ensure the URL uses the proper slug format
   const expectedSlug = `${slugMaker(songTitle)}_${slugMaker(artistName)}`;
-  if (resolvedParams.title_artist !== expectedSlug) {
+  if (!areEquivalentSlugs(resolvedParams.title_artist, expectedSlug)) {
     permanentRedirect(`/lyrics/${lyric._id}/${expectedSlug}`);
   }
 

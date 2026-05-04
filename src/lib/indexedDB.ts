@@ -6,6 +6,8 @@ export type LyricRecord = {
   artistId?: { name?: string } | string;
   lyrics?: string;
   updatedAt?: string;
+  lyricsHash?: string;
+  lyricsLength?: number;
 };
 
 export type ArtistRecord = {
@@ -29,11 +31,28 @@ export type MetadataRecord = {
   savedAt: number; // epoch ms
 };
 
+export type PageCacheRecord<T = unknown> = {
+  key: string;
+  data: T;
+  savedAt: number;
+  expiresAt: number;
+  version: number;
+  meta?: {
+    totalCount?: number;
+    lastUpdated?: string;
+    hash?: string;
+    length?: number;
+  };
+};
+
+const DB_VERSION = 3;
+const CACHE_VERSION = 1;
+
 let dbPromise: Promise<IDBPDatabase<any>> | null = null;
 
 function getDB() {
   if (!dbPromise) {
-    dbPromise = openDB("lyrics-db", 2, {
+    dbPromise = openDB("lyrics-db", DB_VERSION, {
       upgrade(db, oldVersion) {
         // Create lyrics store
         if (!db.objectStoreNames.contains("lyrics")) {
@@ -47,6 +66,9 @@ function getDB() {
         if (oldVersion < 2 && !db.objectStoreNames.contains("artists")) {
           db.createObjectStore("artists", { keyPath: "_id" });
         }
+        if (oldVersion < 3 && !db.objectStoreNames.contains("pages")) {
+          db.createObjectStore("pages", { keyPath: "key" });
+        }
       },
     });
   }
@@ -56,6 +78,7 @@ function getDB() {
 export async function saveLyricsList(list: LyricRecord[]) {
   const db = await getDB();
   const tx = db.transaction("lyrics", "readwrite");
+  await tx.store.clear();
 
   // Batch operations for better performance
   const promises = list.map((item) => tx.store.put(item));
@@ -101,6 +124,7 @@ export async function getMetadata(): Promise<MetadataRecord | null> {
 export async function saveArtistsList(list: ArtistRecord[]) {
   const db = await getDB();
   const tx = db.transaction("artists", "readwrite");
+  await tx.store.clear();
 
   // Batch operations for better performance
   const promises = list.map((item) => tx.store.put(item));
@@ -161,5 +185,47 @@ export async function clearAllCache() {
     db.clear("lyrics"),
     db.clear("artists"),
     db.clear("metadata"),
+    db.clear("pages"),
   ]);
+}
+
+export async function savePageCache<T>(
+  key: string,
+  data: T,
+  options: {
+    ttlMs: number;
+    meta?: PageCacheRecord<T>["meta"];
+  }
+) {
+  const db = await getDB();
+  const record: PageCacheRecord<T> = {
+    key,
+    data,
+    savedAt: Date.now(),
+    expiresAt: Date.now() + options.ttlMs,
+    version: CACHE_VERSION,
+    meta: options.meta,
+  };
+  await db.put("pages", record);
+  return record;
+}
+
+export async function getPageCache<T>(
+  key: string
+): Promise<PageCacheRecord<T> | null> {
+  const db = await getDB();
+  const record = (await db.get("pages", key)) as
+    | PageCacheRecord<T>
+    | undefined;
+
+  if (!record || record.version !== CACHE_VERSION) {
+    return null;
+  }
+
+  return record;
+}
+
+export async function deletePageCache(key: string) {
+  const db = await getDB();
+  await db.delete("pages", key);
 }

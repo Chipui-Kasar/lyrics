@@ -189,20 +189,32 @@ export async function GET(req: NextRequest) {
       const totalCount = await Lyrics.countDocuments(filters);
       const totalPages = Math.max(1, Math.ceil(totalCount / pageLimit));
 
-      return NextResponse.json({
-        items: lyrics,
-        pagination: {
-          page,
-          limit: pageLimit,
-          totalCount,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
+      return NextResponse.json(
+        {
+          items: lyrics,
+          pagination: {
+            page,
+            limit: pageLimit,
+            totalCount,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+          },
         },
-      });
+        {
+          headers: {
+            "Cache-Control":
+              "public, s-maxage=300, stale-while-revalidate=3600",
+          },
+        },
+      );
     }
 
-    return NextResponse.json(lyrics);
+    return NextResponse.json(lyrics, {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch lyrics", details: (error as Error).message },

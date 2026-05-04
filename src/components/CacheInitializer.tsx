@@ -1,15 +1,44 @@
 "use client";
 
 import { useEffect } from "react";
+import { initializeCache } from "@/lib/cacheService";
 
 export default function CacheInitializer() {
   useEffect(() => {
-    console.log("🚀 Cache system initialized");
+    if (typeof window === "undefined") return;
 
-    // Don't run any background syncs - let pages handle their own data
-    // This component is now a placeholder for future cache initialization
-    // Removed expensive syncAllData calls that were causing slow navigation
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        await initializeCache();
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Cache initialization failed:", error);
+        }
+      }
+    };
+
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(() => {
+        void run();
+      }, { timeout: 1500 });
+
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(id);
+      };
+    }
+
+    const timeout = setTimeout(() => {
+      void run();
+    }, 800);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, []);
 
-  return null; // This component doesn't render anything
+  return null;
 }

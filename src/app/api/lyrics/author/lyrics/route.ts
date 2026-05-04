@@ -17,9 +17,9 @@ export async function GET(req: NextRequest) {
     await connectMongoDB();
 
     // Find artist by name (case-insensitive)
-    const artist = await Artist.findOne({
+    const artist = (await Artist.findOne({
       name: { $regex: new RegExp(`^${artistName.replace(/-/g, " ")}$`, "i") },
-    });
+    }).lean()) as { _id: unknown; name?: string } | null;
 
     if (!artist) {
       return NextResponse.json({ error: "Artist not found" }, { status: 404 });
@@ -39,9 +39,34 @@ export async function GET(req: NextRequest) {
           ],
         },
       ],
-    }).populate("artistId", "name");
+    })
+      .populate("artistId", "name")
+      .sort({ title: 1 })
+      .lean();
 
-    return NextResponse.json(lyrics);
+    const latestUpdated = lyrics
+      .map((lyric) => lyric.updatedAt?.toISOString?.())
+      .filter(Boolean)
+      .sort()
+      .at(-1);
+    const etag = `"${artist._id}:${lyrics.length}:${latestUpdated || ""}"`;
+
+    if (req.headers.get("if-none-match") === etag) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          ETag: etag,
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      });
+    }
+
+    return NextResponse.json(lyrics, {
+      headers: {
+        ETag: etag,
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    });
   } catch (error) {
     console.error("Error fetching lyrics:", error);
     return NextResponse.json(

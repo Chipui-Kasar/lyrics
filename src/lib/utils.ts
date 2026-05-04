@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+function normalizeSlugValue(str: string) {
+  return str.normalize("NFC").trim().replace(/\s+/g, " ");
+}
+
 //a function to convert space to - in a string
 export function slugMaker(str: string) {
   if (!str) return "";
@@ -15,10 +19,45 @@ export function slugMaker(str: string) {
   } catch (e) {
     // ignore
   }
-  return str.trim().replace(/\s+/g, "-").toLowerCase();
+  return normalizeSlugValue(str)
+    .replace(/[_\s]+/g, "-")
+    .replace(/-+/g, "-")
+    .toLowerCase();
 }
 export function removeSlug(str: string) {
-  return str.replace(/-/g, " ");
+  try {
+    str = decodeURIComponent(str);
+  } catch (e) {
+    // ignore
+  }
+  return normalizeSlugValue(str).replace(/[-_]+/g, " ");
+}
+
+export function splitTitleArtistSlug(value: string) {
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(value);
+    } catch (error) {
+      return value;
+    }
+  })();
+
+  const lastSeparator = decoded.lastIndexOf("_");
+  if (lastSeparator === -1) {
+    return {
+      title: decoded,
+      artist: "",
+    };
+  }
+
+  return {
+    title: decoded.slice(0, lastSeparator),
+    artist: decoded.slice(lastSeparator + 1),
+  };
+}
+
+export function areEquivalentSlugs(left: string, right: string) {
+  return slugMaker(left) === slugMaker(right);
 }
 
 //function for metatags

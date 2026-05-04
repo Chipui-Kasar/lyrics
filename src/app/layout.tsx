@@ -166,23 +166,6 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <meta charSet="utf-8" />
-        {/* Preconnect for external resources - high priority */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-
-        {/* Preload critical font files to reduce FCP/LCP */}
-        <link
-          rel="preload"
-          href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-
         {/* DNS prefetch for external resources - lower priority */}
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />

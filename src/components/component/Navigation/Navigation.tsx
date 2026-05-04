@@ -55,8 +55,9 @@ const Navigation: React.FC = React.memo(() => {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Debounced search with caching
-  const debouncedSearch = useCallback(
-    debounce(async (query: string) => {
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (query: string) => {
       if (query.length <= 2) {
         setFilteredLyrics([]);
         setIsLoading(false);
@@ -146,7 +147,7 @@ const Navigation: React.FC = React.memo(() => {
       } finally {
         setIsLoading(false);
       }
-    }, 500), // Increased debounce to 500ms
+      }, 500),
     [],
   );
 

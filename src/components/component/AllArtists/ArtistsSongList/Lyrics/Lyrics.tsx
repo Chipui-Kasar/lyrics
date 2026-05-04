@@ -7,9 +7,54 @@ import { handleShare, sanitizeAndDeduplicateHTML } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import {
+  getCachedLyric,
+  revalidateLyricCache,
+  seedLyricCache,
+} from "@/lib/cacheService";
 
 const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
   if (!lyrics._id) notFound();
+  const [displayLyrics, setDisplayLyrics] = useState(lyrics);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    seedLyricCache(lyrics).catch((error) => {
+      console.error("Failed to seed lyric cache:", error);
+    });
+
+    getCachedLyric(lyrics._id)
+      .then(({ data }) => {
+        if (!cancelled && data) {
+          setDisplayLyrics(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to read lyric cache:", error);
+      });
+
+    revalidateLyricCache(lyrics._id)
+      .then((fresh) => {
+        if (!cancelled && fresh) {
+          setDisplayLyrics(fresh);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to refresh lyric cache:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [lyrics]);
+
+  const sanitizedLyrics = useMemo(
+    () => sanitizeAndDeduplicateHTML(displayLyrics.lyrics || ""),
+    [displayLyrics.lyrics]
+  );
+
   const escapeApostrophe = (text: string) => {
     return text?.replace(/'/g, "&apos;");
   };
@@ -23,16 +68,16 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
               Lyrics
             </div>
             <h1 className="text-3xl font-bold">
-              {escapeApostrophe(lyrics.title)}
+              {escapeApostrophe(displayLyrics.title)}
             </h1>
             <div className="text-muted-foreground">
-              {escapeApostrophe(lyrics.artistId?.name)}
+              {escapeApostrophe(displayLyrics.artistId?.name)}
             </div>
           </div>
           <div className="flex flex-wrap w-full items-start gap-6">
-            {lyrics.streamingLinks?.youtube !== "" &&
-            lyrics.streamingLinks?.youtube ? (
-              <YouTubePlayer videoUrl={lyrics.streamingLinks.youtube} />
+            {displayLyrics.streamingLinks?.youtube !== "" &&
+            displayLyrics.streamingLinks?.youtube ? (
+              <YouTubePlayer videoUrl={displayLyrics.streamingLinks.youtube} />
             ) : (
               <Video
                 width="200"
@@ -44,7 +89,7 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
             <div
               className="prose text-muted-foreground"
               dangerouslySetInnerHTML={{
-                __html: sanitizeAndDeduplicateHTML(lyrics.lyrics || ""),
+                __html: sanitizedLyrics,
               }}
             ></div>
           </div>
@@ -58,7 +103,7 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => handleShare(lyrics)}
+                onClick={() => handleShare(displayLyrics)}
               >
                 <ShareIcon className="h-5 w-5" />
                 <span className="sr-only">Share</span>
@@ -67,25 +112,25 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
             <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
               <div className="flex items-center justify-between">
                 <span>Artist:</span>
-                <span>{lyrics.artistId?.name}</span>
+                <span>{displayLyrics.artistId?.name}</span>
               </div>
               <div className="flex items-start justify-between">
                 <span>Album:</span>
-                <span>{lyrics.album}</span>
+                <span>{displayLyrics.album}</span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span>Release Date:</span>
-                <span>{lyrics.releaseYear}</span>
+                <span>{displayLyrics.releaseYear}</span>
               </div>
             </div>
             <div className="mt-4">
-              {(lyrics.streamingLinks?.youtube ||
-                lyrics.streamingLinks?.spotify) && (
+              {(displayLyrics.streamingLinks?.youtube ||
+                displayLyrics.streamingLinks?.spotify) && (
                 <Link
                   href={
-                    lyrics.streamingLinks?.youtube ||
-                    lyrics.streamingLinks?.spotify ||
+                    displayLyrics.streamingLinks?.youtube ||
+                    displayLyrics.streamingLinks?.spotify ||
                     "#"
                   }
                   className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"

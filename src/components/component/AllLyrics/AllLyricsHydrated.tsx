@@ -4,6 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AllLyrics from "./AllLyrics";
 import type { ILyrics } from "@/models/IObjects";
+import {
+  getCachedLyricsPage,
+  saveLyricsPageCache,
+} from "@/lib/cacheService";
 
 interface Props {
   initialLyrics: ILyrics[];
@@ -43,6 +47,15 @@ export default function AllLyricsHydrated({
     },
   });
 
+  useEffect(() => {
+    saveLyricsPageCache(initialPagination.page, {
+      items: initialLyrics || [],
+      pagination: initialPagination,
+    }).catch((error) => {
+      console.error("Failed to seed lyrics page cache:", error);
+    });
+  }, [initialLyrics, initialPagination]);
+
   const pageFromUrl = useMemo(() => {
     const raw = searchParams.get("page");
     const parsed = raw ? Number(raw) : initialPagination.page;
@@ -63,10 +76,18 @@ export default function AllLyricsHydrated({
         setIsLoading(false);
         setLyrics(cached.items);
         setPagination(cached.pagination);
-        return;
+      } else {
+        const persistentCached = await getCachedLyricsPage(page);
+        if (persistentCached?.data && Date.now() <= persistentCached.expiresAt) {
+          cacheRef.current[page] = persistentCached.data;
+          setLyrics(persistentCached.data.items);
+          setPagination(persistentCached.data.pagination);
+          setIsLoading(false);
+        } else {
+          setIsLoading(true);
+        }
       }
 
-      setIsLoading(true);
       const controller = new AbortController();
       abortRef.current = controller;
 
@@ -94,6 +115,10 @@ export default function AllLyricsHydrated({
           items: data.items,
           pagination: data.pagination,
         };
+        await saveLyricsPageCache(page, {
+          items: data.items,
+          pagination: data.pagination,
+        });
 
         setLyrics(data.items);
         setPagination(data.pagination);
