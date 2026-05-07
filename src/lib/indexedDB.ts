@@ -94,6 +94,11 @@ export async function getLyricsList(): Promise<LyricRecord[]> {
   return all as LyricRecord[];
 }
 
+export async function getLyricsCount(): Promise<number> {
+  const db = await getDB();
+  return db.count("lyrics");
+}
+
 export async function saveLyric(record: LyricRecord) {
   const db = await getDB();
   await db.put("lyrics", record);
@@ -138,6 +143,11 @@ export async function getArtistsList(): Promise<ArtistRecord[]> {
   const all = await tx.store.getAll();
   await tx.done;
   return all as ArtistRecord[];
+}
+
+export async function getArtistsCount(): Promise<number> {
+  const db = await getDB();
+  return db.count("artists");
 }
 
 export async function saveArtist(record: ArtistRecord) {

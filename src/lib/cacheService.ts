@@ -2,10 +2,12 @@
 
 import {
   getLyricsList,
+  getLyricsCount,
   saveLyricsList,
   saveMetadata,
   getMetadata,
   getArtistsList,
+  getArtistsCount,
   saveArtistsList,
   saveArtistsMetadata,
   getArtistsMetadata,
@@ -40,9 +42,20 @@ function toIfNoneMatch(lastUpdated?: string) {
   return lastUpdated ? `"${lastUpdated}"` : "";
 }
 
+function buildApiUrl(path: string, params?: Record<string, string>) {
+  const searchParams = new URLSearchParams(params);
+  if (typeof window !== "undefined") {
+    searchParams.set("_cacheBust", String(Date.now()));
+  }
+
+  const queryString = searchParams.toString();
+  return `${apiBase()}${path}${queryString ? `?${queryString}` : ""}`;
+}
+
 async function fetchCollectionMetadata(type: "lyrics" | "artists") {
-  const response = await fetch(`${apiBase()}/api/${type}/metadata`, {
+  const response = await fetch(buildApiUrl(`/api/${type}/metadata`), {
     method: "GET",
+    cache: "no-store",
     headers: {
       "Cache-Control": "no-cache",
     },
@@ -99,17 +112,24 @@ async function checkCacheFreshness(
       type === "lyrics" ? await getMetadata() : await getArtistsMetadata();
     if (!metadata) return false;
 
+    const storedCount =
+      type === "lyrics" ? await getLyricsCount() : await getArtistsCount();
+    if (storedCount !== metadata.totalCount) {
+      console.log(
+        `🔄 ${type} cache count mismatch (${storedCount}/${metadata.totalCount})`
+      );
+      return false;
+    }
+
     // Use metadata endpoint (returns ~50-100 bytes vs 500KB+)
-    const response = await fetch(
-      `${apiBase()}/api/${type}/metadata`,
-      {
-        method: "GET",
-        headers: {
-          "If-None-Match": toIfNoneMatch(metadata.lastUpdated),
-          "Cache-Control": "no-cache",
-        },
-      }
-    );
+    const response = await fetch(buildApiUrl(`/api/${type}/metadata`), {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        "If-None-Match": toIfNoneMatch(metadata.lastUpdated),
+        "Cache-Control": "no-cache",
+      },
+    });
 
     // 304 = Not Modified (cache is fresh)
     if (response.status === 304) {
@@ -170,11 +190,16 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
     // Check if cache is recent using lightweight check
     if (!forceRefresh) {
       const metadata = await getMetadata();
+      const storedCount = await getLyricsCount();
       const now = Date.now();
       const savedAt = metadata?.savedAt || 0;
+      const hasCompleteCache =
+        !!metadata &&
+        storedCount > 0 &&
+        storedCount === metadata.totalCount;
 
       // First check: Time-based (instant, no network)
-      if (now - savedAt < CACHE_DURATION) {
+      if (hasCompleteCache && now - savedAt < CACHE_DURATION) {
         console.log("✅ Lyrics cache is fresh (time-based), skipping update");
         return;
       }
@@ -195,8 +220,9 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
     const metadata = await fetchCollectionMetadata("lyrics").catch(() => null);
 
     const response = await fetch(
-      `${apiBase()}/api/lyrics?sort=title`,
+      buildApiUrl("/api/lyrics", { sort: "title", order: "asc" }),
       {
+        cache: "no-store",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -210,12 +236,21 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
     }
 
     const lyrics = await response.json();
+    if (!Array.isArray(lyrics)) {
+      throw new Error("Invalid lyrics response");
+    }
 
     console.log(
       `📦 Downloaded ${lyrics.length} lyrics (${Math.round(
         JSON.stringify(lyrics).length / 1024
       )}KB)`
     );
+
+    if (metadata?.totalCount && lyrics.length < metadata.totalCount) {
+      throw new Error(
+        `Incomplete lyrics response: received ${lyrics.length} of ${metadata.totalCount}`
+      );
+    }
 
     // Save to IndexedDB
     await saveLyricsList(
@@ -446,11 +481,16 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
     // Check if cache is recent using lightweight check
     if (!forceRefresh) {
       const metadata = await getArtistsMetadata();
+      const storedCount = await getArtistsCount();
       const now = Date.now();
       const savedAt = metadata?.savedAt || 0;
+      const hasCompleteCache =
+        !!metadata &&
+        storedCount > 0 &&
+        storedCount === metadata.totalCount;
 
       // First check: Time-based (instant, no network)
-      if (now - savedAt < CACHE_DURATION) {
+      if (hasCompleteCache && now - savedAt < CACHE_DURATION) {
         console.log("✅ Artists cache is fresh (time-based), skipping update");
         return;
       }
@@ -471,8 +511,9 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
     const metadata = await fetchCollectionMetadata("artists").catch(() => null);
 
     const response = await fetch(
-      `${apiBase()}/api/artist`,
+      buildApiUrl("/api/artist"),
       {
+        cache: "no-store",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -486,6 +527,15 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
     }
 
     const artists = await response.json();
+    if (!Array.isArray(artists)) {
+      throw new Error("Invalid artists response");
+    }
+
+    if (metadata?.totalCount && artists.length < metadata.totalCount) {
+      throw new Error(
+        `Incomplete artists response: received ${artists.length} of ${metadata.totalCount}`
+      );
+    }
 
     console.log(`📦 Downloaded ${artists.length} artists`);
 

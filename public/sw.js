@@ -6,7 +6,7 @@
   - Stale-while-revalidate for assets and API
 */
 
-const VERSION = "v2.0.0";
+const VERSION = "v2.0.1";
 const PAGE_CACHE = `pages-${VERSION}`;
 const ASSET_CACHE = `assets-${VERSION}`;
 const API_CACHE = `api-${VERSION}`;
@@ -109,6 +109,11 @@ self.addEventListener("fetch", (event) => {
   // Content API responses: network-first with a short timeout and cache fallback.
   // The app-level IndexedDB cache still controls instant repeat renders.
   if (isSameOrigin(request.url) && url.pathname.startsWith("/api/")) {
+    if (request.cache === "no-store" || url.searchParams.has("_cacheBust")) {
+      event.respondWith(fetch(request));
+      return;
+    }
+
     event.respondWith(
       (async () => {
         const cache = await caches.open(API_CACHE);
