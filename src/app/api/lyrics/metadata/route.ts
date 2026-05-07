@@ -3,40 +3,34 @@ import { connectMongoDB } from "@/lib/mongodb";
 import { Lyrics } from "@/models/model";
 import { headers } from "next/headers";
 
+function publicLyricsFilter() {
+  return {
+    $and: [
+      { status: { $ne: "draft" } },
+      {
+        $or: [
+          { status: "published" },
+          { status: { $exists: false } },
+          { status: null },
+          { status: "" },
+        ],
+      },
+    ],
+  };
+}
+
 // Returns minimal metadata for consistency checks
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const includeAll = searchParams.get("includeAll") === "true";
+    const filters = includeAll ? {} : publicLyricsFilter();
+
     await connectMongoDB(false);
 
-    // Count published (exclude drafts)
-    const totalCount = await Lyrics.countDocuments({
-      $and: [
-        { status: { $ne: "draft" } },
-        {
-          $or: [
-            { status: "published" },
-            { status: { $exists: false } },
-            { status: null },
-            { status: "" },
-          ],
-        },
-      ],
-    });
+    const totalCount = await Lyrics.countDocuments(filters);
 
-    // Latest updatedAt among published
-    const latest = await Lyrics.find({
-      $and: [
-        { status: { $ne: "draft" } },
-        {
-          $or: [
-            { status: "published" },
-            { status: { $exists: false } },
-            { status: null },
-            { status: "" },
-          ],
-        },
-      ],
-    })
+    const latest = await Lyrics.find(filters)
       .sort({ updatedAt: -1 })
       .limit(1)
       .select({ updatedAt: 1 })

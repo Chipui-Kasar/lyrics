@@ -53,13 +53,19 @@ function buildApiUrl(path: string, params?: Record<string, string>) {
 }
 
 async function fetchCollectionMetadata(type: "lyrics" | "artists") {
-  const response = await fetch(buildApiUrl(`/api/${type}/metadata`), {
-    method: "GET",
-    cache: "no-store",
-    headers: {
-      "Cache-Control": "no-cache",
-    },
-  });
+  const response = await fetch(
+    buildApiUrl(
+      `/api/${type}/metadata`,
+      type === "lyrics" ? { includeAll: "true" } : undefined
+    ),
+    {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-cache",
+      },
+    }
+  );
 
   if (!response.ok) {
     throw new Error(`Failed metadata fetch for ${type}: ${response.status}`);
@@ -103,6 +109,62 @@ function artistPageMeta(lyrics: ILyrics[]) {
   };
 }
 
+async function fetchAllLyrics(): Promise<LyricRecord[]> {
+  const pageSize = 200;
+  const lyricsById = new Map<string, LyricRecord>();
+  let page = 1;
+  let totalCount = 0;
+  let hasNext = true;
+
+  while (hasNext) {
+    const response = await fetch(
+      buildApiUrl("/api/lyrics", {
+        page: String(page),
+        limit: String(pageSize),
+        sort: "title",
+        order: "asc",
+        includeAll: "true",
+      }),
+      {
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Accept-Encoding": "gzip, deflate, br",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data?.items) || !data?.pagination) {
+      throw new Error("Invalid paginated lyrics response");
+    }
+
+    data.items.forEach((lyric: LyricRecord) => {
+      if (lyric?._id) {
+        lyricsById.set(lyric._id, lyric);
+      }
+    });
+
+    totalCount = data.pagination.totalCount ?? totalCount;
+    hasNext = Boolean(data.pagination.hasNext);
+    page += 1;
+  }
+
+  const lyrics = Array.from(lyricsById.values());
+  if (totalCount && lyrics.length < totalCount) {
+    throw new Error(
+      `Incomplete lyrics response: received ${lyrics.length} of ${totalCount}`
+    );
+  }
+
+  return lyrics;
+}
+
 // Helper to check if cache needs update using lightweight metadata endpoint
 async function checkCacheFreshness(
   type: "lyrics" | "artists"
@@ -122,14 +184,20 @@ async function checkCacheFreshness(
     }
 
     // Use metadata endpoint (returns ~50-100 bytes vs 500KB+)
-    const response = await fetch(buildApiUrl(`/api/${type}/metadata`), {
+    const response = await fetch(
+      buildApiUrl(
+        `/api/${type}/metadata`,
+        type === "lyrics" ? { includeAll: "true" } : undefined
+      ),
+      {
       method: "GET",
       cache: "no-store",
       headers: {
         "If-None-Match": toIfNoneMatch(metadata.lastUpdated),
         "Cache-Control": "no-cache",
       },
-    });
+      }
+    );
 
     // 304 = Not Modified (cache is fresh)
     if (response.status === 304) {
@@ -219,26 +287,7 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
     // Fetch fresh data from API
     const metadata = await fetchCollectionMetadata("lyrics").catch(() => null);
 
-    const response = await fetch(
-      buildApiUrl("/api/lyrics", { sort: "title", order: "asc" }),
-      {
-        cache: "no-store",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Accept-Encoding": "gzip, deflate, br", // Request compression
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const lyrics = await response.json();
-    if (!Array.isArray(lyrics)) {
-      throw new Error("Invalid lyrics response");
-    }
+    const lyrics = await fetchAllLyrics();
 
     console.log(
       `📦 Downloaded ${lyrics.length} lyrics (${Math.round(

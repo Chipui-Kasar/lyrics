@@ -25,6 +25,22 @@ function revalidateLyricsCache(lyricsId?: string, artistName?: string) {
   revalidateTag("search");
 }
 
+function publicLyricsFilter() {
+  return {
+    $and: [
+      { status: { $ne: "draft" } },
+      {
+        $or: [
+          { status: "published" },
+          { status: { $exists: false } },
+          { status: null },
+          { status: "" },
+        ],
+      },
+    ],
+  };
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -122,6 +138,7 @@ export async function GET(req: NextRequest) {
     const sortParam = url.searchParams.get("sort");
     const orderParam = url.searchParams.get("order");
     const fieldsParam = url.searchParams.get("fields");
+    const includeAllParam = url.searchParams.get("includeAll");
 
     const DEFAULT_LIMIT = 60;
     const MAX_LIMIT = 200;
@@ -140,20 +157,10 @@ export async function GET(req: NextRequest) {
     const order = orderParam === "asc" ? 1 : -1;
     await connectMongoDB(false); // Explicitly use user connection for read operations
 
-    // Build query - fetch published lyrics and legacy lyrics without status field, exclude drafts
-    const filters: Record<string, unknown> = {
-      $and: [
-        { status: { $ne: "draft" } }, // Explicitly exclude drafts
-        {
-          $or: [
-            { status: "published" },
-            { status: { $exists: false } }, // Legacy lyrics without status field
-            { status: null }, // Lyrics with null status
-            { status: "" }, // Lyrics with empty status
-          ],
-        },
-      ],
-    };
+    const includeAll = includeAllParam === "true";
+    const filters: Record<string, unknown> = includeAll
+      ? {}
+      : publicLyricsFilter();
 
     if (url.searchParams.get("featured")) {
       filters.featured = true;
