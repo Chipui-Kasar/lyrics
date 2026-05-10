@@ -111,7 +111,7 @@ function artistPageMeta(lyrics: ILyrics[]) {
 
 async function fetchAllLyrics(): Promise<LyricRecord[]> {
   const pageSize = 200;
-  const lyricsById = new Map<string, LyricRecord>();
+  const lyrics: LyricRecord[] = [];
   let page = 1;
   let totalCount = 0;
   let hasNext = true;
@@ -144,18 +144,17 @@ async function fetchAllLyrics(): Promise<LyricRecord[]> {
       throw new Error("Invalid paginated lyrics response");
     }
 
-    data.items.forEach((lyric: LyricRecord) => {
-      if (lyric?._id) {
-        lyricsById.set(lyric._id, lyric);
+    for (const lyric of data.items as LyricRecord[]) {
+      if (lyric) {
+        lyrics.push(lyric);
       }
-    });
+    }
 
     totalCount = data.pagination.totalCount ?? totalCount;
     hasNext = Boolean(data.pagination.hasNext);
     page += 1;
   }
 
-  const lyrics = Array.from(lyricsById.values());
   if (totalCount && lyrics.length < totalCount) {
     throw new Error(
       `Incomplete lyrics response: received ${lyrics.length} of ${totalCount}`
