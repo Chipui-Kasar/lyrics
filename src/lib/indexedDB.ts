@@ -33,6 +33,7 @@ export type MetadataRecord = {
   totalCount: number;
   lastUpdated?: string;
   savedAt: number; // epoch ms
+  schemaVersion?: number;
 };
 
 export type PageCacheRecord<T = unknown> = {
@@ -49,7 +50,7 @@ export type PageCacheRecord<T = unknown> = {
   };
 };
 
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 const CACHE_VERSION = 1;
 
 let dbPromise: Promise<IDBPDatabase<any>> | null = null;
@@ -62,7 +63,9 @@ function slugify(value = "") {
   }
 
   return value
-    .normalize("NFC")
+    .normalize("NFKC")
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
     .trim()
     .replace(/[_\s]+/g, "-")
     .replace(/-+/g, "-")
@@ -134,11 +137,13 @@ function getDB() {
   if (!dbPromise) {
     dbPromise = openDB("lyrics-db", DB_VERSION, {
       upgrade(db, oldVersion, _newVersion, transaction) {
-        // Version 5 recreates lyrics so the IndexedDB key is the stable
-        // MongoDB _id. Older versions derived keys from artist/title, which
-        // could collapse or duplicate records and leave the store incomplete.
-        if (oldVersion < 5 && db.objectStoreNames.contains("lyrics")) {
+        // Version 6 recreates lyrics and metadata so legacy 49-item caches
+        // cannot be treated as complete by the freshness shortcut.
+        if (oldVersion < 6 && db.objectStoreNames.contains("lyrics")) {
           db.deleteObjectStore("lyrics");
+        }
+        if (oldVersion < 6 && db.objectStoreNames.contains("metadata")) {
+          db.deleteObjectStore("metadata");
         }
 
         if (!db.objectStoreNames.contains("lyrics")) {

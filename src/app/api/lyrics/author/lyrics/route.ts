@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Artist, Lyrics } from "@/models/model"; // Ensure Artists model is imported
+import { slugMaker } from "@/lib/utils";
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,10 +21,24 @@ export async function GET(req: NextRequest) {
 
     await connectMongoDB();
 
-    // Find artist by name (case-insensitive)
-    const artist = (await Artist.findOne({
-      name: { $regex: new RegExp(`^${artistName.replace(/-/g, " ")}$`, "i") },
+    const requestedName = artistName.replace(/-/g, " ");
+    const requestedSlug = slugMaker(artistName);
+
+    // Find artist by name first. Some existing artist names contain invisible
+    // Unicode characters, so fall back to comparing sanitized slugs.
+    let artist = (await Artist.findOne({
+      name: { $regex: new RegExp(`^${escapeRegExp(requestedName)}$`, "i") },
     }).lean()) as { _id: unknown; name?: string } | null;
+
+    if (!artist) {
+      const artists = (await Artist.find()
+        .select({ _id: 1, name: 1 })
+        .lean()) as { _id: unknown; name?: string }[];
+
+      artist =
+        artists.find((item) => slugMaker(item.name || "") === requestedSlug) ||
+        null;
+    }
 
     if (!artist) {
       return NextResponse.json({ error: "Artist not found" }, { status: 404 });

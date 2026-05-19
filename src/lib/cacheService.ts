@@ -24,6 +24,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const STALE_DURATION = 60 * 60 * 1000; // 1 hour - when to show stale warning
 const PAGE_TTL = 7 * 24 * 60 * 60 * 1000;
 const SEARCH_TTL = 6 * 60 * 60 * 1000;
+const LYRICS_METADATA_SCHEMA_VERSION = 2;
 
 export function fastHash(value = "") {
   let hash = 5381;
@@ -130,7 +131,6 @@ async function fetchAllLyrics(): Promise<LyricRecord[]> {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          "Accept-Encoding": "gzip, deflate, br",
         },
       }
     );
@@ -262,6 +262,7 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
       const savedAt = metadata?.savedAt || 0;
       const hasCompleteCache =
         !!metadata &&
+        metadata.schemaVersion === LYRICS_METADATA_SCHEMA_VERSION &&
         storedCount > 0 &&
         storedCount === metadata.totalCount;
 
@@ -310,6 +311,7 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
     );
     await saveMetadata({
       totalCount: metadata?.totalCount ?? lyrics.length,
+      schemaVersion: LYRICS_METADATA_SCHEMA_VERSION,
       lastUpdated:
         metadata?.lastUpdated ??
         lyrics
@@ -579,7 +581,6 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          "Accept-Encoding": "gzip, deflate, br", // Request compression
         },
       }
     );

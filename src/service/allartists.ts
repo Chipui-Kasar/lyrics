@@ -226,7 +226,9 @@ export const getSingleArtistWithSongCount = async (artistName: string) => {
   try {
     const artistSlug = artistName.toLowerCase().replace(/\s+/g, "-");
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/lyrics/author/lyrics?artistName=${artistName}`,
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/lyrics/author/lyrics?artistName=${encodeURIComponent(artistName)}`,
       {
         next: {
           revalidate: 3600,

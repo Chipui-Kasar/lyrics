@@ -7,8 +7,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-function normalizeSlugValue(str: string) {
-  return str.normalize("NFC").trim().replace(/\s+/g, " ");
+export function normalizeSlugValue(str: string) {
+  return str
+    .normalize("NFKC")
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
+    .trim()
+    .replace(/\s+/g, " ");
 }
 
 //a function to convert space to - in a string
