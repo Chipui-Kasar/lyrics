@@ -1,15 +1,15 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
 import { generatePageMetadata, slugMaker, removeSlug } from "@/lib/utils";
 import { permanentRedirect, notFound } from "next/navigation";
-import { ILyrics } from "@/models/IObjects";
+import { ILyrics, IArtists } from "@/models/IObjects";
 import {
-  // getAllArtists,
+  getAllArtists,
   getSingleArtistWithSongCount,
 } from "@/service/allartists";
 import { cache } from "react";
 
-// Make the route statically rendered and revalidated weekly
 export const dynamic = "force-static";
+export const dynamicParams = true; // ISR for newly added artists not in build
 export const revalidate = 604800; // 1 week
 
 // Cache the lyrics fetch per artist
@@ -17,13 +17,16 @@ const fetchFeaturedLyrics = cache(async (artistName: string) => {
   return await getSingleArtistWithSongCount(removeSlug(artistName));
 });
 
-// ✅ Pre-generate all artist paths for SSG
-// export async function generateStaticParams() {
-//   const artists = await getAllArtists();
-//   return artists.map((artist: IArtists) => ({
-//     artists: slugMaker(artist.name || ""),
-//   }));
-// }
+export async function generateStaticParams() {
+  try {
+    const artists = await getAllArtists();
+    return (artists as IArtists[])
+      .filter((a) => a.name)
+      .map((a) => ({ artists: slugMaker(a.name) }));
+  } catch {
+    return [];
+  }
+}
 
 // ✅ Enhanced dynamic metadata generation with structured data
 export async function generateMetadata({

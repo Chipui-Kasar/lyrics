@@ -12,7 +12,7 @@ const nextConfig = {
   // Optimize images for mobile
   images: {
     formats: ["image/webp", "image/avif"],
-    minimumCacheTTL: 86400, // 24 hours
+    minimumCacheTTL: 31536000, // 1 year — artist images rarely change
     deviceSizes: [640, 750, 828, 1080, 1200], // Mobile-first device sizes
     imageSizes: [16, 32, 48, 64, 96, 128, 256], // Smaller image sizes for mobile
     dangerouslyAllowSVG: true,
@@ -182,6 +182,26 @@ const nextConfig = {
           {
             key: "X-DNS-Prefetch-Control",
             value: "on",
+          },
+        ],
+      },
+      // Lyrics pages: serve stale while revalidating (matches revalidate = 1 year)
+      {
+        source: "/lyrics/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=31536000, stale-while-revalidate=86400",
+          },
+        ],
+      },
+      // Artist pages: serve stale while revalidating (matches revalidate = 1 week)
+      {
+        source: "/artists/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=604800, stale-while-revalidate=86400",
           },
         ],
       },

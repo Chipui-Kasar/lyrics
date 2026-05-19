@@ -10,11 +10,12 @@ import {
   areEquivalentSlugs,
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
-import { getSingleLyrics } from "@/service/allartists";
+import { getSingleLyrics, getLyricsPage } from "@/service/allartists";
 import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
 
 export const dynamic = "force-static";
+export const dynamicParams = true; // ISR for newly added lyrics not in build
 export const revalidate = 31536000; // 1 year
 
 const fetchLyric = cache(
@@ -122,17 +123,35 @@ const LyricsPage = async ({
   );
 };
 
-// export async function generateStaticParams() {
-//   const posts = await getLyrics();
+export async function generateStaticParams() {
+  try {
+    // Fetch all lyrics in one shot — only summary fields needed for params
+    const { items, pagination } = await getLyricsPage({
+      page: 1,
+      limit: 1000,
+      fields: "summary",
+    });
 
-//   return posts
-//     .filter((post: ILyrics) => post.artistId?.name) // Filter out posts without artist names
-//     .map((post: ILyrics) => ({
-//       lyricsID: post._id,
-//       title_artist: `${slugMaker(post.title)}_${slugMaker(
-//         post.artistId?.name || "unknown"
-//       )}`,
-//     }));
-// }
+    // If there are more pages, fetch them all
+    const allItems = [...items];
+    if (pagination.totalPages > 1) {
+      const remaining = await Promise.all(
+        Array.from({ length: pagination.totalPages - 1 }, (_, i) =>
+          getLyricsPage({ page: i + 2, limit: 1000, fields: "summary" })
+        )
+      );
+      remaining.forEach((r) => allItems.push(...r.items));
+    }
+
+    return allItems
+      .filter((post: ILyrics) => post._id && post.artistId?.name)
+      .map((post: ILyrics) => ({
+        lyricsID: String(post._id),
+        title_artist: `${slugMaker(post.title)}_${slugMaker(post.artistId?.name || "unknown")}`,
+      }));
+  } catch {
+    return [];
+  }
+}
 
 export default LyricsPage;
