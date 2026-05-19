@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
             folder: "tangkhul-lyrics/artists", // Organize uploads in folders
             transformation: [
               { width: 400, height: 400, crop: "fill", gravity: "face" },
-              { quality: "auto:good" },
+              { quality: "auto:good", fetch_format: "webp" },
             ],
           },
           (error, result) => {

@@ -304,6 +304,12 @@ export const sanitizeAndDeduplicateHTML = (html: string): string => {
   return wrapper.innerHTML.trim();
 };
 
+export function cloudinaryWebP(url: string | null | undefined): string {
+  if (!url) return "";
+  if (!url.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/", "/upload/f_webp,q_auto/");
+}
+
 export const replaceAllHTMLTagsWithSpace = (html: string): string => {
   if (!html) return "";
   return html.replace(/<[^>]+>/g, " ").trim();

@@ -1,4 +1,4 @@
-import { slugMaker } from "@/lib/utils";
+import { slugMaker, cloudinaryWebP } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import Image from "next/image";
 import { NavigationLink } from "@/components/NavigationLink";
@@ -24,7 +24,7 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
             rel="noopener noreferrer"
           >
             <Image
-              src={artist.image || "/placeholder-user.jpg"}
+              src={cloudinaryWebP(artist.image) || "/placeholder-user.jpg"}
               width={44}
               height={44}
               alt={artist.name}
