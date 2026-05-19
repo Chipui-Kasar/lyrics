@@ -3,19 +3,20 @@ import { connectMongoDB } from "@/lib/mongodb";
 import { Artist, Lyrics } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { revalidateTag } from "next/cache";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 // Helper function to revalidate relevant tags
 function revalidateLyricsCache(lyricsId?: string, artistName?: string) {
-  // Revalidate specific lyrics
+  // Revalidate specific lyrics page
   if (lyricsId) {
     revalidateTag(`lyrics-${lyricsId}`);
   }
 
-  // Revalidate artist cache
+  // Revalidate artist cache and page
   if (artistName) {
     const artistSlug = artistName.toLowerCase().replace(/\s+/g, "-");
     revalidateTag(`artist-${artistSlug}`);
+    revalidatePath(`/artists/${artistSlug}`);
   }
 
   // Revalidate collection caches
@@ -23,6 +24,10 @@ function revalidateLyricsCache(lyricsId?: string, artistName?: string) {
   revalidateTag("lyrics-featured");
   revalidateTag("lyrics-top");
   revalidateTag("search");
+
+  // Revalidate static pages that list lyrics
+  revalidatePath("/", "page");
+  revalidatePath("/lyrics", "page");
 }
 
 function publicLyricsFilter() {
