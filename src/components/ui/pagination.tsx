@@ -4,6 +4,7 @@ interface PaginatorProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  getPageHref?: (page: number) => string;
   siblingCount?: number;
 }
 
@@ -18,6 +19,7 @@ export const Paginator: React.FC<PaginatorProps> = ({
   currentPage,
   totalPages,
   onPageChange,
+  getPageHref,
   siblingCount = 1,
 }) => {
   if (totalPages <= 1) return null;
@@ -53,23 +55,40 @@ export const Paginator: React.FC<PaginatorProps> = ({
     pageNumbers.push(totalPages - 1, totalPages);
   }
 
+  const handleLinkClick =
+    (page: number) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      onPageChange(page);
+    };
+
+  const pageLinkClassName = (page: number) =>
+    cn(
+      "inline-flex h-9 min-w-9 items-center justify-center rounded-full px-3 text-sm font-semibold transition-all",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+      page === safeCurrentPage
+        ? "bg-primary text-primary-foreground shadow-sm"
+        : "bg-muted text-foreground hover:bg-accent hover:text-accent-foreground"
+    );
+
   return (
     <nav
       className="inline-flex flex-row flex-nowrap items-center gap-1 rounded-full border border-border/60 bg-background/80 p-1 shadow-sm backdrop-blur"
       aria-label="Pagination"
     >
-      <button
+      <a
+        href={getPageHref?.(safeCurrentPage - 1) ?? "#"}
         className={cn(
           "inline-flex h-9 min-w-9 items-center justify-center rounded-full px-3 text-sm font-medium transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-          "text-foreground/80 hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+          "text-foreground/80 hover:bg-accent hover:text-accent-foreground",
+          safeCurrentPage === 1 && "pointer-events-none opacity-50"
         )}
-        disabled={safeCurrentPage === 1}
-        onClick={() => onPageChange(safeCurrentPage - 1)}
+        onClick={handleLinkClick(safeCurrentPage - 1)}
         aria-label="Previous"
+        aria-disabled={safeCurrentPage === 1}
       >
         Prev
-      </button>
+      </a>
       {pageNumbers.map((page, idx) =>
         page === DOTS ? (
           <span
@@ -79,34 +98,31 @@ export const Paginator: React.FC<PaginatorProps> = ({
             ...
           </span>
         ) : (
-          <button
+          <a
             key={`page-${page}`}
-            className={cn(
-              "inline-flex h-9 min-w-9 items-center justify-center rounded-full px-3 text-sm font-semibold transition-all",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-              page === safeCurrentPage
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-muted text-foreground hover:bg-accent hover:text-accent-foreground"
-            )}
-            onClick={() => onPageChange(Number(page))}
+            href={getPageHref?.(Number(page)) ?? "#"}
+            className={pageLinkClassName(Number(page))}
+            onClick={handleLinkClick(Number(page))}
             aria-current={page === safeCurrentPage ? "page" : undefined}
           >
             {page}
-          </button>
+          </a>
         )
       )}
-      <button
+      <a
+        href={getPageHref?.(safeCurrentPage + 1) ?? "#"}
         className={cn(
           "inline-flex h-9 min-w-9 items-center justify-center rounded-full px-3 text-sm font-medium transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-          "text-foreground/80 hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+          "text-foreground/80 hover:bg-accent hover:text-accent-foreground",
+          safeCurrentPage === totalPages && "pointer-events-none opacity-50"
         )}
-        disabled={safeCurrentPage === totalPages}
-        onClick={() => onPageChange(safeCurrentPage + 1)}
+        onClick={handleLinkClick(safeCurrentPage + 1)}
         aria-label="Next"
+        aria-disabled={safeCurrentPage === totalPages}
       >
         Next
-      </button>
+      </a>
     </nav>
   );
 };

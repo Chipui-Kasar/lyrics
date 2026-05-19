@@ -146,15 +146,9 @@ export default function AllLyricsHydrated({
   }, []);
 
   const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (page <= 1) {
-      params.delete("page");
-    } else {
-      params.set("page", String(page));
-    }
-
-    const queryString = params.toString();
-    router.push(queryString ? `?${queryString}` : "/lyrics", { scroll: true });
+    router.push(page <= 1 ? "/lyrics" : `/lyrics/page/${page}`, {
+      scroll: true,
+    });
   };
 
   return (
@@ -167,6 +161,7 @@ export default function AllLyricsHydrated({
         totalCount: pagination.totalCount,
         pageSize: pagination.limit,
         onPageChange: handlePageChange,
+        getPageHref: (page) => (page <= 1 ? "/lyrics" : `/lyrics/page/${page}`),
       }}
     />
   );

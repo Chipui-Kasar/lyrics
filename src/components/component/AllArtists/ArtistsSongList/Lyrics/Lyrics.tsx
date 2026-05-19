@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { YouTubePlayer } from "@/components/ui/video";
-import { handleShare, sanitizeAndDeduplicateHTML } from "@/lib/utils";
+import { handleShare, sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
@@ -70,9 +70,14 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
             <h1 className="text-3xl font-bold">
               {escapeApostrophe(displayLyrics.title)}
             </h1>
-            <div className="text-muted-foreground">
-              {escapeApostrophe(displayLyrics.artistId?.name)}
-            </div>
+            {displayLyrics.artistId?.name && (
+              <Link
+                href={`/artists/${slugMaker(displayLyrics.artistId.name)}`}
+                className="text-muted-foreground underline-offset-4 hover:underline"
+              >
+                {escapeApostrophe(displayLyrics.artistId.name)}
+              </Link>
+            )}
           </div>
           <div className="flex flex-wrap w-full items-start gap-6">
             {displayLyrics.streamingLinks?.youtube !== "" &&
@@ -112,7 +117,16 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
             <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
               <div className="flex items-center justify-between">
                 <span>Artist:</span>
-                <span>{displayLyrics.artistId?.name}</span>
+                {displayLyrics.artistId?.name ? (
+                  <Link
+                    href={`/artists/${slugMaker(displayLyrics.artistId.name)}`}
+                    className="text-right underline-offset-4 hover:underline"
+                  >
+                    {displayLyrics.artistId.name}
+                  </Link>
+                ) : (
+                  <span>Unknown Artist</span>
+                )}
               </div>
               <div className="flex items-start justify-between">
                 <span>Album:</span>

@@ -11,6 +11,7 @@ interface AllLyricsProps {
     totalCount: number;
     pageSize: number;
     onPageChange: (page: number) => void;
+    getPageHref?: (page: number) => string;
   };
 }
 const AllLyrics = ({ lyrics, isLoading, pagination }: AllLyricsProps) => {
@@ -79,6 +80,7 @@ const AllLyrics = ({ lyrics, isLoading, pagination }: AllLyricsProps) => {
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
             onPageChange={pagination.onPageChange}
+            getPageHref={pagination.getPageHref}
           />
         </div>
       )}
