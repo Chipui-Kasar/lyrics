@@ -486,6 +486,20 @@ export async function saveLyricsPageCache(
     };
   }
 ) {
+  const lyricsWithIds = data.items.filter((lyric) => lyric?._id);
+
+  await Promise.all(
+    lyricsWithIds.map((lyric) => {
+      const meta = lyricCacheMeta(lyric);
+      return saveLyric({
+        ...(lyric as LyricRecord),
+        updatedAt: meta.lastUpdated,
+        lyricsLength: meta.length,
+        lyricsHash: meta.hash,
+      });
+    })
+  );
+
   await savePageCache(`lyrics-page:${page}`, data, {
     ttlMs: PAGE_TTL,
     meta: {

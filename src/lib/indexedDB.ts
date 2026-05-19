@@ -49,7 +49,7 @@ export type PageCacheRecord<T = unknown> = {
   };
 };
 
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 const CACHE_VERSION = 1;
 
 let dbPromise: Promise<IDBPDatabase<any>> | null = null;
@@ -94,12 +94,17 @@ function normalizeLyricRecord(
   usedIds: Set<string>,
   usedSlugs: Set<string>
 ): LyricRecord {
+  const databaseId = record._id || record.id || "";
   const artist = lyricArtistName(record);
   const title = record.title || "Untitled";
   const artistSlug = slugify(artist || "unknown-artist");
   const titleSlug = slugify(title || "untitled");
-  const idBase = slugify(record.id || `${artistSlug}-${titleSlug}`);
-  const slugBase = record.slug || `/lyrics/${artistSlug}/${titleSlug}`;
+  const idBase = databaseId || `${artistSlug}-${titleSlug}`;
+  const slugBase =
+    record.slug ||
+    (databaseId
+      ? `/lyrics/${databaseId}/${titleSlug}_${artistSlug}`
+      : `/lyrics/${artistSlug}/${titleSlug}`);
 
   return {
     ...record,
@@ -129,9 +134,10 @@ function getDB() {
   if (!dbPromise) {
     dbPromise = openDB("lyrics-db", DB_VERSION, {
       upgrade(db, oldVersion, _newVersion, transaction) {
-        // Version 4 migrates lyrics from the old _id keyPath to a dedicated
-        // per-song id keyPath and recreates indexes used by offline lookup.
-        if (oldVersion < 4 && db.objectStoreNames.contains("lyrics")) {
+        // Version 5 recreates lyrics so the IndexedDB key is the stable
+        // MongoDB _id. Older versions derived keys from artist/title, which
+        // could collapse or duplicate records and leave the store incomplete.
+        if (oldVersion < 5 && db.objectStoreNames.contains("lyrics")) {
           db.deleteObjectStore("lyrics");
         }
 
@@ -204,7 +210,23 @@ export async function getLyricsCount(): Promise<number> {
 
 export async function saveLyric(record: LyricRecord) {
   const db = await getDB();
-  const normalizedRecord = normalizeLyricRecord(record, new Set(), new Set());
+  const existingRecord =
+    ((record.id || record._id
+      ? await getLyricById(record.id || record._id)
+      : undefined) as LyricRecord | undefined) ?? undefined;
+  const mergedRecord = existingRecord
+    ? {
+        ...existingRecord,
+        ...record,
+        lyrics: record.lyrics || existingRecord.lyrics,
+        content: record.content || existingRecord.content,
+      }
+    : record;
+  const normalizedRecord = normalizeLyricRecord(
+    mergedRecord,
+    new Set(),
+    new Set()
+  );
 
   try {
     await db.add("lyrics", normalizedRecord);
