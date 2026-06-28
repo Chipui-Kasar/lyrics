@@ -1,4 +1,5 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
+import StructuredData from "@/components/StructureDataComponent";
 import { generatePageMetadata, slugMaker, removeSlug } from "@/lib/utils";
 import { permanentRedirect, notFound } from "next/navigation";
 import { ILyrics, IArtists } from "@/models/IObjects";
@@ -85,10 +86,42 @@ export default async function ArtistPage({
   }
 
   const lyrics = await fetchFeaturedLyrics(expectedSlug);
-  
+
   if (!lyrics || lyrics.length === 0) {
     notFound();
   }
 
-  return <ArtistsSongLists lyrics={lyrics} />;
+  const artistName = lyrics[0]?.artistId?.name || "Unknown Artist";
+  const artistSlug = slugMaker(artistName);
+  const artistUrl = `https://tangkhullyrics.com/artists/${artistSlug}`;
+
+  const musicGroupSchema = {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    name: artistName,
+    url: artistUrl,
+    track: lyrics.map((l: ILyrics) => ({
+      "@type": "MusicRecording",
+      name: l.title,
+      url: `https://tangkhullyrics.com/lyrics/${l._id}/${slugMaker(l.title)}_${artistSlug}`,
+    })),
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://tangkhullyrics.com" },
+      { "@type": "ListItem", position: 2, name: "Artists", item: "https://tangkhullyrics.com/allartists" },
+      { "@type": "ListItem", position: 3, name: artistName, item: artistUrl },
+    ],
+  };
+
+  return (
+    <>
+      <StructuredData data={musicGroupSchema} />
+      <StructuredData data={breadcrumbSchema} />
+      <ArtistsSongLists lyrics={lyrics} />
+    </>
+  );
 }

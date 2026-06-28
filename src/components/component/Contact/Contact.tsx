@@ -11,12 +11,19 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState(""); // spam trap — bots fill this, humans don't
   const [submitStatus, setSubmitStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submitSuggestions = async () => {
     setSubmitStatus("");
     setLoading(true);
+    if (honeypot) {
+      // Silently discard bot submission
+      setLoading(false);
+      setSubmitStatus("Sent successfully");
+      return;
+    }
     if (!name || !email || !message) {
       setSubmitStatus("Please fill all the required fields");
       setLoading(false);
@@ -62,9 +69,9 @@ export default function Contact() {
   return (
     <div className="bg-white px-6 py-12 sm:py-12 lg:px-8 bg-muted">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
           Contact Us
-        </h2>
+        </h1>
         <span
           onClick={() =>
             navigator.clipboard.writeText("tangkhullaalyrics@gmail.com")
@@ -99,6 +106,8 @@ export default function Contact() {
             <Input
               id="first-name"
               placeholder="Enter your name"
+              required
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className={`border ${
@@ -122,6 +131,8 @@ export default function Contact() {
               id="email"
               type="email"
               placeholder="Enter your email"
+              required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={`border ${
@@ -173,6 +184,19 @@ export default function Contact() {
             />
           </div>
         </div>
+      </div>
+      {/* Honeypot: visually hidden, only bots fill this */}
+      <div aria-hidden="true" style={{ display: "none" }}>
+        <label htmlFor="website">Website</label>
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
       </div>
       <div className="mt-10">
         <Button

@@ -1,9 +1,11 @@
 "use client";
 
 import { NavigationLink } from "@/components/NavigationLink";
+import Image from "next/image";
+import Link from "next/link";
 
 import { ILyrics } from "@/models/IObjects";
-import { slugMaker } from "@/lib/utils";
+import { cloudinaryWebP, slugMaker } from "@/lib/utils";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -54,13 +56,59 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
     [displayLyrics]
   );
 
+  const artist = displayLyrics[0]?.artistId;
+  const artistName = artist?.name || "";
+  const artistImage = cloudinaryWebP(artist?.image) || "/placeholder-user.jpg";
+  const artistGenres = artist?.genre?.join(", ") || "";
+  const artistVillage = artist?.village || "";
+
   return (
     <>
       <main className="flex-1 py-8 px-6">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold mb-6">
-            {displayLyrics[0]?.artistId?.name}
-          </h2>
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
+            <ol className="flex items-center gap-1">
+              <li>
+                <Link href="/" className="hover:underline">Home</Link>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li>
+                <Link href="/allartists" className="hover:underline">Artists</Link>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li aria-current="page" className="text-foreground font-medium truncate max-w-[200px]">
+                {artistName}
+              </li>
+            </ol>
+          </nav>
+
+          {/* Artist profile header */}
+          <div className="flex items-center gap-6 mb-8">
+            <Image
+              src={artistImage}
+              alt={artistName}
+              width={96}
+              height={96}
+              className="rounded-full object-cover w-24 h-24 border"
+            />
+            <div>
+              <h1 className="text-3xl font-bold">{artistName}</h1>
+              {(artistGenres || artistVillage) && (
+                <p className="mt-1 text-muted-foreground text-sm">
+                  {[artistGenres, artistVillage].filter(Boolean).join(" · ")}
+                </p>
+              )}
+              <p className="mt-1 text-sm text-muted-foreground">
+                {sortedLyrics.length} song{sortedLyrics.length !== 1 ? "s" : ""}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground italic">
+                No bio available yet.
+              </p>
+            </div>
+          </div>
+
+          {/* Song list */}
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-muted text-muted-foreground">
@@ -90,7 +138,6 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
           </div>
         </div>
       </main>
-      <div className="container mx-auto flex justify-center"></div>
     </>
   );
 };

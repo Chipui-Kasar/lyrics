@@ -54,8 +54,8 @@ export async function generateMetadata({
     )?.slice(0, 155) || "Traditional Tangkhul song";
 
   return generatePageMetadata({
-    title: `${songTitle} by ${artistName} - Lyrics | ${songTitle} Lyrics`,
-    description: `${lyricsPreview}... - Complete lyrics to "${songTitle}" by ${artistName} from ${albumName}. Traditional Tangkhul music with cultural context. Tangkhul song lyrics translation`,
+    title: `${songTitle} Lyrics — ${artistName}`,
+    description: `Complete lyrics to "${songTitle}" by ${artistName}${albumName !== "Single" ? ` from ${albumName}` : ""}. ${lyricsPreview}`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       songTitle,
     )}_${slugMaker(artistName)}`,

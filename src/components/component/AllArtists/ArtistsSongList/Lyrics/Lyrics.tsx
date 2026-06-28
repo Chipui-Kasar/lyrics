@@ -108,10 +108,10 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Share this song"
                 onClick={() => handleShare(displayLyrics)}
               >
-                <ShareIcon className="h-5 w-5" />
-                <span className="sr-only">Share</span>
+                <ShareIcon className="h-5 w-5" aria-hidden="true" />
               </Button>
             </div>
             <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
@@ -129,7 +129,7 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
                 )}
               </div>
               <div className="flex items-start justify-between">
-                <span>Album:</span>
+                <span>Album: </span>
                 <span>{displayLyrics.album}</span>
               </div>
 

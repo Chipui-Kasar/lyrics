@@ -35,10 +35,9 @@ const fetchHomeData = async () => {
 
 export async function generateMetadata() {
   return generatePageMetadata({
-    title:
-      "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
+    title: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
     description:
-      "🎵 Discover 1000+ authentic Tangkhul song lyrics online. Browse trending hits, traditional favorites & new releases from top Tangkhul artists. Updated daily with accurate translations. Preserve cultural heritage through music!",
+      "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
     url: "https://tangkhullyrics.com",
     keywords:
       "Tangkhul lyrics, Tangkhul songs, Tangkhul music, Northeast India songs, Manipur tribal music, traditional songs, cultural heritage, song translations, Tangkhul artists, folk music, indigenous music, ethnic songs",
@@ -71,17 +70,11 @@ const HomePage = async () => {
         role="main"
       >
         <h1 className="sr-only">
-          Tangkhul Song Lyrics - Cultural Through Music
+          Tangkhul Song Lyrics — Preserving Culture Through Music
         </h1>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="col-span-2 grid gap-4">
-            <section
-              aria-labelledby="popular-artists-heading"
-              className="below-fold non-critical"
-            >
-              <h2 id="popular-artists-heading" className="sr-only">
-                Popular Tangkhul Artists
-              </h2>
+            <section className="below-fold non-critical">
               <PopularArtists
                 artists={artists.filter(
                   (artist: IArtists) => artist.name !== "Pamching Kasar",
@@ -89,33 +82,15 @@ const HomePage = async () => {
               />
             </section>
           </div>
-          <aside
-            aria-labelledby="top-lyrics-heading"
-            className="col-span-2 md:col-span-2 lg:col-span-1 below-fold non-critical"
-          >
-            <section
-              aria-labelledby="featured-lyrics-heading"
-              className="critical-path mb-6"
-            >
-              <h2 id="featured-lyrics-heading" className="sr-only">
-                Featured Tangkhul Song Lyrics
-              </h2>
+          <aside className="col-span-2 md:col-span-2 lg:col-span-1 below-fold non-critical">
+            <section className="critical-path mb-6">
               <FeaturedLyrics lyrics={featuredLyrics} />
             </section>
-            <h2 id="top-lyrics-heading" className="sr-only">
-              Top Tangkhul Song Lyrics
-            </h2>
             <TopLyrics lyrics={topLyrics} />
           </aside>
         </div>
       </section>
-      <section
-        aria-labelledby="contribute-heading"
-        className="below-fold non-critical"
-      >
-        <h2 id="contribute-heading" className="sr-only">
-          Contribute Tangkhul Song Lyrics
-        </h2>
+      <section className="below-fold non-critical">
         <ContributeLyrics />
       </section>
     </div>

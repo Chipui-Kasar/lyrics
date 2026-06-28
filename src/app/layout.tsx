@@ -41,11 +41,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists",
-    template: "%s | Tangkhul Song Lyrics",
+    default: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
+    template: "%s | Tangkhul Lyrics",
   },
   description:
-    "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists. Updated daily with accurate lyrics. | TANGKHUL LYRICS Translation",
+    "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
   applicationName: "Tangkhul Song Lyrics",
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -114,9 +114,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://tangkhullyrics.com",
     siteName: "Tangkhul Song Lyrics",
-    title: "Tangkhul Song Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
+    title: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
     description:
-      "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases from your favorite Tangkhul artists.",
+      "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
     images: [
       {
         url: "/ogImage.jpg",
@@ -131,9 +131,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@TangkhulLyrics",
     creator: "@TangkhulLyrics",
-    title: "Tangkhul Lyrics | Tangkhul Song Lyrics and Artists | TANGKHUL LYRICS Translation",
+    title: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
     description:
-      "Discover the largest collection of TANGKHUL SONG LYRICS online. Find trending hits, traditional favorites, and new releases.",
+      "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
     images: ["/ogImage.jpg"],
   },
   verification: {
@@ -166,6 +166,8 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <meta charSet="utf-8" />
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+        <link rel="alternate" hrefLang="en" href="https://tangkhullyrics.com" />
         {/* DNS prefetch for external resources - lower priority */}
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
@@ -193,6 +195,12 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:underline focus:rounded"
+        >
+          Skip to main content
+        </a>
         <noscript>
           <div
             style={{
@@ -251,7 +259,7 @@ export default function RootLayout({
               <header>
                 <Navigation />
               </header>
-              <main>{children}</main>
+              <main id="main-content">{children}</main>
               <Footer />
             </ErrorBoundary>
           </SessionValidator>

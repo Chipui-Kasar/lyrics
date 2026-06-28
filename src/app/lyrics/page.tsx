@@ -18,7 +18,7 @@ export async function generateMetadata() {
   return generatePageMetadata({
     title: "All Tangkhul Lyrics - Complete Song Collection",
     description:
-      "Browse our comprehensive collection of Tangkhul song lyrics. Discover traditional and contemporary Tangkhul Laa with artist information and cultural context.",
+      "Browse our comprehensive collection of Tangkhul song lyrics. Discover traditional and contemporary Tangkhul songs with artist information and cultural context.",
     url: "https://tangkhullyrics.com/lyrics",
     keywords:
       "Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, Ukhrul music, Tangkhul artists, traditional songs, Manipur music",

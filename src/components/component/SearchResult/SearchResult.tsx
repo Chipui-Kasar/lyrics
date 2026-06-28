@@ -138,9 +138,9 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
           {!params ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="max-w-md">
-                <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                  🔍 Search Tangkhul Lyrics
-                </h2>
+                <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                  Search Tangkhul Lyrics
+                </h1>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
                   Discover your favorite Tangkhul songs and artists. Search by
                   song title, artist name, or even lyrics content.
@@ -251,25 +251,30 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                                       : sanitizeAndDeduplicateHTML(artist.name),
                                   }}
                                 />
-                                &#39; from{" "}
-                                <article
-                                  dangerouslySetInnerHTML={{
-                                    __html: highlightRegex
-                                      ? highlightFuzzyMatch(
-                                          sanitizeAndDeduplicateHTML(
-                                            artist.village,
-                                          ).replace(
-                                            highlightRegex,
-                                            (match) =>
-                                              `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`,
-                                          ),
-                                          removeSlug(params),
-                                        )
-                                      : sanitizeAndDeduplicateHTML(
-                                          artist.village,
-                                        ),
-                                  }}
-                                />
+                                &#39;
+                                {artist.village ? (
+                                  <>
+                                    {" from "}
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html: highlightRegex
+                                          ? highlightFuzzyMatch(
+                                              sanitizeAndDeduplicateHTML(
+                                                artist.village,
+                                              ).replace(
+                                                highlightRegex,
+                                                (match) =>
+                                                  `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`,
+                                              ),
+                                              removeSlug(params),
+                                            )
+                                          : sanitizeAndDeduplicateHTML(
+                                              artist.village,
+                                            ),
+                                      }}
+                                    />
+                                  </>
+                                ) : null}
                               </h2>
                             </div>
                             <ArrowRightIcon className="w-5 h-5 text-muted-foreground" />

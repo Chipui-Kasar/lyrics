@@ -22,6 +22,7 @@ const YouTubePlayer = ({ videoUrl, className }: YouTubePlayerProps) => {
         src={`https://www.youtube.com/embed/${videoId}?rel=0&showinfo=0`}
         title="YouTube video player"
         frameBorder="0"
+        loading="lazy"
         allow="autoplay; encrypted-media; picture-in-picture"
         allowFullScreen
       />

@@ -34,7 +34,7 @@ const PromotionalBanner = () => {
     {
       id: "2",
       title: "🎤 Submit Your Lyrics & Win Prizes!",
-      description: "Help preserve our cultural by contributing lyrics",
+      description: "Help preserve our culture by contributing lyrics",
       imageUrl: "/placeholder.svg",
       linkUrl: "/contribute",
       buttonText: "Contribute",
@@ -154,10 +154,10 @@ const PromotionalBanner = () => {
             <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/10 rounded-full translate-x-24 translate-y-24"></div>
           </div>
 
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows — min 44×44px touch targets (WCAG 2.1 AA) */}
           <button
             onClick={goToPrevious}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white transition-all duration-300 hover:scale-110"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white transition-all duration-300 hover:scale-110"
             aria-label="Previous promotion"
           >
             <svg
@@ -177,7 +177,7 @@ const PromotionalBanner = () => {
 
           <button
             onClick={goToNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white transition-all duration-300 hover:scale-110"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white transition-all duration-300 hover:scale-110"
             aria-label="Next promotion"
           >
             <svg
@@ -196,8 +196,8 @@ const PromotionalBanner = () => {
           </button>
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Content Section */}
-            <div className="flex-1 text-center md:text-left">
+            {/* Content Section — left padding prevents text from being obscured by the arrow button */}
+            <div className="flex-1 text-center md:text-left pl-16">
               <p
                 className={`text-2xl md:text-3xl font-bold mb-2 ${activeItem.textColor}`}
               >
@@ -235,19 +235,23 @@ const PromotionalBanner = () => {
             </div>
           </div>
 
-          {/* Slide Indicators */}
+          {/* Slide Indicators — min 44×44px touch target via padding (WCAG 2.1 AA) */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
             {promotionalItems.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? "bg-white scale-110"
-                    : "bg-white/50 hover:bg-white/70"
-                }`}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label={`Go to slide ${index + 1}`}
-              />
+              >
+                <span
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? "bg-white scale-110"
+                      : "bg-white/50 hover:bg-white/70"
+                  }`}
+                />
+              </button>
             ))}
           </div>
 
@@ -285,7 +289,7 @@ const PromotionalBanner = () => {
           </span>
           <button
             onClick={toggleAutoPlay}
-            className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 ml-2"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 ml-2"
             aria-label={isAutoPlaying ? "Pause carousel" : "Play carousel"}
           >
             {isAutoPlaying ? "⏸️" : "▶️"}

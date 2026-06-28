@@ -140,18 +140,22 @@ const ContributeLyrics = () => {
   return (
     <section className="container py-4 sm:py-8 md:py-10 m-auto ">
       <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
-        <h2 className="text-2xl font-bold">Share Lyrics</h2>
+        <h1 className="text-2xl font-bold">Contribute Tangkhul Lyrics</h1>
         <p className="mt-2 text-muted-foreground">
           Share your favorite song lyrics with the community.
         </p>
 
         {!session ? (
           <div className="mt-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
-            You're not{" "}
+            You must be signed in to contribute via this form.{" "}
             <a href="/auth/signin" className="font-bold underline">
-              signed in
+              Sign in here
             </a>{" "}
-            contribute via this form.
+            or{" "}
+            <a href="/auth/signup" className="font-bold underline">
+              create an account
+            </a>
+            .
             <Contact />
           </div>
         ) : (

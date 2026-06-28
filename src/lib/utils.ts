@@ -7,6 +7,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Strip zero-width and invisible Unicode characters from display strings. */
+export function stripInvisibleChars(str: string): string {
+  if (!str) return "";
+  return str.replace(/[​‌‍﻿⁠]/g, "").trim();
+}
+
 export function normalizeSlugValue(str: string) {
   return str
     .normalize("NFKC")
@@ -94,15 +100,13 @@ export function generatePageMetadata({
   robots?: string;
   structuredData?: Record<string, any>;
 }): Metadata {
-  // Ensure description is optimized length (150-160 characters)
+  // Hard-cap description and title without appending "..." — callers should
+  // supply already-trimmed strings; this is a safety net only.
   const optimizedDescription =
-    description.length > 160
-      ? description.substring(0, 157) + "..."
-      : description;
+    description.length > 160 ? description.substring(0, 160) : description;
 
-  // Ensure title is optimized length (50-60 characters)
   const optimizedTitle =
-    title.length > 60 ? title.substring(0, 57) + "..." : title;
+    title.length > 60 ? title.substring(0, 60) : title;
 
   return {
     // Use an absolute title so route-level metadata doesn't get the layout
@@ -312,7 +316,14 @@ export function cloudinaryWebP(url: string | null | undefined): string {
 
 export const replaceAllHTMLTagsWithSpace = (html: string): string => {
   if (!html) return "";
-  return html.replace(/<[^>]+>/g, " ").trim();
+  // Replace newlines/line-breaks with a space before stripping tags so
+  // adjacent lines don't merge into one word (e.g. "moon\nli" → "moon li").
+  return html
+    .replace(/\r?\n/g, " ")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 };
 
 // Fuzzy matching utilities
