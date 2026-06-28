@@ -61,7 +61,7 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background">
-      <main className="container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
+      <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-start gap-4">
             <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm font-medium">
@@ -158,7 +158,7 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

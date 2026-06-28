@@ -145,10 +145,13 @@ const ContributeLyrics = () => {
           Share your favorite song lyrics with the community.
         </p>
 
-        {!session ? (
+        {status === "loading" ? null : !session ? (
           <div className="mt-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
             You must be signed in to contribute via this form.{" "}
-            <a href="/auth/signin" className="font-bold underline">
+            <a
+              href="/auth/signin?returnUrl=/contribute"
+              className="font-bold underline"
+            >
               Sign in here
             </a>{" "}
             or{" "}
@@ -168,7 +171,7 @@ const ContributeLyrics = () => {
                 value={songTitle}
                 className={`border ${
                   submitStatus === "Please fill all the required fields"
-                    ? "border-[hsl(var(--border-error))]"
+                    ? "border-red-500"
                     : ""
                 }`}
                 required
@@ -183,7 +186,7 @@ const ContributeLyrics = () => {
                 value={artistsName}
                 className={`border ${
                   submitStatus === "Please fill all the required fields"
-                    ? "border-[hsl(var(--border-error))]"
+                    ? "border-red-500"
                     : ""
                 }`}
                 required
@@ -238,7 +241,7 @@ const ContributeLyrics = () => {
                 value={lyrics}
                 className={`border ${
                   submitStatus === "Please fill all the required fields"
-                    ? "border-[hsl(var(--border-error))]"
+                    ? "border-red-500"
                     : ""
                 }`}
                 onChange={(e) => setLyrics(e.target.value)}
@@ -246,9 +249,7 @@ const ContributeLyrics = () => {
             </div>
 
             {submitStatus && submitStatus !== "success" && (
-              <p className="text-sm text-[hsl(var(--border-error))]">
-                {submitStatus}
-              </p>
+              <p className="text-sm text-red-600">{submitStatus}</p>
             )}
 
             {submitStatus === "success" && (

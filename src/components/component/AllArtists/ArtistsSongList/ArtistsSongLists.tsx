@@ -64,7 +64,7 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
 
   return (
     <>
-      <main className="flex-1 py-8 px-6">
+      <div className="flex-1 py-8 px-6">
         <div className="container mx-auto">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
@@ -137,7 +137,7 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
             </table>
           </div>
         </div>
-      </main>
+      </div>
     </>
   );
 };
