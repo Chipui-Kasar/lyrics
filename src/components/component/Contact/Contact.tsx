@@ -6,7 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import PageLoader from "../Spinner/Spinner";
 
-export default function Contact() {
+interface ContactProps {
+  headingLevel?: "h1" | "h2";
+}
+
+export default function Contact({ headingLevel = "h1" }: ContactProps) {
+  const Heading = headingLevel;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
@@ -69,9 +74,9 @@ export default function Contact() {
   return (
     <div className="bg-white px-6 py-12 sm:py-12 lg:px-8 bg-muted">
       <div className="mx-auto max-w-2xl text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        <Heading className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
           Contact Us
-        </h1>
+        </Heading>
         <span
           onClick={() =>
             navigator.clipboard.writeText("tangkhullaalyrics@gmail.com")

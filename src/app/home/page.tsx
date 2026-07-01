@@ -91,7 +91,7 @@ const HomePage = async () => {
         </div>
       </section>
       <section className="below-fold non-critical">
-        <ContributeLyrics />
+        <ContributeLyrics headingLevel="h2" />
       </section>
     </div>
   );

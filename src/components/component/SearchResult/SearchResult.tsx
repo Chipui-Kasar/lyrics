@@ -10,6 +10,7 @@ import { ArrowRightIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SearchSource } from "@/hooks/useLocalSearch";
 
 interface SearchResultProps {
   params: string;
@@ -17,9 +18,10 @@ interface SearchResultProps {
     lyrics: ILyrics[];
     artists: IArtists[];
   };
+  source?: SearchSource;
 }
 
-const SearchResult = ({ params, lyrics }: SearchResultProps) => {
+const SearchResult = ({ params, lyrics, source }: SearchResultProps) => {
   const [searchInput, setSearchInput] = useState(params || "");
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
@@ -127,7 +129,19 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
           {params && (
             <>
               <h1 className="text-3xl font-bold mb-2">Search Results</h1>
-              <p className="text-muted-foreground">{getResultSummary()}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-muted-foreground">{getResultSummary()}</p>
+                {source === "cache" && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    Results from cache
+                  </span>
+                )}
+                {source === "live" && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
+                    Live results
+                  </span>
+                )}
+              </div>
             </>
           )}
         </div>

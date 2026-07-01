@@ -10,6 +10,7 @@ export interface IArtists {
   image: string;
   _id: string;
   songCount?: number;
+  bio?: string;
   updatedAt?: Date | string;
 }
 

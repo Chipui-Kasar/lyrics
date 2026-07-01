@@ -13,6 +13,7 @@ import {
   getArtistsMetadata,
   LyricRecord,
   ArtistRecord,
+  MetadataRecord,
   saveLyric,
   getLyricById,
   savePageCache,
@@ -164,6 +165,87 @@ async function fetchAllLyrics(): Promise<LyricRecord[]> {
   return lyrics;
 }
 
+async function fetchLyricsSince(
+  since: string,
+  limit = 50
+): Promise<{ items: LyricRecord[]; hasMore: boolean }> {
+  const response = await fetch(
+    buildApiUrl("/api/lyrics", {
+      since,
+      limit: String(limit),
+      includeAll: "true",
+    }),
+    {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!Array.isArray(data?.items)) {
+    throw new Error("Invalid delta lyrics response");
+  }
+
+  return { items: data.items as LyricRecord[], hasMore: Boolean(data.hasMore) };
+}
+
+// Applies only the lyrics changed since the cached metadata's lastUpdated
+// cursor, paging forward by each batch's last updatedAt. Returns false when
+// there's nothing to delta from (no prior cursor, or schema drift) so the
+// caller falls back to a full resync.
+async function deltaSyncLyrics(
+  localMetadata: MetadataRecord | null,
+  serverMeta: { totalCount: number; lastUpdated?: string }
+): Promise<boolean> {
+  if (
+    !localMetadata?.lastUpdated ||
+    localMetadata.schemaVersion !== LYRICS_METADATA_SCHEMA_VERSION
+  ) {
+    return false;
+  }
+
+  let cursor = localMetadata.lastUpdated;
+  let applied = 0;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { items, hasMore } = await fetchLyricsSince(cursor, 50);
+    if (items.length === 0) break;
+
+    for (const lyric of items) {
+      await saveLyric({
+        ...lyric,
+        lyricsLength: lyric.lyrics?.length ?? 0,
+        lyricsHash: fastHash(lyric.lyrics || ""),
+      });
+      applied += 1;
+    }
+
+    const lastItem = items[items.length - 1];
+    const nextCursor =
+      typeof lastItem.updatedAt === "string"
+        ? lastItem.updatedAt
+        : (lastItem.updatedAt as unknown as Date | undefined)?.toISOString?.();
+
+    if (!nextCursor || !hasMore) break;
+    cursor = nextCursor;
+  }
+
+  await saveMetadata({
+    totalCount: serverMeta.totalCount,
+    lastUpdated: serverMeta.lastUpdated,
+    schemaVersion: LYRICS_METADATA_SCHEMA_VERSION,
+    savedAt: Date.now(),
+  });
+
+  console.log(`♻️ Delta-synced lyrics cache: ${applied} item(s) applied`);
+  return true;
+}
+
 // Helper to check if cache needs update using lightweight metadata endpoint
 async function checkCacheFreshness(
   type: "lyrics" | "artists"
@@ -286,6 +368,19 @@ export async function updateLyricsCache(forceRefresh = false): Promise<void> {
 
     // Fetch fresh data from API
     const metadata = await fetchCollectionMetadata("lyrics").catch(() => null);
+
+    // Try a delta sync first — only pulls items changed since our cursor
+    // instead of re-downloading the whole collection.
+    if (metadata) {
+      const localMetadata = await getMetadata();
+      const handled = await deltaSyncLyrics(localMetadata, metadata).catch(
+        (error) => {
+          console.error("Delta sync failed, falling back to full sync:", error);
+          return false;
+        }
+      );
+      if (handled) return;
+    }
 
     const lyrics = await fetchAllLyrics();
 

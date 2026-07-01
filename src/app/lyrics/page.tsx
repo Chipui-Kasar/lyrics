@@ -18,7 +18,7 @@ export async function generateMetadata() {
   return generatePageMetadata({
     title: "All Tangkhul Lyrics - Complete Song Collection",
     description:
-      "Browse our comprehensive collection of Tangkhul song lyrics. Discover traditional and contemporary Tangkhul songs with artist information and cultural context.",
+      "Explore 416+ authentic Tangkhul song lyrics from 80+ artists. Browse our complete collection of traditional and contemporary Tangkhul music.",
     url: "https://tangkhullyrics.com/lyrics",
     keywords:
       "Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, Ukhrul music, Tangkhul artists, traditional songs, Manipur music",
@@ -52,6 +52,10 @@ const Lyrics = async () => {
 
   return (
     <div className="flex min-h-screen flex-col dark:bg-background">
+      {/* Next.js hoists <link> tags rendered here into <head> */}
+      {pageData.pagination.totalPages > 1 && (
+        <link rel="next" href="https://tangkhullyrics.com/lyrics/page/2" />
+      )}
       <main className="flex-1">
         <section className="container py-4 sm:py-8 md:py-10 m-auto">
           <AllLyricsHydrated

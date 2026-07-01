@@ -96,10 +96,6 @@ function isPublicNavigationPath(pathname) {
   );
 }
 
-function isLyricsDetailPath(pathname) {
-  return /^\/lyrics\/[^/]+\/[^/]+\/?$/.test(pathname);
-}
-
 function isBrowseOrQueryApi(url) {
   if (url.pathname === "/api/search") {
     return Boolean(url.searchParams.get("query")?.trim());
@@ -228,7 +224,7 @@ async function networkFirstWithCacheFallback(request, options = {}) {
   }
 }
 
-async function staleWhileRevalidate(request, cacheName, maxEntries) {
+async function staleWhileRevalidate(request, cacheName, maxEntries, offlineFallback) {
   const cacheKey = cacheKeyForRequest(request);
   const cache = await caches.open(cacheName);
   const cached = await cache.match(cacheKey);
@@ -243,9 +239,23 @@ async function staleWhileRevalidate(request, cacheName, maxEntries) {
   return (
     cached ||
     (await networkPromise) ||
-    new Response(JSON.stringify({ offline: true, cached: false }), {
-      status: 200,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+    (offlineFallback
+      ? await offlineFallback()
+      : new Response(JSON.stringify({ offline: true, cached: false }), {
+          status: 200,
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+        }))
+  );
+}
+
+async function offlinePageFallback() {
+  const cache = await caches.open(PAGE_CACHE);
+  const fallback = await cache.match("/lyrics");
+  return (
+    fallback ||
+    new Response(OFFLINE_RESPONSE, {
+      status: 503,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     })
   );
 }
@@ -261,10 +271,28 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     if (!isPublicNavigationPath(url.pathname)) return;
 
+    // Artist and lyrics pages serve instantly from cache (if present) while
+    // revalidating in the background — these are the pages precached during
+    // idle time, so a stale hit should be the common case.
+    if (
+      url.pathname.startsWith("/artists/") ||
+      url.pathname.startsWith("/lyrics/")
+    ) {
+      event.respondWith(
+        staleWhileRevalidate(
+          request,
+          PAGE_CACHE,
+          PAGE_CACHE_MAX_ENTRIES,
+          offlinePageFallback
+        )
+      );
+      return;
+    }
+
     event.respondWith(
       networkFirstWithCacheFallback(request, {
         cacheName: PAGE_CACHE,
-        timeoutMs: isLyricsDetailPath(url.pathname) ? 4000 : NETWORK_TIMEOUT_MS,
+        timeoutMs: NETWORK_TIMEOUT_MS,
         maxEntries: PAGE_CACHE_MAX_ENTRIES,
         fallbackRequest:
           url.pathname === "/search"

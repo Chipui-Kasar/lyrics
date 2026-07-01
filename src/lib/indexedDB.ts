@@ -1,4 +1,4 @@
-import { openDB, IDBPDatabase } from "idb";
+import { openDB, IDBPDatabase, IDBPObjectStore } from "idb";
 
 export type LyricRecord = {
   id?: string;
@@ -17,6 +17,7 @@ export type LyricRecord = {
 export type ArtistRecord = {
   _id: string;
   name: string;
+  slug?: string;
   image?: string;
   genre?: string[];
   village?: string;
@@ -50,7 +51,7 @@ export type PageCacheRecord<T = unknown> = {
   };
 };
 
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 const CACHE_VERSION = 1;
 
 let dbPromise: Promise<IDBPDatabase<any>> | null = null;
@@ -131,6 +132,39 @@ function createLyricsStore(db: IDBPDatabase<any>) {
   lyrics.createIndex("artist", "artist", { unique: false });
   lyrics.createIndex("slug", "slug", { unique: true });
   lyrics.createIndex("_id", "_id", { unique: false });
+  lyrics.createIndex("by_title", "title", { unique: false });
+  lyrics.createIndex("by_artist_id", "artistId", { unique: false });
+  lyrics.createIndex("by_slug", "slug", { unique: true });
+}
+
+function ensureLyricsIndexes(lyrics: IDBPObjectStore<any, any, "lyrics", "versionchange">) {
+  if (!lyrics.indexNames.contains("artist")) {
+    lyrics.createIndex("artist", "artist", { unique: false });
+  }
+  if (!lyrics.indexNames.contains("slug")) {
+    lyrics.createIndex("slug", "slug", { unique: true });
+  }
+  if (!lyrics.indexNames.contains("_id")) {
+    lyrics.createIndex("_id", "_id", { unique: false });
+  }
+  if (!lyrics.indexNames.contains("by_title")) {
+    lyrics.createIndex("by_title", "title", { unique: false });
+  }
+  if (!lyrics.indexNames.contains("by_artist_id")) {
+    lyrics.createIndex("by_artist_id", "artistId", { unique: false });
+  }
+  if (!lyrics.indexNames.contains("by_slug")) {
+    lyrics.createIndex("by_slug", "slug", { unique: true });
+  }
+}
+
+function ensureArtistsIndexes(artists: IDBPObjectStore<any, any, "artists", "versionchange">) {
+  if (!artists.indexNames.contains("by_slug")) {
+    artists.createIndex("by_slug", "slug", { unique: true });
+  }
+  if (!artists.indexNames.contains("by_name")) {
+    artists.createIndex("by_name", "name", { unique: false });
+  }
 }
 
 function getDB() {
@@ -149,16 +183,7 @@ function getDB() {
         if (!db.objectStoreNames.contains("lyrics")) {
           createLyricsStore(db);
         } else {
-          const lyrics = transaction.objectStore("lyrics");
-          if (!lyrics.indexNames.contains("artist")) {
-            lyrics.createIndex("artist", "artist", { unique: false });
-          }
-          if (!lyrics.indexNames.contains("slug")) {
-            lyrics.createIndex("slug", "slug", { unique: true });
-          }
-          if (!lyrics.indexNames.contains("_id")) {
-            lyrics.createIndex("_id", "_id", { unique: false });
-          }
+          ensureLyricsIndexes(transaction.objectStore("lyrics"));
         }
 
         // Create metadata store
@@ -171,6 +196,13 @@ function getDB() {
         }
         if (oldVersion < 3 && !db.objectStoreNames.contains("pages")) {
           db.createObjectStore("pages", { keyPath: "key" });
+        }
+
+        // Version 7: add search/lookup indexes on artists (lyrics indexes
+        // are handled above via ensureLyricsIndexes for both fresh and
+        // existing stores).
+        if (db.objectStoreNames.contains("artists")) {
+          ensureArtistsIndexes(transaction.objectStore("artists"));
         }
       },
     });
@@ -386,4 +418,52 @@ export async function getPageCache<T>(
 export async function deletePageCache(key: string) {
   const db = await getDB();
   await db.delete("pages", key);
+}
+
+// ==================== LOCAL PREFIX SEARCH ====================
+// IndexedDB key ranges compare by code point, so "chiho" would not bound-match
+// "Chihohaira" (uppercase sorts before lowercase). Instead we pull the index in
+// its sorted order (one bulk read, not a per-record cursor round trip) and do
+// the case-insensitive prefix check in memory — cheap for a few hundred rows.
+
+export async function searchLyricsByTitlePrefix(
+  prefix: string,
+  limit = 20
+): Promise<LyricRecord[]> {
+  const needle = prefix.trim().toLowerCase();
+  if (!needle) return [];
+
+  const db = await getDB();
+  const all = (await db.getAllFromIndex("lyrics", "by_title")) as LyricRecord[];
+  const matches: LyricRecord[] = [];
+
+  for (const record of all) {
+    if ((record.title || "").toLowerCase().startsWith(needle)) {
+      matches.push(record);
+      if (matches.length >= limit) break;
+    }
+  }
+
+  return matches;
+}
+
+export async function searchArtistsByNamePrefix(
+  prefix: string,
+  limit = 20
+): Promise<ArtistRecord[]> {
+  const needle = prefix.trim().toLowerCase();
+  if (!needle) return [];
+
+  const db = await getDB();
+  const all = (await db.getAllFromIndex("artists", "by_name")) as ArtistRecord[];
+  const matches: ArtistRecord[] = [];
+
+  for (const record of all) {
+    if ((record.name || "").toLowerCase().startsWith(needle)) {
+      matches.push(record);
+      if (matches.length >= limit) break;
+    }
+  }
+
+  return matches;
 }

@@ -3,6 +3,7 @@
 import NextDynamic from "next/dynamic";
 import ServiceWorkerRegistrar from "@/components/component/ServiceWorkerRegistrar/ServiceWorkerRegistrar";
 import CacheInitializer from "@/components/CacheInitializer";
+import ArtistPrecacher from "@/components/ArtistPrecacher";
 
 // Only load truly essential interactive components
 const DarkTheme = NextDynamic(
@@ -33,6 +34,7 @@ export default function ClientShell() {
     <>
       <ServiceWorkerRegistrar />
       <CacheInitializer />
+      <ArtistPrecacher />
       <DarkTheme />
       <AIAssistant />
       {process.env.NODE_ENV !== "production" && <PerformanceMonitor />}

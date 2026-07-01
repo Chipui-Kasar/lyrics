@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ILyrics } from "@/models/IObjects";
-import { cloudinaryWebP, slugMaker } from "@/lib/utils";
+import { cloudinaryWebP, generateArtistBio, slugMaker } from "@/lib/utils";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -62,6 +62,17 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
   const artistGenres = artist?.genre?.join(", ") || "";
   const artistVillage = artist?.village || "";
 
+  const artistBio =
+    artist?.bio ||
+    generateArtistBio({
+      name: artistName,
+      songCount: sortedLyrics.length,
+      songs: sortedLyrics.map((l) => ({
+        title: l.title,
+        releaseYear: l.releaseYear,
+      })),
+    });
+
   return (
     <>
       <div className="flex-1 py-8 px-6">
@@ -102,8 +113,8 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
               <p className="mt-1 text-sm text-muted-foreground">
                 {sortedLyrics.length} song{sortedLyrics.length !== 1 ? "s" : ""}
               </p>
-              <p className="mt-2 text-sm text-muted-foreground italic">
-                No bio available yet.
+              <p className="mt-2 text-sm text-muted-foreground">
+                {artistBio}
               </p>
             </div>
           </div>

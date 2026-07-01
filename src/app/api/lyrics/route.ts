@@ -4,6 +4,7 @@ import { Artist, Lyrics } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidateTag, revalidatePath } from "next/cache";
+import { pingSearchEngines } from "@/lib/pingSearchEngines";
 
 // Helper function to revalidate relevant tags
 function revalidateLyricsCache(lyricsId?: string, artistName?: string) {
@@ -125,6 +126,14 @@ export async function POST(req: NextRequest) {
     // Revalidate cache
     revalidateLyricsCache(newLyric._id.toString(), artist.name);
 
+    // Notify search engines of the updated sitemap, but only for lyrics
+    // that are actually live (drafts don't change the public sitemap).
+    if (newLyric.status === "published") {
+      pingSearchEngines().catch((error) =>
+        console.error("Sitemap ping failed:", error),
+      );
+    }
+
     return NextResponse.json(newLyric, { status: 201 });
   } catch (error) {
     console.error(error);
@@ -144,6 +153,7 @@ export async function GET(req: NextRequest) {
     const orderParam = url.searchParams.get("order");
     const fieldsParam = url.searchParams.get("fields");
     const includeAllParam = url.searchParams.get("includeAll");
+    const sinceParam = url.searchParams.get("since");
 
     const DEFAULT_LIMIT = 60;
     const MAX_LIMIT = 200;
@@ -163,6 +173,42 @@ export async function GET(req: NextRequest) {
     await connectMongoDB(false); // Explicitly use user connection for read operations
 
     const includeAll = includeAllParam === "true";
+
+    // Delta sync path: return only items modified after `since`, oldest
+    // first, so the client can page through changes with a stable cursor
+    // (the last item's updatedAt) instead of an offset that shifts as
+    // writes land.
+    if (sinceParam) {
+      const sinceDate = new Date(sinceParam);
+      if (Number.isNaN(sinceDate.getTime())) {
+        return NextResponse.json(
+          { error: "Invalid 'since' parameter" },
+          { status: 400 }
+        );
+      }
+
+      const deltaLimit = limit ?? DEFAULT_LIMIT;
+      const deltaFilters: Record<string, unknown> = {
+        ...(includeAll ? {} : publicLyricsFilter()),
+        updatedAt: { $gt: sinceDate },
+      };
+
+      // Fetch one extra row to detect whether more pages remain without a
+      // separate countDocuments() round trip.
+      const rows = await Lyrics.find(deltaFilters)
+        .populate("artistId", "name image")
+        .sort({ updatedAt: 1 })
+        .limit(deltaLimit + 1)
+        .lean();
+
+      const hasMore = rows.length > deltaLimit;
+      const items = hasMore ? rows.slice(0, deltaLimit) : rows;
+
+      return NextResponse.json(
+        { items, hasMore },
+        { headers: { "Cache-Control": "no-store" } }
+      );
+    }
     const filters: Record<string, unknown> = includeAll
       ? {}
       : publicLyricsFilter();

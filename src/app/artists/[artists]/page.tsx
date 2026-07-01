@@ -1,6 +1,11 @@
 import ArtistsSongLists from "@/components/component/AllArtists/ArtistsSongList/ArtistsSongLists";
 import StructuredData from "@/components/StructureDataComponent";
-import { generatePageMetadata, slugMaker, removeSlug } from "@/lib/utils";
+import {
+  generatePageMetadata,
+  generateArtistBio,
+  slugMaker,
+  removeSlug,
+} from "@/lib/utils";
 import { permanentRedirect, notFound } from "next/navigation";
 import { ILyrics, IArtists } from "@/models/IObjects";
 import {
@@ -50,18 +55,33 @@ export async function generateMetadata({
   const artistName = artistData[0].artistId?.name || "Unknown Artist";
   const songCount = artistData.length;
 
+  const artistBio =
+    artistData[0].artistId?.bio ||
+    generateArtistBio({
+      name: artistName,
+      songCount,
+      songs: artistData.map((l) => ({
+        title: l.title,
+        releaseYear: l.releaseYear,
+      })),
+    });
+
   return generatePageMetadata({
     title: `${artistName} - Tangkhul Songs & Lyrics Collection`,
-    description: `Discover ${songCount} songs by ${artistName}. Explore traditional and contemporary Tangkhul music with complete lyrics and cultural context.`,
+    description: artistBio,
     url: `https://tangkhullyrics.com/artists/${slugMaker(artistName)}`,
     keywords: `${artistName}, Tangkhul songs, Tangkhul lyrics, ${artistName} lyrics, traditional music, Manipur music`,
+    ogType: "profile",
+    other: {
+      "profile:username": slugMaker(artistName),
+    },
     structuredData: {
       "@context": "https://schema.org",
       "@type": "MusicGroup",
       name: artistName,
       genre: "Traditional Music",
       url: `https://tangkhullyrics.com/artists/${slugMaker(artistName)}`,
-      description: `Tangkhul artist with ${songCount} songs`,
+      description: artistBio,
       numberOfTracks: songCount,
       musicBy: {
         "@type": "Person",

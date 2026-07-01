@@ -25,6 +25,7 @@ import {
   highlightFuzzyMatch,
   getMatchingLyricsExcerpt,
   calculateSimilarity,
+  stripHtmlTags,
 } from "@/lib/utils";
 import Form from "next/form";
 
@@ -278,11 +279,12 @@ const Navigation: React.FC = React.memo(() => {
                   ) : filteredLyrics.length > 0 ? (
                     filteredLyrics.map((lyric: ILyrics) => {
                       const displayText = lyric.title || "Untitled";
-                      const artistName =
-                        lyric.artistId?.name || "Unknown Artist";
+                      const artistName = stripHtmlTags(
+                        lyric.artistId?.name || "Unknown Artist",
+                      );
 
                       // Use lyrics excerpt as main content if available, otherwise use title
-                      const mainDisplayText = lyric.lyrics;
+                      const mainDisplayText = stripHtmlTags(lyric.lyrics);
 
                       return (
                         <li

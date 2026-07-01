@@ -90,7 +90,9 @@ export function generatePageMetadata({
   image = "https://tangkhullyrics.com/ogImage.jpg",
   keywords = "Tangkhul lyrics, Tangkhul song lyrics, Tangkhul Laa, Tangkhul music",
   robots = "index, follow",
+  ogType = "website",
   structuredData,
+  other,
 }: {
   title: string;
   description: string;
@@ -98,7 +100,9 @@ export function generatePageMetadata({
   image?: string;
   keywords?: string;
   robots?: string;
+  ogType?: "website" | "music.song" | "profile" | "article";
   structuredData?: Record<string, any>;
+  other?: Record<string, string | number>;
 }): Metadata {
   // Hard-cap description and title without appending "..." — callers should
   // supply already-trimmed strings; this is a safety net only.
@@ -127,7 +131,7 @@ export function generatePageMetadata({
       description: optimizedDescription,
       url,
       siteName: "Tangkhul Lyrics",
-      type: "website",
+      type: ogType,
       locale: "en_US",
       images: [
         {
@@ -166,6 +170,7 @@ export function generatePageMetadata({
       "og:site_name": "Tangkhul Lyrics",
       "twitter:domain": "tangkhullyrics.com",
       "format-detection": "telephone=no",
+      ...other,
     },
   };
 }
@@ -198,6 +203,16 @@ const getSimilarity = (str1: string, str2: string) => {
 
   return ((longerLength - lastCost) / longerLength) * 100;
 };
+// Strips HTML tags from a string, leaving only plain text
+export const stripHtmlTags = (html: string): string => {
+  if (!html) return "";
+  return html
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
 // Function to highlight fuzzy matches
 export const highlightFuzzyMatch = (text: string, query: string): string => {
   const queryLower = query.toLowerCase();
@@ -307,6 +322,31 @@ export const sanitizeAndDeduplicateHTML = (html: string): string => {
 
   return wrapper.innerHTML.trim();
 };
+
+interface ArtistBioInput {
+  name: string;
+  songCount: number;
+  songs: { title: string; releaseYear?: number }[];
+}
+
+/** Auto-generate a short SEO-friendly bio for artists without one in the database. */
+export function generateArtistBio({ name, songCount, songs }: ArtistBioInput): string {
+  const songLabel = `${songCount} song${songCount !== 1 ? "s" : ""}`;
+  const featuredTitles = songs
+    .slice(0, 2)
+    .map((s) => s.title)
+    .filter(Boolean);
+
+  const sentences = [
+    `Explore ${songLabel} by ${name}, a Tangkhul artist from the Ukhrul district of Manipur, Northeast India.`,
+    featuredTitles.length > 0
+      ? `Their collection includes popular tracks like ${featuredTitles.join(" and ")}.`
+      : "",
+    "Discover the full lyrics and cultural context for each song below.",
+  ];
+
+  return sentences.filter(Boolean).join(" ");
+}
 
 export function cloudinaryWebP(url: string | null | undefined): string {
   if (!url) return "";

@@ -48,6 +48,7 @@ export async function generateMetadata({
   const songTitle = lyric.title || "Untitled";
   const artistName = lyric.artistId?.name || "Unknown Artist";
   const albumName = lyric.album || "Single";
+  const artistUrl = `https://tangkhullyrics.com/artists/${slugMaker(artistName)}`;
   const lyricsPreview =
     replaceAllHTMLTagsWithSpace(
       sanitizeAndDeduplicateHTML(lyric.lyrics),
@@ -65,6 +66,11 @@ export async function generateMetadata({
         : (lyric.artistId?.image ?? "/ogImage.jpg")
     }`,
     keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul song lyrics translation, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
+    ogType: "music.song",
+    other: {
+      "music:musician": artistUrl,
+      ...(lyric.releaseYear ? { "music:release_date": `${lyric.releaseYear}` } : {}),
+    },
   });
 }
 
@@ -83,12 +89,19 @@ const LyricsPage = async ({
 
   const songTitle = lyric.title || "Untitled";
   const artistName = lyric.artistId?.name || "Unknown Artist";
+  const artistSlug = slugMaker(artistName);
+  const artistUrl = `https://tangkhullyrics.com/artists/${artistSlug}`;
 
   // Ensure the URL uses the proper slug format
-  const expectedSlug = `${slugMaker(songTitle)}_${slugMaker(artistName)}`;
+  const expectedSlug = `${slugMaker(songTitle)}_${artistSlug}`;
   if (!areEquivalentSlugs(resolvedParams.title_artist, expectedSlug)) {
     permanentRedirect(`/lyrics/${lyric._id}/${expectedSlug}`);
   }
+
+  const lyricsUrl = `https://tangkhullyrics.com/lyrics/${lyric._id}/${expectedSlug}`;
+  const plainLyrics = replaceAllHTMLTagsWithSpace(
+    sanitizeAndDeduplicateHTML(lyric.lyrics),
+  ) || "";
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -102,12 +115,34 @@ const LyricsPage = async ({
       "@type": "Person",
       name: artistName,
     },
+    byArtist: {
+      "@type": "MusicArtist",
+      name: artistName,
+      url: artistUrl,
+      ...(lyric.artistId?.image ? { image: lyric.artistId.image } : {}),
+    },
+    ...(lyric.album && lyric.album !== "Single"
+      ? {
+          inAlbum: {
+            "@type": "MusicAlbum",
+            name: lyric.album,
+            byArtist: {
+              "@type": "MusicArtist",
+              name: artistName,
+              url: artistUrl,
+            },
+          },
+        }
+      : {}),
+    lyrics: {
+      "@type": "CreativeWork",
+      text: plainLyrics,
+      inLanguage: "tkh",
+    },
     genre: "Traditional Music",
     inLanguage: "tkh",
     description: `Traditional Tangkhul song "${songTitle}" by ${artistName} | Tangkhul Lyrics | Tangkhul lyrics translation`,
-    url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
-      songTitle,
-    )}_${slugMaker(artistName)}`,
+    url: lyricsUrl,
     datePublished: lyric.createdAt || new Date().toISOString(),
     publisher: {
       "@type": "Organization",
@@ -115,9 +150,20 @@ const LyricsPage = async ({
     },
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://tangkhullyrics.com" },
+      { "@type": "ListItem", position: 2, name: "Lyrics", item: "https://tangkhullyrics.com/lyrics" },
+      { "@type": "ListItem", position: 3, name: songTitle, item: lyricsUrl },
+    ],
+  };
+
   return (
     <>
       <StructuredData data={structuredData} />
+      <StructuredData data={breadcrumbSchema} />
       <Lyrics lyrics={lyric} />
     </>
   );
