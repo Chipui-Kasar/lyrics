@@ -146,7 +146,7 @@ export default function AllLyricsHydrated({
   }, []);
 
   const handlePageChange = (page: number) => {
-    router.push(page <= 1 ? "/lyrics" : `/lyrics/page/${page}`, {
+    router.push(page <= 1 ? "/lyrics" : `/lyrics?page=${page}`, {
       scroll: true,
     });
   };
@@ -161,7 +161,7 @@ export default function AllLyricsHydrated({
         totalCount: pagination.totalCount,
         pageSize: pagination.limit,
         onPageChange: handlePageChange,
-        getPageHref: (page) => (page <= 1 ? "/lyrics" : `/lyrics/page/${page}`),
+        getPageHref: (page) => (page <= 1 ? "/lyrics" : `/lyrics?page=${page}`),
       }}
     />
   );

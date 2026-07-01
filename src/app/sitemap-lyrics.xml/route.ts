@@ -29,7 +29,7 @@ export async function GET() {
       (_, index) => {
         const page = index + 2;
         return {
-          url: `/lyrics/page/${page}`,
+          url: `/lyrics?page=${page}`,
           priority: "0.7",
           changefreq: "daily",
           lastmod: new Date(
