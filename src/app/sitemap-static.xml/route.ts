@@ -58,6 +58,12 @@ export async function GET() {
         changefreq: "monthly",
         lastmod,
       },
+      {
+        url: "/tangkhul-keyboard",
+        priority: "0.8",
+        changefreq: "monthly",
+        lastmod,
+      },
     ];
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>

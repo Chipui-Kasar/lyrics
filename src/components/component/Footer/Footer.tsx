@@ -9,6 +9,7 @@ const Footer = () => {
     { name: "Artists", href: "/allartists" },
     { name: "Search", href: "/search" },
     { name: "Contribute", href: "/contribute" },
+    { name: "Tangkhul Keyboard", href: "/tangkhul-keyboard" },
   ];
 
   const legalLinks = [
