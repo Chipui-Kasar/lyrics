@@ -49,6 +49,8 @@ export async function generateMetadata() {
     description:
       "Download Tangkhul Keyboard APK free for Android. Type macron above (ā) and macron below (a̱) — marks unique to Tangkhul that no other keyboard supports. Step-by-step install guide, 100% safe. iOS version coming soon.",
     url: PAGE_URL,
+    image:
+      "https://raw.githubusercontent.com/Chipui-Kasar/tangkhul-keyboard-assets/refs/heads/main/banner.webp",
     keywords:
       "Tangkhul Keyboard, Tangkhul Keyboard APK, download Tangkhul Keyboard, Tangkhul Keyboard download, Tangkhul language keyboard, macron above keyboard, macron below keyboard, a with macron below, Tangkhul typing app, Tangkhul Naga keyboard Android, Tangkhul Keyboard iOS",
   });
