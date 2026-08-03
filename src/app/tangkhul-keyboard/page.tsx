@@ -1,8 +1,10 @@
-import TangkhulKeyboard, {
+import TangkhulKeyboard from "@/components/component/TangkhulKeyboard/TangkhulKeyboard";
+import {
   faqs,
+  iosFaqs,
   installSteps,
   TangkhulKeyboardManifest,
-} from "@/components/component/TangkhulKeyboard/TangkhulKeyboard";
+} from "@/components/component/TangkhulKeyboard/TangkhulKeyboard.data";
 import StructuredData from "@/components/StructureDataComponent";
 import { generatePageMetadata } from "@/lib/utils";
 export const dynamic = "force-static";
@@ -42,12 +44,13 @@ async function getManifest(): Promise<TangkhulKeyboardManifest> {
 // ✅ Generate Metadata for SEO
 export async function generateMetadata() {
   return generatePageMetadata({
-    title: "Tangkhul Keyboard APK Download for Android - Tangkhul Lyrics",
+    title:
+      "Tangkhul Keyboard APK Download for Android (iOS Coming Soon) - Tangkhul Lyrics",
     description:
-      "Download Tangkhul Keyboard APK free for Android. Type macron above (ā) and macron below (a̱) — marks unique to Tangkhul that no other keyboard supports. Step-by-step install guide, 100% safe.",
+      "Download Tangkhul Keyboard APK free for Android. Type macron above (ā) and macron below (a̱) — marks unique to Tangkhul that no other keyboard supports. Step-by-step install guide, 100% safe. iOS version coming soon.",
     url: PAGE_URL,
     keywords:
-      "Tangkhul Keyboard, Tangkhul Keyboard APK, download Tangkhul Keyboard, Tangkhul Keyboard download, Tangkhul language keyboard, macron above keyboard, macron below keyboard, a with macron below, Tangkhul typing app, Tangkhul Naga keyboard Android",
+      "Tangkhul Keyboard, Tangkhul Keyboard APK, download Tangkhul Keyboard, Tangkhul Keyboard download, Tangkhul language keyboard, macron above keyboard, macron below keyboard, a with macron below, Tangkhul typing app, Tangkhul Naga keyboard Android, Tangkhul Keyboard iOS",
   });
 }
 
@@ -99,7 +102,7 @@ const TangkhulKeyboardPage = async () => {
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
+    mainEntity: [...faqs, ...iosFaqs].map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
