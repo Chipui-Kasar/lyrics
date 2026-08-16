@@ -54,8 +54,25 @@ function buildApiUrl(path: string, params?: Record<string, string>) {
   return `${apiBase()}${path}${queryString ? `?${queryString}` : ""}`;
 }
 
+// Retries transient failures (e.g. the shared DB connection being swapped
+// between admin/user mode mid-request) instead of failing the whole sync.
+async function fetchWithRetry(
+  input: string,
+  init?: RequestInit,
+  retries = 2,
+  backoffMs = 300
+): Promise<Response> {
+  for (let attempt = 0; ; attempt += 1) {
+    const response = await fetch(input, init);
+    if (response.ok || attempt >= retries) {
+      return response;
+    }
+    await new Promise((resolve) => setTimeout(resolve, backoffMs * (attempt + 1)));
+  }
+}
+
 async function fetchCollectionMetadata(type: "lyrics" | "artists") {
-  const response = await fetch(
+  const response = await fetchWithRetry(
     buildApiUrl(
       `/api/${type}/metadata`,
       type === "lyrics" ? { includeAll: "true" } : undefined
@@ -119,7 +136,7 @@ async function fetchAllLyrics(): Promise<LyricRecord[]> {
   let hasNext = true;
 
   while (hasNext) {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       buildApiUrl("/api/lyrics", {
         page: String(page),
         limit: String(pageSize),
@@ -669,7 +686,7 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
     // Fetch fresh artists data
     const metadata = await fetchCollectionMetadata("artists").catch(() => null);
 
-    const response = await fetch(
+    const response = await fetchWithRetry(
       buildApiUrl("/api/artist"),
       {
         cache: "no-store",

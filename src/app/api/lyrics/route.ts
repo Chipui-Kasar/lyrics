@@ -1,35 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Artist, Lyrics } from "@/models/model";
+import { ContributedLyrics } from "@/models/ContributedLyrics";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { revalidateTag, revalidatePath } from "next/cache";
 import { pingSearchEngines } from "@/lib/pingSearchEngines";
-
-// Helper function to revalidate relevant tags
-function revalidateLyricsCache(lyricsId?: string, artistName?: string) {
-  // Revalidate specific lyrics page
-  if (lyricsId) {
-    revalidateTag(`lyrics-${lyricsId}`);
-  }
-
-  // Revalidate artist cache and page
-  if (artistName) {
-    const artistSlug = artistName.toLowerCase().replace(/\s+/g, "-");
-    revalidateTag(`artist-${artistSlug}`);
-    revalidatePath(`/artists/${artistSlug}`);
-  }
-
-  // Revalidate collection caches
-  revalidateTag("lyrics-all");
-  revalidateTag("lyrics-featured");
-  revalidateTag("lyrics-top");
-  revalidateTag("search");
-
-  // Revalidate static pages that list lyrics
-  revalidatePath("/", "page");
-  revalidatePath("/lyrics", "page");
-}
+import { revalidateLyricsCache } from "@/lib/revalidateLyricsCache";
 
 function publicLyricsFilter() {
   return {
@@ -104,8 +80,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Set status based on user role - admin submissions are published, others are draft
-    const status = session.user.role === "admin" ? "published" : "draft";
+    // Admins publish directly into the live Lyrics collection. Everyone
+    // else's submissions land in ContributedLyrics for review first.
+    if (session.user.role !== "admin") {
+      const contribution = new ContributedLyrics({
+        title,
+        artistId: artist._id,
+        album,
+        releaseYear,
+        lyrics,
+        streamingLinks: streamingLinks || {},
+        thumbnail: thumbnail || "",
+        contributedBy: contributedBy || "",
+        submittedBy: session.user.id,
+        status: "pending",
+      });
+
+      await contribution.save();
+
+      return NextResponse.json(contribution, { status: 201 });
+    }
 
     const newLyric = new Lyrics({
       title,
@@ -118,7 +112,7 @@ export async function POST(req: NextRequest) {
       featured: featured || false,
       contributedBy: contributedBy || "",
       submittedBy: session.user.id,
-      status: status,
+      status: "published",
     });
 
     await newLyric.save();
@@ -126,13 +120,9 @@ export async function POST(req: NextRequest) {
     // Revalidate cache
     revalidateLyricsCache(newLyric._id.toString(), artist.name);
 
-    // Notify search engines of the updated sitemap, but only for lyrics
-    // that are actually live (drafts don't change the public sitemap).
-    if (newLyric.status === "published") {
-      pingSearchEngines().catch((error) =>
-        console.error("Sitemap ping failed:", error),
-      );
-    }
+    pingSearchEngines().catch((error) =>
+      console.error("Sitemap ping failed:", error),
+    );
 
     return NextResponse.json(newLyric, { status: 201 });
   } catch (error) {
@@ -325,7 +315,8 @@ export async function DELETE(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    // @ts-ignore
+    if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import PageLoader from "../Spinner/Spinner";
 import Contact from "../Contact/Contact";
 
@@ -149,6 +150,17 @@ const ContributeLyrics = ({ headingLevel = "h1" }: ContributeLyricsProps) => {
         <p className="mt-2 text-muted-foreground">
           Share your favorite song lyrics with the community.
         </p>
+
+        {session && (
+          <div className="mt-4">
+            <Link
+              href="/my-contributions"
+              className="inline-block px-4 py-2 rounded-md bg-white border border-gray-300 text-sm font-medium hover:bg-gray-50"
+            >
+              View My Contributions
+            </Link>
+          </div>
+        )}
 
         {status === "loading" ? null : !session ? (
           <div className="mt-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">

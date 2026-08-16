@@ -39,21 +39,27 @@ export default function AdminDashboard() {
   };
 
   const handleReject = async (id: string) => {
-    if (window.confirm("Are you sure you want to reject this submission?")) {
-      try {
-        const res = await fetch(`/api/lyrics/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          setDrafts(drafts.filter((d) => d._id !== id));
-        }
-      } catch (error) {
-        console.error("Failed to reject lyric", error);
+    const reason = window.prompt(
+      "Reason for rejecting this submission (optional). Click OK to reject, or Cancel to abort:"
+    );
+    if (reason === null) return;
+    try {
+      const res = await fetch(`/api/lyrics/contributions/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "rejected", rejectionReason: reason }),
+      });
+      if (res.ok) {
+        setDrafts(drafts.filter((d) => d._id !== id));
       }
+    } catch (error) {
+      console.error("Failed to reject lyric", error);
     }
   };
 
   const handleUpdate = async (id: string, status: string) => {
     try {
-      const res = await fetch(`/api/lyrics/${id}`, {
+      const res = await fetch(`/api/lyrics/contributions/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -89,7 +95,7 @@ export default function AdminDashboard() {
 
         <main className="p-8">
           <h2 className="text-xl font-semibold mb-4">
-            Draft Lyrics for Review
+            Contributions for Review
           </h2>
           <div className="space-y-4">
             {drafts.length > 0 ? (
@@ -119,7 +125,7 @@ export default function AdminDashboard() {
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-500">
-                  No draft lyrics to review at the moment.
+                  No contributions to review at the moment.
                 </p>
               </div>
             )}

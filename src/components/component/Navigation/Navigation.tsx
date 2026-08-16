@@ -7,6 +7,7 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -403,6 +404,14 @@ const Navigation: React.FC = React.memo(() => {
                           Admin Dashboard
                         </Link>
                       )}
+                      <Link
+                        href="/my-contributions"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        My Contributions
+                      </Link>
                       <button
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {
