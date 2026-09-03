@@ -8,10 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Dropdown } from "@/components/ui/dropdown";
 import ImageUpload from "@/components/component/Admin/ImageUpload/ImageUpload";
 import SitemapTracker from "@/components/component/Admin/SitemapTracker/SitemapTracker";
+import { RichTextEditor } from "@/components/ui/richTextEditor";
 import { Loader2, ExternalLink, Info } from "lucide-react";
 import { getAllArtists } from "@/service/allartists";
 import { createLyrics } from "@/service/allartists";
 import { IArtists } from "@/models/IObjects";
+import { sanitizeAndDeduplicateHTML } from "@/lib/utils";
 
 interface ExtractedData {
   title: string;
@@ -28,6 +30,7 @@ export default function ExtractLyricsPage() {
   const [error, setError] = useState("");
   const [artists, setArtists] = useState<IArtists[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [lyricsEditorKey, setLyricsEditorKey] = useState(0);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -168,6 +171,8 @@ export default function ExtractLyricsPage() {
         title: extractedData.title,
         lyrics: extractedData.lyrics,
       }));
+      // Force the rich text editor to remount so it picks up the new content
+      setLyricsEditorKey((prev) => prev + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -252,6 +257,7 @@ export default function ExtractLyricsPage() {
         });
         setExtractedData(null);
         setUrl("");
+        setLyricsEditorKey((prev) => prev + 1);
       } else {
         alert("Failed to add lyrics.");
       }
@@ -436,9 +442,20 @@ export default function ExtractLyricsPage() {
                   <div className="grid gap-2">
                     <Label htmlFor="lyrics">Lyrics</Label>
 
-                    <div
-                      id="lyrics"
-                      dangerouslySetInnerHTML={{ __html: formData.lyrics }}
+                    <RichTextEditor
+                      key={lyricsEditorKey}
+                      name="lyrics"
+                      defaultValue={formData.lyrics}
+                      onChange={({ target }) =>
+                        handleChange({
+                          target: {
+                            name: "lyrics",
+                            value: sanitizeAndDeduplicateHTML(
+                              target.value
+                            ),
+                          },
+                        })
+                      }
                     />
                   </div>
 
