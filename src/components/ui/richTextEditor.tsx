@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import * as Toggle from "@radix-ui/react-toggle";
 import { cva } from "class-variance-authority";
@@ -41,13 +41,6 @@ export function RichTextEditor({
   onChange,
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Mount-only initialization
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const hasInitializedContent = useRef(false);
 
   useEffect(() => {
@@ -98,8 +91,6 @@ export function RichTextEditor({
     execCommand("formatBlock", blockType);
 
   const isFormatActive = (format: string) => document.queryCommandState(format);
-
-  if (!isMounted) return null;
 
   return (
     <div className={cn("border rounded-md")}>

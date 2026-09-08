@@ -10,6 +10,18 @@ interface Props {
   initialArtists: IArtists[];
 }
 
+function getLatestArtistUpdate(artists: IArtists[]) {
+  return artists
+    .map((artist) => artist.updatedAt)
+    .filter(Boolean)
+    .map((value) =>
+      typeof value === "string" ? value : value?.toISOString?.(),
+    )
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+}
+
 export default function AllArtistsHydrated({ initialArtists }: Props) {
   const [artists, setArtists] = useState<IArtists[]>(initialArtists || []);
 
@@ -50,7 +62,7 @@ export default function AllArtistsHydrated({ initialArtists }: Props) {
             saveArtistsList(initialArtists as any),
             saveArtistsMetadata({
               totalCount: initialArtists.length,
-              lastUpdated: new Date().toISOString(),
+              lastUpdated: getLatestArtistUpdate(initialArtists),
               savedAt: Date.now(),
             }),
           ])
@@ -77,7 +89,7 @@ export default function AllArtistsHydrated({ initialArtists }: Props) {
     return () => {
       cancelled = true;
     };
-  }, []); // Empty deps - only run once
+  }, [initialArtists]);
 
   return (
     <section className="container py-4 sm:py-8 md:py-10 m-auto">

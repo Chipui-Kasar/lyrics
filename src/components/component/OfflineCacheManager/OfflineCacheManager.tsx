@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import {
-  getMetadata,
-  saveMetadata,
-  saveLyricsList,
-  getLyricsList,
-} from "@/lib/indexedDB";
+import { updateLyricsCache } from "@/lib/cacheService";
+import { getLyricsList } from "@/lib/indexedDB";
 
 // Minimal cache manager: compares backend metadata and updates IDB silently
 export default function OfflineCacheManager() {
@@ -22,35 +18,20 @@ export default function OfflineCacheManager() {
       if (!navigator.onLine) return;
 
       try {
-        // Fetch metadata from backend
-        const metaRes = await fetch("/api/lyrics/metadata", {
+        const metaRes = await fetch("/api/lyrics/metadata?includeAll=true", {
           cache: "no-store",
         });
         if (!metaRes.ok) return;
         const remoteMeta = await metaRes.json();
 
-        const localMeta = await getMetadata();
+        const cachedLyrics = await getLyricsList();
 
         const isDifferent =
-          !localMeta ||
-          localMeta.totalCount !== remoteMeta.totalCount ||
-          localMeta.lastUpdated !== remoteMeta.lastUpdated;
+          !cachedLyrics.length || cachedLyrics.length !== remoteMeta.totalCount;
 
         if (isDifferent) {
-          // Fetch updated list (limit can be applied server-side; here we fetch all published)
-          const listRes = await fetch("/api/lyrics?sort=updatedAt", {
-            cache: "no-store",
-          });
-          if (listRes.ok) {
-            const list = await listRes.json();
-            if (!cancelled && Array.isArray(list)) {
-              await saveLyricsList(list);
-              await saveMetadata({
-                totalCount: remoteMeta.totalCount,
-                lastUpdated: remoteMeta.lastUpdated,
-                savedAt: Date.now(),
-              });
-            }
+          if (!cancelled) {
+            await updateLyricsCache(true);
           }
         }
       } catch (err) {

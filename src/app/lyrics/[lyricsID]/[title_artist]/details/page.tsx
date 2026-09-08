@@ -1,12 +1,11 @@
 // app/lyrics/[lyricsID]/[title_artist]/details/page.tsx
 import { notFound, permanentRedirect } from "next/navigation";
-import SongDetails from "@/components/component/AllArtists/ArtistsSongList/SongDetails/SongDetails";
 import {
   generatePageMetadata,
   replaceAllHTMLTagsWithSpace,
   sanitizeAndDeduplicateHTML,
   slugMaker,
-  removeSlug,
+  splitTitleArtistSlug,
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getSingleLyrics } from "@/service/allartists";
@@ -22,11 +21,7 @@ const fetchLyric = cache(
     title: string,
     artist: string,
   ): Promise<ILyrics | null> => {
-    return await getSingleLyrics(
-      lyricsID,
-      removeSlug(title),
-      removeSlug(artist),
-    );
+    return await getSingleLyrics(lyricsID, title, artist);
   },
 );
 
@@ -37,7 +32,7 @@ export async function generateMetadata({
   params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
   const resolvedParams = await params; // Resolve the promise to get the actual params
-  const [title, artist] = resolvedParams.title_artist.split("_");
+  const { title, artist } = splitTitleArtistSlug(resolvedParams.title_artist);
   const lyric = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
   if (!lyric) {
@@ -116,7 +111,7 @@ export default async function SongDetailsPage({
   params: Promise<{ lyricsID: string; title_artist: string }>;
 }) {
   const resolvedParams = await params; // Resolve the promise to get the actual params
-  const [title, artist] = resolvedParams.title_artist.split("_");
+  const { title, artist } = splitTitleArtistSlug(resolvedParams.title_artist);
   const songLyrics = await fetchLyric(resolvedParams?.lyricsID, title, artist);
 
   if (!songLyrics) {
@@ -127,6 +122,6 @@ export default async function SongDetailsPage({
   const songTitle = songLyrics.title || "Untitled";
   const artistName = songLyrics.artistId?.name || "Unknown Artist";
   const expectedSlug = `${slugMaker(songTitle)}_${slugMaker(artistName)}`;
-  
+
   permanentRedirect(`/lyrics/${songLyrics._id}/${expectedSlug}`);
 }

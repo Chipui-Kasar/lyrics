@@ -271,3 +271,66 @@
 .animate-spin-slow {
   animation: spin-slow 8s linear infinite;
 }
+
+/* AI Assistant panel + message transitions */
+@keyframes chat-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes chat-pop-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+}
+
+@keyframes message-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-chat-pop-in {
+  animation: chat-pop-in 0.25s ease-out;
+}
+
+.animate-chat-pop-out {
+  animation: chat-pop-out 0.2s ease-in forwards;
+}
+
+.animate-message-pop-in {
+  animation: message-pop-in 0.25s ease-out;
+}
+
+.ai-chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ai-chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-chat-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 9999px;
+}
+
+.ai-chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}

@@ -11,6 +11,7 @@ interface AllLyricsProps {
     totalCount: number;
     pageSize: number;
     onPageChange: (page: number) => void;
+    getPageHref?: (page: number) => string;
   };
 }
 const AllLyrics = ({ lyrics, isLoading, pagination }: AllLyricsProps) => {
@@ -23,9 +24,9 @@ const AllLyrics = ({ lyrics, isLoading, pagination }: AllLyricsProps) => {
     totalCount > 0 ? Math.min(currentPage * pageSize, totalCount) : 0;
   return (
     <div className="col-span-2 md:col-span-2 lg:col-span-1  rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
-      <h2 className="text-2xl font-bold">
-        Tangkhul Song Lyrics | Explore and Discover new Lyrics
-      </h2>
+      <h1 className="text-2xl font-bold">
+        Tangkhul Song Lyrics — Explore and Discover New Lyrics
+      </h1>
       <p className="mt-2 text-muted-foreground">
         Explore the growing collection of lyrics from various artists and
         genres.
@@ -79,6 +80,7 @@ const AllLyrics = ({ lyrics, isLoading, pagination }: AllLyricsProps) => {
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
             onPageChange={pagination.onPageChange}
+            getPageHref={pagination.getPageHref}
           />
         </div>
       )}

@@ -18,12 +18,19 @@ export async function PUT(
     await connectMongoDB(); // Use admin connection for updates
     const { id } = params;
     const body = await req.json();
-    const { status } = body;
+    const { status, rejectionReason } = body;
 
-    if (!status || (status !== "published" && status !== "draft")) {
+    if (
+      !status ||
+      (status !== "published" && status !== "draft" && status !== "rejected")
+    ) {
       return NextResponse.json({ message: "Invalid status" }, { status: 400 });
     }
-    const lyric = await Lyrics.findByIdAndUpdate(id, { status }, { new: true });
+    const lyric = await Lyrics.findByIdAndUpdate(
+      id,
+      { status, rejectionReason: status === "rejected" ? rejectionReason || "" : "" },
+      { new: true }
+    );
     if (!lyric) {
       return NextResponse.json({ message: "Lyric not found" }, { status: 404 });
     }

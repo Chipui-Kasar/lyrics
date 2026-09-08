@@ -20,7 +20,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
         {lyrics.map((lyric, key) => (
           <NavigationLink
             href={`/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
-              lyric.artistId?.name
+              lyric.artistId?.name,
             )}`}
             prefetch={true}
             className="group relative flex items-center gap-4 rounded-lg border border-yellow-400 bg-yellow-50 p-4 shadow transition hover:bg-yellow-100 hover:shadow-md"

@@ -1,4 +1,4 @@
-import { slugMaker } from "@/lib/utils";
+import { slugMaker, cloudinaryWebP, stripInvisibleChars } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import Image from "next/image";
 import { NavigationLink } from "@/components/NavigationLink";
@@ -18,13 +18,13 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
         {artists.map((artist, key) => (
           <NavigationLink
             key={key}
-            href={`/artists/${slugMaker(artist.name)}`}
+            href={`/artists/${slugMaker(stripInvisibleChars(artist.name))}`}
             className="group flex flex-col items-center gap-2 rounded-lg bg-background p-4 transition-colors hover:bg-muted"
             prefetch={true}
             rel="noopener noreferrer"
           >
             <Image
-              src={artist.image || "/placeholder-user.jpg"}
+              src={cloudinaryWebP(artist.image) || "/placeholder-user.jpg"}
               width={44}
               height={44}
               alt={artist.name}
@@ -32,7 +32,7 @@ const PopularArtists = ({ artists }: PopularArtistsProps) => {
               style={{ borderRadius: "50%" }}
             />
             <div className="text-center">
-              <h3 className="text-xs font-medium">{artist.name}</h3>
+              <h3 className="text-xs font-medium">{stripInvisibleChars(artist.name)}</h3>
               <p className="text-xs text-muted-foreground">
                 {artist.songCount ? `${artist.songCount} Songs` : ""}
               </p>

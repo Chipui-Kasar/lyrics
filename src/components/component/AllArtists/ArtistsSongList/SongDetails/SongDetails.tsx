@@ -13,6 +13,7 @@ import {
   handleShare,
   slugMaker,
   sanitizeAndDeduplicateHTML,
+  cloudinaryWebP,
 } from "@/lib/utils";
 import { useMemo } from "react";
 
@@ -26,11 +27,11 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
   );
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <main className="flex-1 py-12">
+      <div className="flex-1 py-12">
         <div className="container mx-auto grid grid-cols-1 gap-8 px-4 md:grid-cols-[1fr_300px] md:gap-12 md:px-6">
           <div className="flex flex-col items-center justify-center">
             <Image
-              src={songLyrics.artistId?.image || "/placeholder.svg"}
+              src={cloudinaryWebP(songLyrics.artistId?.image) || "/placeholder.svg"}
               width={400}
               height={400}
               alt="Album Cover"
@@ -83,7 +84,7 @@ export default function SongDetails({ songLyrics }: { songLyrics: ILyrics }) {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

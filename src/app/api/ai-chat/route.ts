@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Artist, Lyrics } from "@/models/model";
 import { slugMaker } from "@/lib/utils";
+import { chatCompletion } from "@/lib/aiClient";
+import { searchLyricsAndArtists } from "@/lib/searchLyricsAndArtists";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,85 +16,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not configured");
+    if (!process.env.OPENROUTER_API_KEY && !process.env.GROQ_API_KEY) {
+      throw new Error("Neither OPENROUTER_API_KEY nor GROQ_API_KEY is configured");
     }
 
     // Connect to MongoDB and fetch real data
     await connectMongoDB();
 
-    // Fetch relevant data based on the user's question
-    const lowerMessage = message.toLowerCase();
-    let databaseContext = "";
+    // Fetch recent/featured lyrics for general "what's on this site" context
+    const recentLyrics = await Lyrics.find()
+      .populate("artistId", "name village genre")
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select("_id title artistId album releaseYear")
+      .lean();
 
-    // If user is asking about lyrics, artists, or searching
-    if (
-      lowerMessage.includes("lyric") ||
-      lowerMessage.includes("song") ||
-      lowerMessage.includes("artist") ||
-      lowerMessage.includes("search") ||
-      lowerMessage.includes("find")
-    ) {
-      // Fetch recent/featured lyrics
-      const recentLyrics = await Lyrics.find()
-        .populate("artistId", "name village genre")
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .select("_id title artistId album releaseYear")
-        .lean();
+    // Fetch all artists (site only has a small catalog, so listing all is cheap
+    // and avoids hiding artists past an arbitrary alphabetical cutoff)
+    const artists = await Artist.find()
+      .sort({ name: 1 })
+      .select("_id name village genre")
+      .lean();
 
-      // Fetch all artists
-      const artists = await Artist.find()
-        .sort({ name: 1 })
-        .limit(20)
-        .select("_id name village genre")
-        .lean();
+    // Search both artists and lyrics for whatever the user actually asked about
+    const { lyrics: matchedLyrics, artists: matchedArtists } =
+      await searchLyricsAndArtists(message, {
+        lyricsLimit: 5,
+        artistsLimit: 5,
+      });
 
-      // If user mentions specific artist or song, search for it
-      const searchKeywords = message.match(
-        /["']([^"']+)["']|(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b)/g
-      );
-      let specificResults = null;
-
-      if (searchKeywords && searchKeywords.length > 0) {
-        const searchQuery = searchKeywords.join(" ").replace(/["']/g, "");
-
-        specificResults = await Lyrics.aggregate([
-          {
-            $search: {
-              index: "default",
-              text: {
-                query: searchQuery,
-                path: ["lyrics", "title", "album"],
-                fuzzy: { maxEdits: 2, prefixLength: 2 },
-              },
-            },
-          },
-          { $limit: 5 },
-          {
-            $lookup: {
-              from: "artists",
-              localField: "artistId",
-              foreignField: "_id",
-              as: "artist",
-            },
-          },
-          { $unwind: "$artist" },
-          {
-            $project: {
-              title: 1,
-              album: 1,
-              artistId: "$artist._id",
-              artistName: "$artist.name",
-              lyrics: { $substr: ["$lyrics", 0, 200] },
-            },
-          },
-        ]);
-      }
-
-      // Build database context with IDs for link generation
-      databaseContext = `\n\nACTUAL WEBSITE DATA:
+    // Build database context with IDs for link generation
+    let databaseContext = `\n\nACTUAL WEBSITE DATA:
 
 AVAILABLE ARTISTS (${artists.length} total):
 ${artists
@@ -118,19 +72,30 @@ ${recentLyrics
   )
   .join("\n")}`;
 
-      if (specificResults && specificResults.length > 0) {
-        databaseContext += `\n\nSEARCH RESULTS FOR YOUR QUERY:
-${specificResults
+    if (matchedArtists.length > 0) {
+      databaseContext += `\n\nARTISTS MATCHING YOUR QUERY:
+${matchedArtists
   .map(
-    (r: any) =>
-      `- "${r.title}" by ${r.artistName}${
-        r.album ? ` (${r.album})` : ""
-      } [LINK: /lyrics/${r._id}/${slugMaker(r.title)}_${slugMaker(
-        r.artistName
-      )}]\n  Preview: ${r.lyrics.substring(0, 150)}...`
+    (a: any) =>
+      `- ${a.name}${a.village ? ` from ${a.village}` : ""}${
+        a.genre?.length ? ` (${a.genre.join(", ")})` : ""
+      } [LINK: /artists/${slugMaker(a.name)}]`
+  )
+  .join("\n")}`;
+    }
+
+    if (matchedLyrics.length > 0) {
+      databaseContext += `\n\nSONGS MATCHING YOUR QUERY:
+${matchedLyrics
+  .map(
+    (l: any) =>
+      `- "${l.title}" by ${l.artistId?.name || "Unknown"}${
+        l.album ? ` (${l.album})` : ""
+      } [LINK: /lyrics/${l._id}/${slugMaker(l.title)}_${slugMaker(
+        l.artistId?.name || "Unknown"
+      )}]\n  Preview: ${(l.lyrics || "").substring(0, 150)}...`
   )
   .join("\n\n")}`;
-      }
     }
 
     // Build system prompt with website context
@@ -182,7 +147,7 @@ RESPONSE GUIDELINES:
 - For all artists: [View all artists](/allartists)
 - For all lyrics: [Browse all lyrics](/lyrics)
 - For search page: [Search for more songs](/search?query=keyword)
-- If user searches for something specific, use the SEARCH RESULTS section
+- If user searches for something specific, use the "ARTISTS MATCHING YOUR QUERY" / "SONGS MATCHING YOUR QUERY" sections
 - Mention album names and release years when available
 - Group information logically (by artist, by genre, by village, etc.)
 - Make every song title and artist name a clickable link${databaseContext}`;
@@ -194,42 +159,13 @@ USER QUESTION: ${message}
 
 Provide a helpful response based on the website context above.`;
 
-    // Use REST API directly with gemini-2.0-flash-exp
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: fullPrompt,
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Gemini API Error:", errorData);
-      throw new Error(
-        `API request failed: ${response.status} ${response.statusText}`
-      );
-    }
-
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!text) {
-      throw new Error("No response text from API");
-    }
+    // Try OpenRouter first, fall back to Groq if it fails
+    const text = await chatCompletion({
+      messages: [{ role: "user", content: fullPrompt }],
+      openRouterModel: "google/gemini-2.5-flash",
+      groqModel: "llama-3.3-70b-versatile",
+      maxTokens: 2048,
+    });
 
     return NextResponse.json({
       message: text,

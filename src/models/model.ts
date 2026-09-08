@@ -31,9 +31,10 @@ const lyricsSchema = new Schema(
     featured: { type: Boolean, default: false }, // For featured lyrics
     status: {
       type: String,
-      enum: ["draft", "published"],
+      enum: ["draft", "published", "rejected"],
       default: "draft",
     },
+    rejectionReason: String,
     submittedBy: { type: Schema.Types.ObjectId, ref: "User" },
     contributedBy: String, // For display name of contributor
   },

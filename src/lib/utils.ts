@@ -7,6 +7,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Strip zero-width and invisible Unicode characters from display strings. */
+export function stripInvisibleChars(str: string): string {
+  if (!str) return "";
+  return str.replace(/[​‌‍﻿⁠]/g, "").trim();
+}
+
+export function normalizeSlugValue(str: string) {
+  return str
+    .normalize("NFKC")
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
 //a function to convert space to - in a string
 export function slugMaker(str: string) {
   if (!str) return "";
@@ -15,10 +30,45 @@ export function slugMaker(str: string) {
   } catch (e) {
     // ignore
   }
-  return str.trim().replace(/\s+/g, "-").toLowerCase();
+  return normalizeSlugValue(str)
+    .replace(/[_\s]+/g, "-")
+    .replace(/-+/g, "-")
+    .toLowerCase();
 }
 export function removeSlug(str: string) {
-  return str.replace(/-/g, " ");
+  try {
+    str = decodeURIComponent(str);
+  } catch (e) {
+    // ignore
+  }
+  return normalizeSlugValue(str).replace(/[-_]+/g, " ");
+}
+
+export function splitTitleArtistSlug(value: string) {
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(value);
+    } catch (error) {
+      return value;
+    }
+  })();
+
+  const lastSeparator = decoded.lastIndexOf("_");
+  if (lastSeparator === -1) {
+    return {
+      title: decoded,
+      artist: "",
+    };
+  }
+
+  return {
+    title: decoded.slice(0, lastSeparator),
+    artist: decoded.slice(lastSeparator + 1),
+  };
+}
+
+export function areEquivalentSlugs(left: string, right: string) {
+  return slugMaker(left) === slugMaker(right);
 }
 
 //function for metatags
@@ -40,7 +90,9 @@ export function generatePageMetadata({
   image = "https://tangkhullyrics.com/ogImage.jpg",
   keywords = "Tangkhul lyrics, Tangkhul song lyrics, Tangkhul Laa, Tangkhul music",
   robots = "index, follow",
+  ogType = "website",
   structuredData,
+  other,
 }: {
   title: string;
   description: string;
@@ -48,17 +100,17 @@ export function generatePageMetadata({
   image?: string;
   keywords?: string;
   robots?: string;
+  ogType?: "website" | "music.song" | "profile" | "article";
   structuredData?: Record<string, any>;
+  other?: Record<string, string | number>;
 }): Metadata {
-  // Ensure description is optimized length (150-160 characters)
+  // Hard-cap description and title without appending "..." — callers should
+  // supply already-trimmed strings; this is a safety net only.
   const optimizedDescription =
-    description.length > 160
-      ? description.substring(0, 157) + "..."
-      : description;
+    description.length > 160 ? description.substring(0, 160) : description;
 
-  // Ensure title is optimized length (50-60 characters)
   const optimizedTitle =
-    title.length > 60 ? title.substring(0, 57) + "..." : title;
+    title.length > 60 ? title.substring(0, 60) : title;
 
   return {
     // Use an absolute title so route-level metadata doesn't get the layout
@@ -79,7 +131,7 @@ export function generatePageMetadata({
       description: optimizedDescription,
       url,
       siteName: "Tangkhul Lyrics",
-      type: "website",
+      type: ogType,
       locale: "en_US",
       images: [
         {
@@ -118,6 +170,7 @@ export function generatePageMetadata({
       "og:site_name": "Tangkhul Lyrics",
       "twitter:domain": "tangkhullyrics.com",
       "format-detection": "telephone=no",
+      ...other,
     },
   };
 }
@@ -150,6 +203,16 @@ const getSimilarity = (str1: string, str2: string) => {
 
   return ((longerLength - lastCost) / longerLength) * 100;
 };
+// Strips HTML tags from a string, leaving only plain text
+export const stripHtmlTags = (html: string): string => {
+  if (!html) return "";
+  return html
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
 // Function to highlight fuzzy matches
 export const highlightFuzzyMatch = (text: string, query: string): string => {
   const queryLower = query.toLowerCase();
@@ -260,9 +323,47 @@ export const sanitizeAndDeduplicateHTML = (html: string): string => {
   return wrapper.innerHTML.trim();
 };
 
+interface ArtistBioInput {
+  name: string;
+  songCount: number;
+  songs: { title: string; releaseYear?: number }[];
+}
+
+/** Auto-generate a short SEO-friendly bio for artists without one in the database. */
+export function generateArtistBio({ name, songCount, songs }: ArtistBioInput): string {
+  const songLabel = `${songCount} song${songCount !== 1 ? "s" : ""}`;
+  const featuredTitles = songs
+    .slice(0, 2)
+    .map((s) => s.title)
+    .filter(Boolean);
+
+  const sentences = [
+    `Explore ${songLabel} by ${name}, a Tangkhul artist from the Ukhrul district of Manipur, Northeast India.`,
+    featuredTitles.length > 0
+      ? `Their collection includes popular tracks like ${featuredTitles.join(" and ")}.`
+      : "",
+    "Discover the full lyrics and cultural context for each song below.",
+  ];
+
+  return sentences.filter(Boolean).join(" ");
+}
+
+export function cloudinaryWebP(url: string | null | undefined): string {
+  if (!url) return "";
+  if (!url.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/", "/upload/f_webp,q_auto/");
+}
+
 export const replaceAllHTMLTagsWithSpace = (html: string): string => {
   if (!html) return "";
-  return html.replace(/<[^>]+>/g, " ").trim();
+  // Replace newlines/line-breaks with a space before stripping tags so
+  // adjacent lines don't merge into one word (e.g. "moon\nli" → "moon li").
+  return html
+    .replace(/\r?\n/g, " ")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 };
 
 // Fuzzy matching utilities

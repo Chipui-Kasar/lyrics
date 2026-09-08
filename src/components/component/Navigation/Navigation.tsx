@@ -7,6 +7,7 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -25,6 +26,7 @@ import {
   highlightFuzzyMatch,
   getMatchingLyricsExcerpt,
   calculateSimilarity,
+  stripHtmlTags,
 } from "@/lib/utils";
 import Form from "next/form";
 
@@ -55,8 +57,9 @@ const Navigation: React.FC = React.memo(() => {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Debounced search with caching
-  const debouncedSearch = useCallback(
-    debounce(async (query: string) => {
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (query: string) => {
       if (query.length <= 2) {
         setFilteredLyrics([]);
         setIsLoading(false);
@@ -146,7 +149,7 @@ const Navigation: React.FC = React.memo(() => {
       } finally {
         setIsLoading(false);
       }
-    }, 500), // Increased debounce to 500ms
+      }, 500),
     [],
   );
 
@@ -277,11 +280,12 @@ const Navigation: React.FC = React.memo(() => {
                   ) : filteredLyrics.length > 0 ? (
                     filteredLyrics.map((lyric: ILyrics) => {
                       const displayText = lyric.title || "Untitled";
-                      const artistName =
-                        lyric.artistId?.name || "Unknown Artist";
+                      const artistName = stripHtmlTags(
+                        lyric.artistId?.name || "Unknown Artist",
+                      );
 
                       // Use lyrics excerpt as main content if available, otherwise use title
-                      const mainDisplayText = lyric.lyrics;
+                      const mainDisplayText = stripHtmlTags(lyric.lyrics);
 
                       return (
                         <li
@@ -400,6 +404,14 @@ const Navigation: React.FC = React.memo(() => {
                           Admin Dashboard
                         </Link>
                       )}
+                      <Link
+                        href="/my-contributions"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        My Contributions
+                      </Link>
                       <button
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => {

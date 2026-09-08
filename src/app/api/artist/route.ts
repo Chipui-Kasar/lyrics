@@ -45,8 +45,12 @@ export async function POST(req: Request) {
 //get all artists
 export async function GET() {
   await connectMongoDB();
-  const artists = await Artist.find().sort({ name: "asc" });
-  return NextResponse.json(artists);
+  const artists = await Artist.find().sort({ name: "asc" }).lean();
+  return NextResponse.json(artists, {
+    headers: {
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+    },
+  });
 }
 // Delete Artist by Query Param
 export async function DELETE(req: NextRequest) {

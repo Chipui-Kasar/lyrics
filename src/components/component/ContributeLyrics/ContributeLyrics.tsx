@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import PageLoader from "../Spinner/Spinner";
 import Contact from "../Contact/Contact";
 
@@ -14,7 +15,12 @@ interface Artist {
   name: string;
 }
 
-const ContributeLyrics = () => {
+interface ContributeLyricsProps {
+  headingLevel?: "h1" | "h2";
+}
+
+const ContributeLyrics = ({ headingLevel = "h1" }: ContributeLyricsProps) => {
+  const Heading = headingLevel;
   const { data: session, status } = useSession();
   const router = useRouter();
   const [songTitle, setSongTitle] = useState("");
@@ -140,19 +146,37 @@ const ContributeLyrics = () => {
   return (
     <section className="container py-4 sm:py-8 md:py-10 m-auto ">
       <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
-        <h2 className="text-2xl font-bold">Share Lyrics</h2>
+        <Heading className="text-2xl font-bold">Contribute Tangkhul Lyrics</Heading>
         <p className="mt-2 text-muted-foreground">
           Share your favorite song lyrics with the community.
         </p>
 
-        {!session ? (
+        {session && (
+          <div className="mt-4">
+            <Link
+              href="/my-contributions"
+              className="inline-block px-4 py-2 rounded-md bg-white border border-gray-300 text-sm font-medium hover:bg-gray-50"
+            >
+              View My Contributions
+            </Link>
+          </div>
+        )}
+
+        {status === "loading" ? null : !session ? (
           <div className="mt-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
-            You're not{" "}
-            <a href="/auth/signin" className="font-bold underline">
-              signed in
+            You must be signed in to contribute via this form.{" "}
+            <a
+              href="/auth/signin?returnUrl=/contribute"
+              className="font-bold underline"
+            >
+              Sign in here
             </a>{" "}
-            contribute via this form.
-            <Contact />
+            or{" "}
+            <a href="/auth/signup" className="font-bold underline">
+              create an account
+            </a>
+            .
+            <Contact headingLevel="h2" />
           </div>
         ) : (
           <div className="mt-6 grid gap-4">
@@ -164,7 +188,7 @@ const ContributeLyrics = () => {
                 value={songTitle}
                 className={`border ${
                   submitStatus === "Please fill all the required fields"
-                    ? "border-[hsl(var(--border-error))]"
+                    ? "border-red-500"
                     : ""
                 }`}
                 required
@@ -179,7 +203,7 @@ const ContributeLyrics = () => {
                 value={artistsName}
                 className={`border ${
                   submitStatus === "Please fill all the required fields"
-                    ? "border-[hsl(var(--border-error))]"
+                    ? "border-red-500"
                     : ""
                 }`}
                 required
@@ -234,7 +258,7 @@ const ContributeLyrics = () => {
                 value={lyrics}
                 className={`border ${
                   submitStatus === "Please fill all the required fields"
-                    ? "border-[hsl(var(--border-error))]"
+                    ? "border-red-500"
                     : ""
                 }`}
                 onChange={(e) => setLyrics(e.target.value)}
@@ -242,9 +266,7 @@ const ContributeLyrics = () => {
             </div>
 
             {submitStatus && submitStatus !== "success" && (
-              <p className="text-sm text-[hsl(var(--border-error))]">
-                {submitStatus}
-              </p>
+              <p className="text-sm text-red-600">{submitStatus}</p>
             )}
 
             {submitStatus === "success" && (

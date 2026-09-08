@@ -10,6 +10,8 @@ export interface IArtists {
   image: string;
   _id: string;
   songCount?: number;
+  bio?: string;
+  updatedAt?: Date | string;
 }
 
 export interface ILyrics {
@@ -27,5 +29,6 @@ export interface ILyrics {
   contributedBy: string;
   featured?: boolean; // ✅ Add this line
   createdAt?: Date;
+  updatedAt?: Date | string;
   view?: number; // ✅ Add this line
 }

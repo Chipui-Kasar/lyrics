@@ -10,6 +10,7 @@ import { ArrowRightIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SearchSource } from "@/hooks/useLocalSearch";
 
 interface SearchResultProps {
   params: string;
@@ -17,9 +18,10 @@ interface SearchResultProps {
     lyrics: ILyrics[];
     artists: IArtists[];
   };
+  source?: SearchSource;
 }
 
-const SearchResult = ({ params, lyrics }: SearchResultProps) => {
+const SearchResult = ({ params, lyrics, source }: SearchResultProps) => {
   const [searchInput, setSearchInput] = useState(params || "");
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
@@ -127,7 +129,19 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
           {params && (
             <>
               <h1 className="text-3xl font-bold mb-2">Search Results</h1>
-              <p className="text-muted-foreground">{getResultSummary()}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-muted-foreground">{getResultSummary()}</p>
+                {source === "cache" && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    Results from cache
+                  </span>
+                )}
+                {source === "live" && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
+                    Live results
+                  </span>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -138,9 +152,9 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
           {!params ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="max-w-md">
-                <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                  🔍 Search Tangkhul Lyrics
-                </h2>
+                <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                  Search Tangkhul Lyrics
+                </h1>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
                   Discover your favorite Tangkhul songs and artists. Search by
                   song title, artist name, or even lyrics content.
@@ -251,25 +265,30 @@ const SearchResult = ({ params, lyrics }: SearchResultProps) => {
                                       : sanitizeAndDeduplicateHTML(artist.name),
                                   }}
                                 />
-                                &#39; from{" "}
-                                <article
-                                  dangerouslySetInnerHTML={{
-                                    __html: highlightRegex
-                                      ? highlightFuzzyMatch(
-                                          sanitizeAndDeduplicateHTML(
-                                            artist.village,
-                                          ).replace(
-                                            highlightRegex,
-                                            (match) =>
-                                              `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`,
-                                          ),
-                                          removeSlug(params),
-                                        )
-                                      : sanitizeAndDeduplicateHTML(
-                                          artist.village,
-                                        ),
-                                  }}
-                                />
+                                &#39;
+                                {artist.village ? (
+                                  <>
+                                    {" from "}
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html: highlightRegex
+                                          ? highlightFuzzyMatch(
+                                              sanitizeAndDeduplicateHTML(
+                                                artist.village,
+                                              ).replace(
+                                                highlightRegex,
+                                                (match) =>
+                                                  `<span class="bg-[hsl(var(--highlight-yellow))] text-primary">${match}</span>`,
+                                              ),
+                                              removeSlug(params),
+                                            )
+                                          : sanitizeAndDeduplicateHTML(
+                                              artist.village,
+                                            ),
+                                      }}
+                                    />
+                                  </>
+                                ) : null}
                               </h2>
                             </div>
                             <ArrowRightIcon className="w-5 h-5 text-muted-foreground" />

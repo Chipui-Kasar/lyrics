@@ -1,28 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Artist, Lyrics } from "@/models/model";
+import { ContributedLyrics } from "@/models/ContributedLyrics";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { revalidateTag } from "next/cache";
+import { pingSearchEngines } from "@/lib/pingSearchEngines";
+import { revalidateLyricsCache } from "@/lib/revalidateLyricsCache";
 
-// Helper function to revalidate relevant tags
-function revalidateLyricsCache(lyricsId?: string, artistName?: string) {
-  // Revalidate specific lyrics
-  if (lyricsId) {
-    revalidateTag(`lyrics-${lyricsId}`);
-  }
-
-  // Revalidate artist cache
-  if (artistName) {
-    const artistSlug = artistName.toLowerCase().replace(/\s+/g, "-");
-    revalidateTag(`artist-${artistSlug}`);
-  }
-
-  // Revalidate collection caches
-  revalidateTag("lyrics-all");
-  revalidateTag("lyrics-featured");
-  revalidateTag("lyrics-top");
-  revalidateTag("search");
+function publicLyricsFilter() {
+  return {
+    $and: [
+      { status: { $ne: "draft" } },
+      {
+        $or: [
+          { status: "published" },
+          { status: { $exists: false } },
+          { status: null },
+          { status: "" },
+        ],
+      },
+    ],
+  };
 }
 
 export async function POST(req: NextRequest) {
@@ -82,8 +80,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Set status based on user role - admin submissions are published, others are draft
-    const status = session.user.role === "admin" ? "published" : "draft";
+    // Admins publish directly into the live Lyrics collection. Everyone
+    // else's submissions land in ContributedLyrics for review first.
+    if (session.user.role !== "admin") {
+      const contribution = new ContributedLyrics({
+        title,
+        artistId: artist._id,
+        album,
+        releaseYear,
+        lyrics,
+        streamingLinks: streamingLinks || {},
+        thumbnail: thumbnail || "",
+        contributedBy: contributedBy || "",
+        submittedBy: session.user.id,
+        status: "pending",
+      });
+
+      await contribution.save();
+
+      return NextResponse.json(contribution, { status: 201 });
+    }
 
     const newLyric = new Lyrics({
       title,
@@ -96,13 +112,17 @@ export async function POST(req: NextRequest) {
       featured: featured || false,
       contributedBy: contributedBy || "",
       submittedBy: session.user.id,
-      status: status,
+      status: "published",
     });
 
     await newLyric.save();
 
     // Revalidate cache
     revalidateLyricsCache(newLyric._id.toString(), artist.name);
+
+    pingSearchEngines().catch((error) =>
+      console.error("Sitemap ping failed:", error),
+    );
 
     return NextResponse.json(newLyric, { status: 201 });
   } catch (error) {
@@ -122,6 +142,8 @@ export async function GET(req: NextRequest) {
     const sortParam = url.searchParams.get("sort");
     const orderParam = url.searchParams.get("order");
     const fieldsParam = url.searchParams.get("fields");
+    const includeAllParam = url.searchParams.get("includeAll");
+    const sinceParam = url.searchParams.get("since");
 
     const DEFAULT_LIMIT = 60;
     const MAX_LIMIT = 200;
@@ -140,20 +162,46 @@ export async function GET(req: NextRequest) {
     const order = orderParam === "asc" ? 1 : -1;
     await connectMongoDB(false); // Explicitly use user connection for read operations
 
-    // Build query - fetch published lyrics and legacy lyrics without status field, exclude drafts
-    const filters: Record<string, unknown> = {
-      $and: [
-        { status: { $ne: "draft" } }, // Explicitly exclude drafts
-        {
-          $or: [
-            { status: "published" },
-            { status: { $exists: false } }, // Legacy lyrics without status field
-            { status: null }, // Lyrics with null status
-            { status: "" }, // Lyrics with empty status
-          ],
-        },
-      ],
-    };
+    const includeAll = includeAllParam === "true";
+
+    // Delta sync path: return only items modified after `since`, oldest
+    // first, so the client can page through changes with a stable cursor
+    // (the last item's updatedAt) instead of an offset that shifts as
+    // writes land.
+    if (sinceParam) {
+      const sinceDate = new Date(sinceParam);
+      if (Number.isNaN(sinceDate.getTime())) {
+        return NextResponse.json(
+          { error: "Invalid 'since' parameter" },
+          { status: 400 }
+        );
+      }
+
+      const deltaLimit = limit ?? DEFAULT_LIMIT;
+      const deltaFilters: Record<string, unknown> = {
+        ...(includeAll ? {} : publicLyricsFilter()),
+        updatedAt: { $gt: sinceDate },
+      };
+
+      // Fetch one extra row to detect whether more pages remain without a
+      // separate countDocuments() round trip.
+      const rows = await Lyrics.find(deltaFilters)
+        .populate("artistId", "name image")
+        .sort({ updatedAt: 1 })
+        .limit(deltaLimit + 1)
+        .lean();
+
+      const hasMore = rows.length > deltaLimit;
+      const items = hasMore ? rows.slice(0, deltaLimit) : rows;
+
+      return NextResponse.json(
+        { items, hasMore },
+        { headers: { "Cache-Control": "no-store" } }
+      );
+    }
+    const filters: Record<string, unknown> = includeAll
+      ? {}
+      : publicLyricsFilter();
 
     if (url.searchParams.get("featured")) {
       filters.featured = true;
@@ -189,20 +237,32 @@ export async function GET(req: NextRequest) {
       const totalCount = await Lyrics.countDocuments(filters);
       const totalPages = Math.max(1, Math.ceil(totalCount / pageLimit));
 
-      return NextResponse.json({
-        items: lyrics,
-        pagination: {
-          page,
-          limit: pageLimit,
-          totalCount,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
+      return NextResponse.json(
+        {
+          items: lyrics,
+          pagination: {
+            page,
+            limit: pageLimit,
+            totalCount,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+          },
         },
-      });
+        {
+          headers: {
+            "Cache-Control":
+              "public, s-maxage=300, stale-while-revalidate=3600",
+          },
+        },
+      );
     }
 
-    return NextResponse.json(lyrics);
+    return NextResponse.json(lyrics, {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch lyrics", details: (error as Error).message },
@@ -255,7 +315,8 @@ export async function DELETE(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    // @ts-ignore
+    if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

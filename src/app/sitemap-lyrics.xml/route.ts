@@ -2,6 +2,7 @@ import { slugMaker } from "@/lib/utils";
 import { getLyrics } from "@/service/allartists";
 
 const BASE_URL = "https://tangkhullyrics.com";
+const LYRICS_PAGE_SIZE = 60;
 // CRITICAL FIX: Removed force-dynamic to prevent ISR write on every crawler request
 // ISR will cache and only regenerate after revalidate period
 export const dynamic = "force-static";
@@ -22,6 +23,22 @@ export async function GET() {
     // For now, use first chunk. Later you can create multiple lyrics sitemaps
     const currentChunk = chunks[0] || [];
 
+    const totalDirectoryPages = Math.ceil(lyrics.length / LYRICS_PAGE_SIZE);
+    const directoryPages = Array.from(
+      { length: Math.max(totalDirectoryPages - 1, 0) },
+      (_, index) => {
+        const page = index + 2;
+        return {
+          url: `/lyrics?page=${page}`,
+          priority: "0.7",
+          changefreq: "daily",
+          lastmod: new Date(
+            Math.floor(Date.now() / (21600 * 1000)) * 21600 * 1000,
+          ).toISOString(),
+        };
+      },
+    );
+
     const lyricPages = currentChunk.flatMap((lyric: any) => [
       {
         url: `/lyrics/${lyric._id}/${slugMaker(lyric.title)}_${slugMaker(
@@ -34,10 +51,12 @@ export async function GET() {
       // Removed /details pages to avoid duplicate content issues
     ]);
 
+    const sitemapPages = [...directoryPages, ...lyricPages];
+
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0">
-${lyricPages
+${sitemapPages
   .map(
     (item: any) => `  <url>
     <loc>${BASE_URL}${item.url}</loc>

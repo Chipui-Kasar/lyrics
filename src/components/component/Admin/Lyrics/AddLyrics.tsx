@@ -333,6 +333,7 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
           <div className="grid gap-2">
             <Label htmlFor="lyrics">Lyrics</Label>
             <RichTextEditor
+              key={formData._id || "new"}
               name="lyrics"
               defaultValue={formData.lyrics ?? ""}
               onChange={({ target }) =>
