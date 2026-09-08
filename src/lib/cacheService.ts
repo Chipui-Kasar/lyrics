@@ -46,10 +46,6 @@ function toIfNoneMatch(lastUpdated?: string) {
 
 function buildApiUrl(path: string, params?: Record<string, string>) {
   const searchParams = new URLSearchParams(params);
-  if (typeof window !== "undefined") {
-    searchParams.set("_cacheBust", String(Date.now()));
-  }
-
   const queryString = searchParams.toString();
   return `${apiBase()}${path}${queryString ? `?${queryString}` : ""}`;
 }
@@ -71,10 +67,17 @@ async function fetchWithRetry(
   }
 }
 
+// The lyrics API route lives at /api/lyrics/metadata, but the artist route
+// is singular (/api/artist/metadata) — this maps the collection type to its
+// actual route path instead of assuming both are pluralized the same way.
+function metadataPath(type: "lyrics" | "artists") {
+  return type === "lyrics" ? "/api/lyrics/metadata" : "/api/artist/metadata";
+}
+
 async function fetchCollectionMetadata(type: "lyrics" | "artists") {
   const response = await fetchWithRetry(
     buildApiUrl(
-      `/api/${type}/metadata`,
+      metadataPath(type),
       type === "lyrics" ? { includeAll: "true" } : undefined
     ),
     {
@@ -143,6 +146,7 @@ async function fetchAllLyrics(): Promise<LyricRecord[]> {
         sort: "title",
         order: "asc",
         includeAll: "true",
+        fields: "summary",
       }),
       {
         cache: "no-store",
@@ -191,6 +195,7 @@ async function fetchLyricsSince(
       since,
       limit: String(limit),
       includeAll: "true",
+      fields: "summary",
     }),
     {
       cache: "no-store",
@@ -284,7 +289,7 @@ async function checkCacheFreshness(
     // Use metadata endpoint (returns ~50-100 bytes vs 500KB+)
     const response = await fetch(
       buildApiUrl(
-        `/api/${type}/metadata`,
+        metadataPath(type),
         type === "lyrics" ? { includeAll: "true" } : undefined
       ),
       {
@@ -714,23 +719,8 @@ export async function updateArtistsCache(forceRefresh = false): Promise<void> {
 
     console.log(`📦 Downloaded ${artists.length} artists`);
 
-    // Fetch song counts if artists exist
-    if (artists.length > 0) {
-      const artistIds = artists
-        .map((artist: ArtistRecord) => artist._id)
-        .join(",");
-      const countResponse = await fetch(
-        `${apiBase()}/api/artist/lyricscount?artistIds=${artistIds}`
-      );
-
-      if (countResponse.ok) {
-        const songCounts = await countResponse.json();
-        // Merge song counts
-        artists.forEach((artist: ArtistRecord) => {
-          artist.songCount = songCounts[artist._id] ?? 0;
-        });
-      }
-    }
+    // songCount now comes folded into each artist from /api/artist directly,
+    // so no second round trip is needed here.
 
     // Save to IndexedDB
     await saveArtistsList(artists);

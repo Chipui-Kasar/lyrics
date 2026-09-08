@@ -185,6 +185,8 @@ export const getAllArtists = async () => {
 };
 export const getArtistsWithSongCount = async () => {
   try {
+    // songCount now comes folded into each artist from /api/artist directly,
+    // so this is a single round trip instead of a fetch-then-fetch-counts pair.
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artist`, {
       next: {
         revalidate: 3600,
@@ -195,26 +197,9 @@ export const getArtistsWithSongCount = async () => {
     if (!res.ok) return [];
 
     const artists = await res.json();
-    if (artists.length === 0) return [];
-
-    // Fetch song counts
-    const artistIds = artists.map((artist: IArtists) => artist._id).join(",");
-    const countRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artist/lyricscount?artistIds=${artistIds}`,
-      {
-        next: { revalidate: 3600 },
-      },
-    );
-
-    if (!countRes.ok)
-      return artists.map((artist: IArtists) => ({ ...artist, songCount: 0 }));
-
-    const songCounts = await countRes.json();
-
-    // Merge song counts with artists
     return artists.map((artist: IArtists) => ({
       ...artist,
-      songCount: songCounts[artist._id] ?? 0,
+      songCount: artist.songCount ?? 0,
     }));
   } catch (error) {
     console.error("Error fetching artists with song counts:", error);

@@ -185,8 +185,21 @@ export async function GET(req: NextRequest) {
 
       // Fetch one extra row to detect whether more pages remain without a
       // separate countDocuments() round trip.
-      const rows = await Lyrics.find(deltaFilters)
-        .populate("artistId", "name image")
+      const deltaQuery = Lyrics.find(deltaFilters).populate(
+        "artistId",
+        "name image"
+      );
+
+      if (fieldsParam === "summary") {
+        deltaQuery.select({
+          title: 1,
+          artistId: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        });
+      }
+
+      const rows = await deltaQuery
         .sort({ updatedAt: 1 })
         .limit(deltaLimit + 1)
         .lean();

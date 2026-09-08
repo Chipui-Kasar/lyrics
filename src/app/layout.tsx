@@ -172,15 +172,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-        {/* Preload only critical LCP image */}
-        <link
-          rel="preload"
-          href="/ogImage.jpg"
-          as="image"
-          type="image/jpeg"
-          fetchPriority="high"
-        />
-
         {/* Critical CSS for LCP optimization */}
         <style
           dangerouslySetInnerHTML={{

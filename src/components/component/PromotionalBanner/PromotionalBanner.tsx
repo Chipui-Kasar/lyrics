@@ -15,8 +15,6 @@ interface PromotionalItem {
 }
 
 const PromotionalBanner = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
   // Sample promotional data - you can modify this manually
   const [promotionalItems] = useState<PromotionalItem[]>([
     {
@@ -49,14 +47,9 @@ const PromotionalBanner = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
 
-  // Handle client-side hydration
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // Auto-play carousel
   useEffect(() => {
-    if (!isMounted || !isAutoPlaying) {
+    if (!isAutoPlaying) {
       setProgress(0);
       return;
     }
@@ -82,7 +75,7 @@ const PromotionalBanner = () => {
       clearInterval(interval);
       clearInterval(progressInterval);
     };
-  }, [isMounted, isAutoPlaying, promotionalItems.length, currentIndex]);
+  }, [isAutoPlaying, promotionalItems.length, currentIndex]);
 
   // Get the current promotional item
   const activeItem = promotionalItems[currentIndex];
@@ -112,7 +105,7 @@ const PromotionalBanner = () => {
     setProgress(0); // Reset progress
   };
 
-  if (!activeItem || !isMounted) {
+  if (!activeItem) {
     return (
       <section
         className="w-full bg-gray-50 dark:bg-gray-900 py-6 border-y border-gray-200 dark:border-gray-700"

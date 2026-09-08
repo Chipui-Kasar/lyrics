@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Artist } from "@/models/model";
+import { Artist, Lyrics } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidateTag } from "next/cache";
@@ -42,11 +42,40 @@ export async function POST(req: Request) {
   );
 }
 
-//get all artists
+//get all artists, with each artist's published song count folded in
+// (avoids a second round trip with every artist ID crammed into a query string)
 export async function GET() {
   await connectMongoDB();
   const artists = await Artist.find().sort({ name: "asc" }).lean();
-  return NextResponse.json(artists, {
+
+  const lyricsCounts = await Lyrics.aggregate([
+    {
+      $match: {
+        $and: [
+          { status: { $ne: "draft" } },
+          {
+            $or: [
+              { status: "published" },
+              { status: { $exists: false } },
+              { status: null },
+              { status: "" },
+            ],
+          },
+        ],
+      },
+    },
+    { $group: { _id: "$artistId", count: { $sum: 1 } } },
+  ]);
+  const countsByArtistId = Object.fromEntries(
+    lyricsCounts.map(({ _id, count }) => [_id.toString(), count])
+  );
+
+  const artistsWithSongCount = artists.map((artist) => ({
+    ...artist,
+    songCount: countsByArtistId[String(artist._id)] ?? 0,
+  }));
+
+  return NextResponse.json(artistsWithSongCount, {
     headers: {
       "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
     },
