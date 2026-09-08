@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
   description:
     "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
-  applicationName: "Tangkhul Song Lyrics",
+  applicationName: "Tangkhul Lyrics",
   referrer: "origin-when-cross-origin",
   keywords: [
     "Tangkhul lyrics",
@@ -113,7 +113,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://tangkhullyrics.com",
-    siteName: "Tangkhul Song Lyrics",
+    siteName: "Tangkhul Lyrics",
     title: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
     description:
       "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
