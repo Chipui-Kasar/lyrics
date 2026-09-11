@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Lyrics } from "@/models/model";
-import { ContributedLyrics } from "@/models/ContributedLyrics";
+import { getLyricsModel } from "@/models/model";
+import { getContributedLyricsModel } from "@/models/ContributedLyrics";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { pingSearchEngines } from "@/lib/pingSearchEngines";
@@ -28,7 +28,9 @@ export async function PUT(
   }
 
   try {
-    await connectMongoDB(true);
+    const conn = await connectMongoDB(true);
+    const Lyrics = getLyricsModel(conn);
+    const ContributedLyrics = getContributedLyricsModel(conn);
     const { id } = params;
     const body = await req.json();
     const { status, rejectionReason } = body;

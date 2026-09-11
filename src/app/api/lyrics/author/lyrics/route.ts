@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Artist, Lyrics } from "@/models/model"; // Ensure Artists model is imported
+import { getArtistModel, getLyricsModel } from "@/models/model";
 import { slugMaker } from "@/lib/utils";
 
 function escapeRegExp(value: string) {
@@ -19,7 +19,9 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    await connectMongoDB();
+    const conn = await connectMongoDB();
+    const Artist = getArtistModel(conn);
+    const Lyrics = getLyricsModel(conn);
 
     const requestedName = artistName.replace(/-/g, " ");
     const requestedSlug = slugMaker(artistName);
@@ -64,7 +66,7 @@ export async function GET(req: NextRequest) {
       .lean();
 
     const latestUpdated = lyrics
-      .map((lyric) => lyric.updatedAt?.toISOString?.())
+      .map((lyric: any) => lyric.updatedAt?.toISOString?.())
       .filter(Boolean)
       .sort()
       .at(-1);

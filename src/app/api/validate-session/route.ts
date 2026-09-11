@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectMongoDB } from "@/lib/mongodb";
-import User from "@/models/User";
+import { getUserModel } from "@/models/User";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user still exists in database
-    await connectMongoDB(); // Regular connection is fine for read operations
+    const conn = await connectMongoDB(); // Regular connection is fine for read operations
+    const User = getUserModel(conn);
     const existingUser = await User.findById(session.user.id);
 
     if (!existingUser) {

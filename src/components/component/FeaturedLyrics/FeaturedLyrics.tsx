@@ -31,8 +31,8 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
               ⭐
             </span>
             <div className="flex-1">
-              <h3 className="font-medium">{lyric.title}</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="font-medium text-slate-900">{lyric.title}</h3>
+              <p className="text-sm text-slate-600">
                 by{" "}
                 <span className="font-medium">
                   {lyric.artistId?.name ?? "Unknown Artist"}
@@ -42,7 +42,7 @@ const FeaturedLyrics = ({ lyrics }: FeaturedLyricsProps) => {
             <Button
               variant="ghost"
               size="icon"
-              className="group-hover:opacity-100"
+              className="text-slate-700 hover:text-slate-900 group-hover:opacity-100"
               aria-label="View Lyrics"
             >
               <ArrowRightIcon className="h-5 w-5" />

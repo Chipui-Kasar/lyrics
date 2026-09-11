@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import User from "@/models/User";
+import { getUserModel } from "@/models/User";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await connectMongoDB(true);
+    const conn = await connectMongoDB(true);
+    const User = getUserModel(conn);
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {

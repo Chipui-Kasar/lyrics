@@ -25,7 +25,7 @@ const PromotionalBanner = () => {
       imageUrl: "/placeholder.svg",
       linkUrl: "/lyrics",
       buttonText: "Explore Now",
-      backgroundColor: "bg-gradient-to-r from-blue-600 to-purple-600",
+      backgroundColor: "bg-gradient-to-r from-[#79095c] to-[#001fff]",
       textColor: "text-white",
       isActive: false,
     },
@@ -36,7 +36,7 @@ const PromotionalBanner = () => {
       imageUrl: "/placeholder.svg",
       linkUrl: "/contribute",
       buttonText: "Contribute",
-      backgroundColor: "bg-gradient-to-r from-green-500 to-teal-600",
+      backgroundColor: "bg-gradient-to-r from-[#001fff] to-[#79095c]",
       textColor: "text-white",
       isActive: false,
     },
@@ -45,36 +45,24 @@ const PromotionalBanner = () => {
   // Carousel state
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const SLIDE_DURATION_MS = 5000;
 
-  // Auto-play carousel
+  // Auto-play carousel. The progress bar itself is a CSS animation (see
+  // JSX below) rather than a per-frame React state update — a 20ms
+  // setInterval driving setState was re-rendering this component (and
+  // everything under it: gradients, backdrop-blur buttons, SVGs) 50
+  // times/second continuously, which is expensive to composite and was
+  // competing with the main thread during scroll.
   useEffect(() => {
-    if (!isAutoPlaying) {
-      setProgress(0);
-      return;
-    }
+    if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
         prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1,
       );
-      setProgress(0); // Reset progress when changing slide
-    }, 5000); // Change slide every 5 seconds
+    }, SLIDE_DURATION_MS);
 
-    // Progress bar animation
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          return 0;
-        }
-        return prev + 100 / 250; // 5000ms / 20ms intervals = 250 steps
-      });
-    }, 20);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(progressInterval);
-    };
+    return () => clearInterval(interval);
   }, [isAutoPlaying, promotionalItems.length, currentIndex]);
 
   // Get the current promotional item
@@ -85,24 +73,20 @@ const PromotionalBanner = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1,
     );
-    setProgress(0); // Reset progress
   };
 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? promotionalItems.length - 1 : prevIndex - 1,
     );
-    setProgress(0); // Reset progress
   };
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
-    setProgress(0); // Reset progress
   };
 
   const toggleAutoPlay = () => {
     setIsAutoPlaying(!isAutoPlaying);
-    setProgress(0); // Reset progress
   };
 
   if (!activeItem) {
@@ -113,7 +97,7 @@ const PromotionalBanner = () => {
       >
         <div className="container mx-auto px-4">
           <div
-            className="relative overflow-hidden rounded-xl shadow-lg bg-gradient-to-r from-green-500 to-teal-600 p-6 md:p-8"
+            className="relative overflow-hidden rounded-xl shadow-lg bg-gradient-to-r from-[#79095c] to-[#001fff] p-6 md:p-8"
             style={{ minHeight: "168px" }}
           >
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -248,12 +232,15 @@ const PromotionalBanner = () => {
             ))}
           </div>
 
-          {/* Auto-play Progress Bar */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+          {/* Auto-play Progress Bar — a CSS animation (GPU-composited,
+              off the React render loop) rather than a per-frame width
+              update. key={currentIndex} restarts it on every slide. */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 overflow-hidden">
             <div
-              className="h-full bg-white/60 transition-all duration-100 ease-linear"
+              key={currentIndex}
+              className="h-full w-full bg-white/60 origin-left animate-[promo-progress_5000ms_linear_forwards]"
               style={{
-                width: `${isAutoPlaying ? progress : 0}%`,
+                animationPlayState: isAutoPlaying ? "running" : "paused",
               }}
             />
           </div>

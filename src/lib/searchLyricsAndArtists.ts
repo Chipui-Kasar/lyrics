@@ -1,4 +1,3 @@
-import { Artist, Lyrics } from "@/models/model";
 import { calculateLevenshteinDistance } from "@/lib/utils";
 
 // Create fuzzy regex pattern that allows for typos
@@ -43,10 +42,15 @@ export interface SearchOptions {
 
 // Searches both the Lyrics and Artist collections for a free-text query: MongoDB
 // $text search first, falling back to scored fuzzy regex when text search misses.
+// Takes the caller's already-connected models (rather than importing them
+// statically) since which connection they're bound to depends on the
+// caller's connectMongoDB(admin) call.
 export async function searchLyricsAndArtists(
   query: string,
+  models: { Artist: any; Lyrics: any },
   options: SearchOptions = {}
 ) {
+  const { Artist, Lyrics } = models;
   const { lyricsLimit = 20, artistsLimit = 20, publishedOnly = true } = options;
 
   const queryLower = query.toLowerCase();
@@ -167,9 +171,9 @@ export async function searchLyricsAndArtists(
     });
 
     lyrics = scoredLyrics
-      .sort((a, b) => b.fuzzyScore - a.fuzzyScore)
+      .sort((a: any, b: any) => b.fuzzyScore - a.fuzzyScore)
       .slice(0, lyricsLimit)
-      .map(({ fuzzyScore, ...lyric }) => lyric);
+      .map(({ fuzzyScore, ...lyric }: any) => lyric);
   }
 
   if (artists.length === 0) {
@@ -233,9 +237,9 @@ export async function searchLyricsAndArtists(
     });
 
     artists = scoredArtists
-      .sort((a, b) => b.fuzzyScore - a.fuzzyScore)
+      .sort((a: any, b: any) => b.fuzzyScore - a.fuzzyScore)
       .slice(0, artistsLimit)
-      .map(({ fuzzyScore, ...artist }) => artist);
+      .map(({ fuzzyScore, ...artist }: any) => artist);
   }
 
   return { lyrics, artists };

@@ -213,7 +213,7 @@ export default function ContributionsPage() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <AdminNavigation />
-      <div className="flex-1">
+      <div className="flex-1 pt-14 lg:pt-0">
         {/* Top header */}
         <header className="bg-white shadow-sm border-b px-6 py-4">
           <div className="flex justify-between items-center">

@@ -2,11 +2,12 @@
 import type * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   LogOut,
-  Package,
+  Music2,
   Settings,
   Users,
   FileText,
@@ -15,71 +16,81 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { signOut } from "next-auth/react";
+
 interface NavItem {
   title: string;
   href: string;
   icon: React.ElementType;
+  badge?: number;
 }
-
-const navItems: NavItem[] = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Artists",
-    href: "/admin/artists",
-    icon: Users,
-  },
-  {
-    title: "Lyrics",
-    href: "/admin/lyrics",
-    icon: Package,
-  },
-  {
-    title: "Contributions",
-    href: "/admin/contributions",
-    icon: FileText,
-  },
-  {
-    title: "Extract Lyrics",
-    href: "/admin/extract-lyrics",
-    icon: Download,
-  },
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
-  },
-];
 
 export default function AdminNavigation() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/admin/stats")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setPendingCount(data.pendingContributions ?? 0);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Close the mobile drawer on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  const navItems: NavItem[] = [
+    { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { title: "Artists", href: "/admin/artists", icon: Users },
+    { title: "Lyrics", href: "/admin/lyrics", icon: Music2 },
+    {
+      title: "Contributions",
+      href: "/admin/contributions",
+      icon: FileText,
+      badge: pendingCount,
+    },
+    { title: "Extract Lyrics", href: "/admin/extract-lyrics", icon: Download },
+    { title: "Settings", href: "/admin/settings", icon: Settings },
+  ];
+
+  const initials =
+    session?.user?.name
+      ?.split(" ")
+      .map((part) => part[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() ?? "AD";
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="lg:hidden fixed left-4 z-50 bg-gray-800 text-white hover:bg-gray-700"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-      >
-        {isMobileMenuOpen ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <Menu className="h-6 w-6" />
-        )}
-      </Button>
+      {/* Mobile top bar. Fixed (not sticky) so it's taken out of flow —
+          otherwise it'd sit as an in-flow sibling in the page's horizontal
+          flex row and eat its own content-width slot, squeezing the content
+          column next to the sidebar. */}
+      <div className="lg:hidden fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 border-b bg-white px-4">
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          aria-label="Open menu"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <span className="text-sm font-semibold text-slate-900">Admin Panel</span>
+      </div>
 
       {/* Overlay for mobile */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="lg:hidden fixed inset-0 bg-slate-900/50 z-40"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -87,134 +98,79 @@ export default function AdminNavigation() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "w-64 text-white min-h-screen flex flex-col transition-transform duration-300 z-40",
-          "fixed lg:static left-0",
-          "bg-gradient-to-r from-[#ff88e0] to-[#00ffe6]",
+          "w-64 shrink-0 text-slate-300 flex flex-col transition-transform duration-300 z-50",
+          "fixed lg:sticky top-0 left-0 h-screen",
+          "bg-[#0b1220]",
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Admin Panel</h2>
-        </div>
-        <nav className="flex-1 mt-4 overflow-y-auto">
-          <ul className="space-y-1">
-            {navItems.map((item) => (
-              <li key={item.title}>
-                <Link
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn(
-                    "flex items-center px-4 py-3 text-sm font-medium transition-colors",
-                    pathname === item.href
-                      ? "bg-gray-700 text-white border-r-2 border-blue-400"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                  )}
-                >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="p-4 border-t border-gray-700">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full text-gray-800 bg-white hover:bg-gray-100"
-            onClick={() => signOut({ callbackUrl: "/" })}
+        <div className="flex items-center gap-2.5 px-5 h-16 border-b border-white/5 shrink-0">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-fuchsia-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+            T
+          </div>
+          <span className="text-white font-semibold tracking-tight truncate">
+            Tangkhul Admin
+          </span>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
+            className="ml-auto lg:hidden text-slate-400 hover:text-white"
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                className={cn(
+                  "flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-white/10 text-white"
+                    : "text-slate-400 hover:bg-white/5 hover:text-white"
+                )}
+              >
+                <span className="flex items-center gap-3">
+                  <item.icon className="h-[18px] w-[18px]" />
+                  {item.title}
+                </span>
+                {!!item.badge && (
+                  <span className="h-5 min-w-5 px-1 rounded-full bg-amber-400 text-[11px] font-bold text-amber-950 flex items-center justify-center">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="px-3 py-4 border-t border-white/5 shrink-0">
+          <div className="flex items-center gap-3 px-3 py-2">
+            <div className="h-8 w-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-semibold text-white shrink-0">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {session?.user?.name ?? "Admin"}
+              </p>
+              <p className="text-xs text-slate-500 truncate">Admin</p>
+            </div>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="mt-1 w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+            Log out
+          </button>
         </div>
       </aside>
     </>
-  );
-}
-
-export function Sidebar() {
-  const pathname = usePathname();
-
-  return (
-    <div className="hidden w-64 flex-col border-r bg-background md:flex">
-      <div className="flex h-14 items-center border-b px-4">
-        <Link
-          href="/admin"
-          className="flex items-center gap-2 font-semibold"
-          rel="noopener noreferrer"
-        >
-          <Package className="h-6 w-6" />
-          <span>Admin Panel</span>
-        </Link>
-      </div>
-      <nav className="flex-1 overflow-auto p-3">
-        <ul className="space-y-1">
-          {navItems.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                  pathname === item.href
-                    ? "bg-accent text-accent-foreground"
-                    : "transparent"
-                )}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      <div className="border-t p-4">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-            <span className="text-sm font-medium">AD</span>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Admin User</p>
-            <p className="text-xs text-muted-foreground">admin@example.com</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Card({ title, value }: { title: string; value: string }) {
-  return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        <p className="text-2xl font-bold">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function ActivityItem({
-  title,
-  description,
-  time,
-}: {
-  title: string;
-  description: string;
-  time: string;
-}) {
-  return (
-    <div className="flex items-start gap-4 rounded-lg border p-3">
-      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-        <Package className="h-4 w-4 text-primary" />
-      </div>
-      <div className="flex-1">
-        <h4 className="text-sm font-medium">{title}</h4>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
-      <div className="text-xs text-muted-foreground">{time}</div>
-    </div>
   );
 }

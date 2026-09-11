@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { connectMongoDB } from "@/lib/mongodb";
-import User from "@/models/User";
+import { getUserModel } from "@/models/User";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
@@ -20,7 +20,8 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          await connectMongoDB(true);
+          const conn = await connectMongoDB(true);
+          const User = getUserModel(conn);
 
           console.log("Looking for user with email:", credentials.email);
           const user = await User.findOne({ email: credentials.email });
@@ -64,7 +65,8 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
         try {
-          await connectMongoDB(true);
+          const conn = await connectMongoDB(true);
+          const User = getUserModel(conn);
           const existingUser = await User.findOne({ email: user.email });
           if (!existingUser) {
             // Register a new user
@@ -109,7 +111,8 @@ export const authOptions: NextAuthOptions = {
       // Check if user still exists during JWT callback (only when token already exists)
       if (token?.id && !user) {
         try {
-          await connectMongoDB();
+          const conn = await connectMongoDB();
+          const User = getUserModel(conn);
           const existingUser = await User.findById(token.id);
 
           if (!existingUser) {
