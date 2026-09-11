@@ -172,15 +172,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-        {/* Preload only critical LCP image */}
-        <link
-          rel="preload"
-          href="/ogImage.jpg"
-          as="image"
-          type="image/jpeg"
-          fetchPriority="high"
-        />
-
         {/* Critical CSS for LCP optimization */}
         <style
           dangerouslySetInnerHTML={{
@@ -212,39 +203,39 @@ export default function RootLayout({
             JavaScript is required for the best experience on Tangkhul Lyrics.
           </div>
         </noscript>
-        <Script
+        <script
           id="structured-data"
           type="application/ld+json"
-          strategy="beforeInteractive"
-        >
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: "Tangkhul Lyrics",
-            alternateName: "tangkhullyrics.com",
-            description:
-              "The largest collection of Tangkhul song lyrics online",
-            url: "https://tangkhullyrics.com",
-            potentialAction: {
-              "@type": "SearchAction",
-              target: {
-                "@type": "EntryPoint",
-                urlTemplate:
-                  "https://tangkhullyrics.com/search?query={search_term_string}",
-              },
-              "query-input": "required name=search_term_string",
-            },
-            publisher: {
-              "@type": "Organization",
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
               name: "Tangkhul Lyrics",
+              alternateName: "tangkhullyrics.com",
+              description:
+                "The largest collection of Tangkhul song lyrics online",
               url: "https://tangkhullyrics.com",
-              logo: {
-                "@type": "ImageObject",
-                url: "https://tangkhullyrics.com/ogImage.jpg",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate:
+                    "https://tangkhullyrics.com/search?query={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
               },
-            },
-          })}
-        </Script>
+              publisher: {
+                "@type": "Organization",
+                name: "Tangkhul Lyrics",
+                url: "https://tangkhullyrics.com",
+                logo: {
+                  "@type": "ImageObject",
+                  url: "https://tangkhullyrics.com/ogImage.jpg",
+                },
+              },
+            }),
+          }}
+        />
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
           strategy="lazyOnload"

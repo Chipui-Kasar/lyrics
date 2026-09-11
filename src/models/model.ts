@@ -1,4 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import { Connection, Schema } from "mongoose";
+import { registerModel } from "@/lib/mongodb";
+import { getUserModel } from "@/models/User";
 
 const artistSchema = new Schema(
   {
@@ -15,8 +17,6 @@ const artistSchema = new Schema(
 artistSchema.index({ name: "text" });
 artistSchema.index({ genre: 1 }); // For genre-based queries
 artistSchema.index({ village: 1 }); // For village-based queries
-
-const Artist = mongoose.models.Artist || mongoose.model("Artist", artistSchema);
 
 const lyricsSchema = new Schema(
   {
@@ -48,6 +48,18 @@ lyricsSchema.index({ artistId: 1 }); // For artist-specific queries
 lyricsSchema.index({ title: 1, artistId: 1 }); // For slug-based URL matching
 lyricsSchema.index({ album: 1 }); // For album-based queries
 
-const Lyrics = mongoose.models.Lyrics || mongoose.model("Lyrics", lyricsSchema);
+// Each caller passes the connection it got from connectMongoDB(admin) so the
+// model is bound to the right credential tier for that request — models are
+// no longer bound to a single shared connection at import time.
+export const getArtistModel = (conn: Connection) =>
+  registerModel(conn, "Artist", artistSchema);
 
-export { Artist, Lyrics };
+export const getLyricsModel = (conn: Connection) => {
+  // Lyrics.artistId and Lyrics.submittedBy are populate() refs — make sure
+  // both referenced models are registered on this same connection too, so
+  // populate works regardless of whether the calling route touches them
+  // directly (each mongoose Connection keeps its own model registry).
+  getArtistModel(conn);
+  getUserModel(conn);
+  return registerModel(conn, "Lyrics", lyricsSchema);
+};

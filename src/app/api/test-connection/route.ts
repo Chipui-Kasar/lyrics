@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectMongoDB } from "@/lib/mongodb";
-import User from "@/models/User";
 
 export async function GET() {
   try {
@@ -12,18 +11,16 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Test both connection types
+    // Test both connection types — each is its own persistent connection,
+    // so report readyState from the connection objects themselves rather
+    // than the (unused) global mongoose default connection.
     console.log("Testing regular connection...");
-    await connectMongoDB();
-    const regularConnection = {
-      readyState: require("mongoose").connection.readyState,
-    };
+    const userConn = await connectMongoDB();
+    const regularConnection = { readyState: userConn.readyState };
 
     console.log("Testing admin connection...");
-    await connectMongoDB(true);
-    const adminConnection = {
-      readyState: require("mongoose").connection.readyState,
-    };
+    const adminConn = await connectMongoDB(true);
+    const adminConnection = { readyState: adminConn.readyState };
 
     return NextResponse.json({
       message: "Connection test completed",

@@ -1,4 +1,5 @@
 import { connectMongoDB } from "@/lib/mongodb";
+import { getArtistModel, getLyricsModel } from "@/models/model";
 import { NextResponse } from "next/server";
 import { searchLyricsAndArtists } from "@/lib/searchLyricsAndArtists";
 
@@ -23,12 +24,18 @@ export async function GET(req: Request) {
   }
 
   try {
-    await connectMongoDB();
+    const conn = await connectMongoDB();
+    const Artist = getArtistModel(conn);
+    const Lyrics = getLyricsModel(conn);
 
-    const { lyrics, artists } = await searchLyricsAndArtists(query, {
-      lyricsLimit: 20,
-      artistsLimit: 20,
-    });
+    const { lyrics, artists } = await searchLyricsAndArtists(
+      query,
+      { Artist, Lyrics },
+      {
+        lyricsLimit: 20,
+        artistsLimit: 20,
+      }
+    );
 
     return NextResponse.json(
       { lyrics, artists },

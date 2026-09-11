@@ -127,6 +127,17 @@
   }
 }
 
+/* PromotionalBanner's auto-play progress bar. transform (not width) so the
+   browser only has to composite this every frame, not re-layout/re-paint. */
+@keyframes promo-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 /* Ultra performance CSS optimizations */
 .font-loading-stable {
   font-display: swap;

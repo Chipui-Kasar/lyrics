@@ -1,4 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import { Connection, Schema } from "mongoose";
+import { registerModel } from "@/lib/mongodb";
+import { getArtistModel, getLyricsModel } from "@/models/model";
+import { getUserModel } from "@/models/User";
 
 const contributedLyricsSchema = new Schema(
   {
@@ -27,6 +30,12 @@ const contributedLyricsSchema = new Schema(
   }
 );
 
-export const ContributedLyrics =
-  mongoose.models.ContributedLyrics ||
-  mongoose.model("ContributedLyrics", contributedLyricsSchema);
+export const getContributedLyricsModel = (conn: Connection) => {
+  // artistId -> "Artist", submittedBy -> "User", publishedLyricsId ->
+  // "Lyrics" (which itself also registers Artist/User — idempotent). See
+  // getLyricsModel for why this matters.
+  getArtistModel(conn);
+  getUserModel(conn);
+  getLyricsModel(conn);
+  return registerModel(conn, "ContributedLyrics", contributedLyricsSchema);
+};

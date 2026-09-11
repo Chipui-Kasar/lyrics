@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Lyrics } from "@/models/model";
+import { getLyricsModel } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -15,7 +15,8 @@ export async function PUT(
   }
 
   try {
-    await connectMongoDB(); // Use admin connection for updates
+    const conn = await connectMongoDB(); // Use admin connection for updates
+    const Lyrics = getLyricsModel(conn);
     const { id } = params;
     const body = await req.json();
     const { status, rejectionReason } = body;
@@ -56,7 +57,8 @@ export async function DELETE(
   }
 
   try {
-    await connectMongoDB(true); // Use admin connection for deletes
+    const conn = await connectMongoDB(true); // Use admin connection for deletes
+    const Lyrics = getLyricsModel(conn);
     const { id } = params;
     await Lyrics.findByIdAndDelete(id);
     return NextResponse.json(

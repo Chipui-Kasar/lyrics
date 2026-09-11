@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectMongoDB } from "@/lib/mongodb";
-import User from "@/models/User";
+import { getUserModel } from "@/models/User";
 
 export async function GET() {
   try {
@@ -12,7 +12,8 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectMongoDB(true); // Use admin connection for admin operations
+    const conn = await connectMongoDB(true); // Use admin connection for admin operations
+    const User = getUserModel(conn);
 
     const users = await User.find(
       {},
@@ -56,7 +57,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    await connectMongoDB(true); // Use admin connection for update operations
+    const conn = await connectMongoDB(true); // Use admin connection for update operations
+    const User = getUserModel(conn);
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -106,14 +108,12 @@ export async function DELETE(request: NextRequest) {
     console.log(
       "Connecting to MongoDB with admin privileges for user deletion..."
     );
-    await connectMongoDB(true); // Use admin connection for delete operations
+    const conn = await connectMongoDB(true); // Use admin connection for delete operations
+    const User = getUserModel(conn);
 
     console.log("Attempting to delete user with ID:", userId);
-    console.log(
-      "Current MongoDB connection state:",
-      require("mongoose").connection.readyState
-    );
-    console.log("Is admin connection:", require("mongoose").connection.host);
+    console.log("Current MongoDB connection state:", conn.readyState);
+    console.log("Is admin connection:", conn.host);
 
     const deletedUser = await User.findByIdAndDelete(userId);
 

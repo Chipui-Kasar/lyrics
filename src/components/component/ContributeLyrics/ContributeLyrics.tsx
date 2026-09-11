@@ -155,7 +155,7 @@ const ContributeLyrics = ({ headingLevel = "h1" }: ContributeLyricsProps) => {
           <div className="mt-4">
             <Link
               href="/my-contributions"
-              className="inline-block px-4 py-2 rounded-md bg-white border border-gray-300 text-sm font-medium hover:bg-gray-50"
+              className="inline-block px-4 py-2 rounded-md bg-white border border-gray-300 text-sm font-medium text-gray-900 hover:bg-gray-50"
             >
               View My Contributions
             </Link>

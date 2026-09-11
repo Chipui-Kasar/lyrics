@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Lyrics } from "@/models/model";
+import { getLyricsModel } from "@/models/model";
 import mongoose from "mongoose";
 import { connectMongoDB } from "@/lib/mongodb";
 
@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    await connectMongoDB();
+    const conn = await connectMongoDB();
+    const Lyrics = getLyricsModel(conn);
     const lyrics = (await Lyrics.findOne({
       _id: ID,
       $and: [

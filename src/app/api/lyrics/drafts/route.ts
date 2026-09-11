@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { ContributedLyrics } from "@/models/ContributedLyrics";
+import { getContributedLyricsModel } from "@/models/ContributedLyrics";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    await connectMongoDB(true); // Use admin connection for admin operations
+    const conn = await connectMongoDB(true); // Use admin connection for admin operations
+    const ContributedLyrics = getContributedLyricsModel(conn);
     const drafts = await ContributedLyrics.find({ status: "pending" }).populate(
       "artistId",
       "name"

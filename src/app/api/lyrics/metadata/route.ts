@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Lyrics } from "@/models/model";
+import { getLyricsModel } from "@/models/model";
 import { headers } from "next/headers";
 
 function publicLyricsFilter() {
@@ -26,7 +26,8 @@ export async function GET(req: Request) {
     const includeAll = searchParams.get("includeAll") === "true";
     const filters = includeAll ? {} : publicLyricsFilter();
 
-    await connectMongoDB(false);
+    const conn = await connectMongoDB(false);
+    const Lyrics = getLyricsModel(conn);
 
     const totalCount = await Lyrics.countDocuments(filters);
 

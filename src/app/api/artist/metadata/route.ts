@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Artist } from "@/models/model";
+import { getArtistModel } from "@/models/model";
 import { headers } from "next/headers";
 
 // Returns minimal metadata for artists consistency checks (~50 bytes)
 // This endpoint is used to check if cache needs updating without downloading full data
 export async function GET() {
   try {
-    await connectMongoDB(false);
+    const conn = await connectMongoDB(false);
+    const Artist = getArtistModel(conn);
 
     // Count all artists
     const totalCount = await Artist.countDocuments();

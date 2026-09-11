@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Artist, Lyrics } from "@/models/model";
-import { ContributedLyrics } from "@/models/ContributedLyrics";
+import { getArtistModel, getLyricsModel } from "@/models/model";
+import { getContributedLyricsModel } from "@/models/ContributedLyrics";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { pingSearchEngines } from "@/lib/pingSearchEngines";
@@ -30,7 +30,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await connectMongoDB(true); // Use admin connection for write operations
+    const conn = await connectMongoDB(true); // Use admin connection for write operations
+    const Artist = getArtistModel(conn);
+    const Lyrics = getLyricsModel(conn);
+    const ContributedLyrics = getContributedLyricsModel(conn);
     const body = await req.json();
     const {
       title,
@@ -160,7 +163,8 @@ export async function GET(req: NextRequest) {
         : undefined;
     const sort = sortParam ? sortParam : undefined;
     const order = orderParam === "asc" ? 1 : -1;
-    await connectMongoDB(false); // Explicitly use user connection for read operations
+    const conn = await connectMongoDB(false); // Explicitly use user connection for read operations
+    const Lyrics = getLyricsModel(conn);
 
     const includeAll = includeAllParam === "true";
 
@@ -185,8 +189,21 @@ export async function GET(req: NextRequest) {
 
       // Fetch one extra row to detect whether more pages remain without a
       // separate countDocuments() round trip.
-      const rows = await Lyrics.find(deltaFilters)
-        .populate("artistId", "name image")
+      const deltaQuery = Lyrics.find(deltaFilters).populate(
+        "artistId",
+        "name image"
+      );
+
+      if (fieldsParam === "summary") {
+        deltaQuery.select({
+          title: 1,
+          artistId: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        });
+      }
+
+      const rows = await deltaQuery
         .sort({ updatedAt: 1 })
         .limit(deltaLimit + 1)
         .lean();
@@ -285,7 +302,8 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    await connectMongoDB();
+    const conn = await connectMongoDB();
+    const Lyrics = getLyricsModel(conn);
     const deletedLyric = await Lyrics.findByIdAndDelete(id).populate(
       "artistId",
       "name",
@@ -321,7 +339,8 @@ export async function PUT(req: NextRequest) {
     }
 
     const { _id, ...rest } = await req.json();
-    await connectMongoDB(true); // Admin access
+    const conn = await connectMongoDB(true); // Admin access
+    const Lyrics = getLyricsModel(conn);
     const updatedLyric = await Lyrics.findByIdAndUpdate(_id, rest, {
       new: true,
     }).populate("artistId", "name");

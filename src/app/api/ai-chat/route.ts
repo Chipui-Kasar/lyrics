@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { Artist, Lyrics } from "@/models/model";
+import { getArtistModel, getLyricsModel } from "@/models/model";
 import { slugMaker } from "@/lib/utils";
 import { chatCompletion } from "@/lib/aiClient";
 import { searchLyricsAndArtists } from "@/lib/searchLyricsAndArtists";
@@ -21,7 +21,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Connect to MongoDB and fetch real data
-    await connectMongoDB();
+    const conn = await connectMongoDB();
+    const Artist = getArtistModel(conn);
+    const Lyrics = getLyricsModel(conn);
 
     // Fetch recent/featured lyrics for general "what's on this site" context
     const recentLyrics = await Lyrics.find()
@@ -40,10 +42,14 @@ export async function POST(request: NextRequest) {
 
     // Search both artists and lyrics for whatever the user actually asked about
     const { lyrics: matchedLyrics, artists: matchedArtists } =
-      await searchLyricsAndArtists(message, {
-        lyricsLimit: 5,
-        artistsLimit: 5,
-      });
+      await searchLyricsAndArtists(
+        message,
+        { Artist, Lyrics },
+        {
+          lyricsLimit: 5,
+          artistsLimit: 5,
+        }
+      );
 
     // Build database context with IDs for link generation
     let databaseContext = `\n\nACTUAL WEBSITE DATA:

@@ -99,12 +99,12 @@ const MyContributions = () => {
                           c.title
                         )}_${slugMaker(c.artistId?.name || "unknown")}`}
                         prefetch={false}
-                        className="text-xl font-bold hover:underline"
+                        className="text-xl font-bold text-gray-900 hover:underline"
                       >
                         {c.title}
                       </Link>
                     ) : (
-                      <h3 className="text-xl font-bold">{c.title}</h3>
+                      <h3 className="text-xl font-bold text-gray-900">{c.title}</h3>
                     )}
                     <p className="text-gray-600">{c.artistId?.name}</p>
                   </div>

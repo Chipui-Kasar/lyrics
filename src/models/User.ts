@@ -1,4 +1,5 @@
-import { Schema, model, models } from "mongoose";
+import { Connection, Schema } from "mongoose";
+import { registerModel } from "@/lib/mongodb";
 
 const UserSchema = new Schema(
   {
@@ -44,8 +45,5 @@ const UserSchema = new Schema(
   },
 );
 
-const User = models.User || model("User", UserSchema);
-
-console.log("User model collection name:", User.collection.name);
-
-export default User;
+export const getUserModel = (conn: Connection) =>
+  registerModel(conn, "User", UserSchema);

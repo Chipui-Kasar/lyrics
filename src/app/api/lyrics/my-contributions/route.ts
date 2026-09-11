@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import { ContributedLyrics } from "@/models/ContributedLyrics";
-import { Lyrics } from "@/models/model";
+import { getContributedLyricsModel } from "@/models/ContributedLyrics";
+import { getLyricsModel } from "@/models/model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -12,7 +12,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    await connectMongoDB();
+    const conn = await connectMongoDB();
+    const ContributedLyrics = getContributedLyricsModel(conn);
+    const Lyrics = getLyricsModel(conn);
     // @ts-ignore
     const userId = session.user.id;
 
@@ -21,9 +23,9 @@ export async function GET(req: NextRequest) {
       .lean();
 
     const linkedLyricsIds = contributions
-      .map((c) => c.publishedLyricsId)
+      .map((c: any) => c.publishedLyricsId)
       .filter(Boolean)
-      .map((id) => id!.toString());
+      .map((id: any) => id!.toString());
 
     // Lyrics published before the contributed_lyrics table existed have no
     // ContributedLyrics record at all - surface them directly so historical
