@@ -167,7 +167,6 @@ export function generatePageMetadata({
 
     other: {
       "article:publisher": "https://tangkhullyrics.com",
-      "og:site_name": "Tangkhul Lyrics",
       "twitter:domain": "tangkhullyrics.com",
       "format-detection": "telephone=no",
       ...other,
