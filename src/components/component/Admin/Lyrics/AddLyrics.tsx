@@ -16,7 +16,10 @@ import PageLoader from "../../Spinner/Spinner";
 import ImageUpload from "../ImageUpload/ImageUpload";
 import Link from "next/link";
 import Image from "next/image";
+import { Paginator } from "@/components/ui/pagination";
 // import { ObjectId } from "mongodb";
+
+const PAGE_SIZE = 10;
 
 const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
   const [formData, setFormData] = useState({
@@ -40,6 +43,11 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
   >({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   useEffect(() => {
     fetchLyrics();
@@ -406,88 +414,118 @@ const AddNewLyrics = ({ artists }: { artists: IArtists[] }) => {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
       <div className="rounded-lg bg-muted p-4 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
-        {Object.entries(groupLyricsByArtist(lyrics)).map(
-          ([artist, artistLyrics]) => (
-            <div key={artist} className="mb-4 border rounded">
-              <div
-                className="flex justify-between items-center bg-gray-300 p-2 cursor-pointer"
-                onClick={() => toggleArtist(artist)}
-              >
-                <h2 className="text-lg font-semibold">
-                  {artist}{" "}
-                  <i className="text-sm">{artistLyrics.length} lyric(s)</i>
-                </h2>
+        {(() => {
+          const groupedEntries = Object.entries(groupLyricsByArtist(lyrics));
+          const totalPages = Math.max(
+            1,
+            Math.ceil(groupedEntries.length / PAGE_SIZE)
+          );
+          const safePage = Math.min(currentPage, totalPages);
+          const paginatedEntries = groupedEntries.slice(
+            (safePage - 1) * PAGE_SIZE,
+            safePage * PAGE_SIZE
+          );
 
-                <span>{expandedArtists[artist] ? "▲" : "▼"}</span>
-              </div>
-              {expandedArtists[artist] && (
-                <table className="w-full table-auto mt-2 border-t">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border p-2">ID</th>
-                      <th className="border p-2">Thumbnail</th>
-                      <th className="border p-2">Title</th>
-                      <th className="border p-2">Contributed By</th>
-                      <th className="border p-2">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {artistLyrics.map((lyric) => (
-                      <tr key={lyric._id} className="border-t">
-                        <td className="border p-2">{lyric._id}</td>
-                        <td className="border p-2">
-                          {lyric.thumbnail ? (
-                            <Image
-                              src={lyric.thumbnail}
-                              alt={lyric.title}
-                              width={48}
-                              height={48}
-                              className="w-12 h-12 object-cover rounded"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "/placeholder.svg";
-                              }}
-                            />
-                          ) : (
-                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                              <span className="text-xs text-gray-500">
-                                No Image
-                              </span>
-                            </div>
-                          )}
-                        </td>
-                        <td className="border p-2">
-                          <Link
-                            href={`/lyrics/${lyric._id}/${slugMaker(
-                              lyric.title
-                            )}_${slugMaker(lyric.artistId?.name || "unknown")}`}
-                            // target="_blank"
-                            prefetch={false}
-                            className={`${
-                              lyric.featured ? "text-accent bg-primary" : ""
-                            } hover:underline`}
-                            rel="noopener noreferrer"
-                          >
-                            {lyric.title}
-                          </Link>
-                        </td>
-                        <td className="border p-2">{lyric.contributedBy}</td>
-                        <td className="border p-2">
-                          <Button onClick={() => handleEdit(lyric)}>
-                            Edit
-                          </Button>
-                          <Button onClick={() => deleteLyric(lyric._id)}>
-                            Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          return (
+            <>
+              {paginatedEntries.map(([artist, artistLyrics]) => (
+                <div key={artist} className="mb-4 border rounded">
+                  <div
+                    className="flex justify-between items-center bg-gray-300 p-2 cursor-pointer"
+                    onClick={() => toggleArtist(artist)}
+                  >
+                    <h2 className="text-lg font-semibold">
+                      {artist}{" "}
+                      <i className="text-sm">{artistLyrics.length} lyric(s)</i>
+                    </h2>
+
+                    <span>{expandedArtists[artist] ? "▲" : "▼"}</span>
+                  </div>
+                  {expandedArtists[artist] && (
+                    <table className="w-full table-auto mt-2 border-t">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border p-2">ID</th>
+                          <th className="border p-2">Thumbnail</th>
+                          <th className="border p-2">Title</th>
+                          <th className="border p-2">Contributed By</th>
+                          <th className="border p-2">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {artistLyrics.map((lyric) => (
+                          <tr key={lyric._id} className="border-t">
+                            <td className="border p-2">{lyric._id}</td>
+                            <td className="border p-2">
+                              {lyric.thumbnail ? (
+                                <Image
+                                  src={lyric.thumbnail}
+                                  alt={lyric.title}
+                                  width={48}
+                                  height={48}
+                                  className="w-12 h-12 object-cover rounded"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src =
+                                      "/placeholder.svg";
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                  <span className="text-xs text-gray-500">
+                                    No Image
+                                  </span>
+                                </div>
+                              )}
+                            </td>
+                            <td className="border p-2">
+                              <Link
+                                href={`/lyrics/${lyric._id}/${slugMaker(
+                                  lyric.title
+                                )}_${slugMaker(
+                                  lyric.artistId?.name || "unknown"
+                                )}`}
+                                // target="_blank"
+                                prefetch={false}
+                                className={`${
+                                  lyric.featured
+                                    ? "text-accent bg-primary"
+                                    : ""
+                                } hover:underline`}
+                                rel="noopener noreferrer"
+                              >
+                                {lyric.title}
+                              </Link>
+                            </td>
+                            <td className="border p-2">
+                              {lyric.contributedBy}
+                            </td>
+                            <td className="border p-2">
+                              <Button onClick={() => handleEdit(lyric)}>
+                                Edit
+                              </Button>
+                              <Button onClick={() => deleteLyric(lyric._id)}>
+                                Delete
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              ))}
+              {totalPages > 1 && (
+                <div className="mt-4 flex justify-center">
+                  <Paginator
+                    currentPage={safePage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
               )}
-            </div>
-          )
-        )}
+            </>
+          );
+        })()}
       </div>
       {loading && <PageLoader isLoading={loading} />}
     </section>

@@ -13,6 +13,7 @@ import { NavigationLoader } from "@/components/NavigationLoader";
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   preload: true,
   display: "swap",
   variable: "--font-inter",

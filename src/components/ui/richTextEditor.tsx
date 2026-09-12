@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 import * as Toggle from "@radix-ui/react-toggle";
 import { cva } from "class-variance-authority";
@@ -42,6 +42,17 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const hasInitializedContent = useRef(false);
+  const [, setSelectionTick] = useState(0);
+
+  // Toolbar buttons reflect document.queryCommandState, which only reads the
+  // browser's current selection. Re-render on selectionchange so pressed
+  // state stays in sync as the cursor moves, not just after typing.
+  useEffect(() => {
+    const handleSelectionChange = () => setSelectionTick((tick) => tick + 1);
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () =>
+      document.removeEventListener("selectionchange", handleSelectionChange);
+  }, []);
 
   useEffect(() => {
     if (editorRef.current && defaultValue === "") {
@@ -90,7 +101,13 @@ export function RichTextEditor({
   const formatBlock = (blockType: string) =>
     execCommand("formatBlock", blockType);
 
-  const isFormatActive = (format: string) => document.queryCommandState(format);
+  const isFormatActive = (format: string) => {
+    try {
+      return document.queryCommandState(format);
+    } catch {
+      return false;
+    }
+  };
 
   return (
     <div className={cn("border rounded-md")}>
