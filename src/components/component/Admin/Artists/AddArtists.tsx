@@ -13,6 +13,9 @@ import { useEffect, useState } from "react";
 import PageLoader from "../../Spinner/Spinner";
 import ImageUpload from "../ImageUpload/ImageUpload";
 import Image from "next/image";
+import { Paginator } from "@/components/ui/pagination";
+
+const PAGE_SIZE = 10;
 
 const AddArtists = () => {
   const [formData, setFormData] = useState<{
@@ -31,6 +34,12 @@ const AddArtists = () => {
   });
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   // ✅ Handle text inputs
   const handleChange = (
@@ -125,6 +134,26 @@ const AddArtists = () => {
     const data = await getAllArtists();
     setArtists(data);
   };
+
+  const filteredArtists = artists.filter((artist: IArtists) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      artist.name?.toLowerCase().includes(query) ||
+      artist.genre?.some((g) => g.toLowerCase().includes(query)) ||
+      artist.village?.toLowerCase().includes(query)
+    );
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredArtists.length / PAGE_SIZE));
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
+  const paginatedArtists = filteredArtists.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   const handleEdit = (artist: IArtists) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -223,6 +252,13 @@ const AddArtists = () => {
       </div>
 
       <h1 className="text-xl font-bold mb-4 mt-4">Artists List</h1>
+      <Input
+        type="text"
+        placeholder="Search"
+        value={searchQuery}
+        className="mb-4"
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       <table className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <thead>
           <tr className="bg-gray-200">
@@ -235,7 +271,7 @@ const AddArtists = () => {
           </tr>
         </thead>
         <tbody>
-          {artists.map((artist: IArtists) => (
+          {paginatedArtists.map((artist: IArtists) => (
             <tr key={artist._id} className="border-b">
               <td className="border p-2">{artist._id}</td>
               <td className="border p-2">
@@ -268,6 +304,15 @@ const AddArtists = () => {
           ))}
         </tbody>
       </table>
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center">
+          <Paginator
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
       {loading && <PageLoader isLoading={loading} />}
     </section>
   );
