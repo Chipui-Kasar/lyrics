@@ -174,7 +174,7 @@ const PromotionalBanner = () => {
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Content Section — side padding prevents text from being obscured by the arrow buttons */}
-            <div className="flex-1 text-center md:text-left px-16">
+            <div className="flex-1 text-center md:text-left">
               <p
                 className={`text-xl sm:text-2xl md:text-3xl font-bold mb-2 ${activeItem.textColor}`}
               >
