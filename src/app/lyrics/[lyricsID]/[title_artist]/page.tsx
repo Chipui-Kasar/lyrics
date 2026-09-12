@@ -7,7 +7,6 @@ import {
   sanitizeAndDeduplicateHTML,
   slugMaker,
   splitTitleArtistSlug,
-  areEquivalentSlugs,
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
 import { getSingleLyrics, getLyricsPage } from "@/service/allartists";
@@ -92,9 +91,15 @@ const LyricsPage = async ({
   const artistSlug = slugMaker(artistName);
   const artistUrl = `https://tangkhullyrics.com/artists/${artistSlug}`;
 
-  // Ensure the URL uses the proper slug format
+  // Ensure the URL uses the proper slug format. This must be a strict
+  // (not case/dash-insensitive) comparison: any non-canonical variant has to
+  // redirect, otherwise it bypasses generateStaticParams() entirely and Next
+  // renders it as a brand-new dynamic path on every first hit (multi-second
+  // cold ISR render) instead of redirecting to the already statically
+  // cached canonical URL.
   const expectedSlug = `${slugMaker(songTitle)}_${artistSlug}`;
-  if (!areEquivalentSlugs(resolvedParams.title_artist, expectedSlug)) {
+  const requestedSlug = `${title}_${artist}`;
+  if (requestedSlug !== expectedSlug) {
     permanentRedirect(`/lyrics/${lyric._id}/${expectedSlug}`);
   }
 

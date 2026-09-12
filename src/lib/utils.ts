@@ -67,10 +67,6 @@ export function splitTitleArtistSlug(value: string) {
   };
 }
 
-export function areEquivalentSlugs(left: string, right: string) {
-  return slugMaker(left) === slugMaker(right);
-}
-
 //function for metatags
 
 interface MetadataProps {
