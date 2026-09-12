@@ -120,7 +120,7 @@ const PromotionalBanner = () => {
     >
       <div className="container mx-auto p-4 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <div
-          className={`relative overflow-hidden rounded-xl shadow-lg ${activeItem.backgroundColor} p-6 md:p-8 transition-all duration-500 ease-in-out`}
+          className={`relative overflow-hidden rounded-xl shadow-lg ${activeItem.backgroundColor} p-6 pb-14 md:p-8 transition-all duration-500 ease-in-out`}
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
@@ -173,10 +173,10 @@ const PromotionalBanner = () => {
           </button>
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Content Section — left padding prevents text from being obscured by the arrow button */}
-            <div className="flex-1 text-center md:text-left pl-16">
+            {/* Content Section — side padding prevents text from being obscured by the arrow buttons */}
+            <div className="flex-1 text-center md:text-left px-16">
               <p
-                className={`text-2xl md:text-3xl font-bold mb-2 ${activeItem.textColor}`}
+                className={`text-xl sm:text-2xl md:text-3xl font-bold mb-2 ${activeItem.textColor}`}
               >
                 {activeItem.title}
               </p>
