@@ -12,12 +12,14 @@ export async function POST(request: NextRequest) {
     if (!message) {
       return NextResponse.json(
         { error: "Message is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!process.env.OPENROUTER_API_KEY && !process.env.GROQ_API_KEY) {
-      throw new Error("Neither OPENROUTER_API_KEY nor GROQ_API_KEY is configured");
+      throw new Error(
+        "Neither OPENROUTER_API_KEY nor GROQ_API_KEY is configured",
+      );
     }
 
     // Connect to MongoDB and fetch real data
@@ -48,7 +50,7 @@ export async function POST(request: NextRequest) {
         {
           lyricsLimit: 5,
           artistsLimit: 5,
-        }
+        },
       );
 
     // Build database context with IDs for link generation
@@ -60,7 +62,7 @@ ${artists
     (a: any) =>
       `- ${a.name}${a.village ? ` from ${a.village}` : ""}${
         a.genre?.length ? ` (${a.genre.join(", ")})` : ""
-      } [LINK: /artists/${slugMaker(a.name)}]`
+      } [LINK: /artists/${slugMaker(a.name)}]`,
   )
   .join("\n")}
 
@@ -73,8 +75,8 @@ ${recentLyrics
       }${l.releaseYear ? ` [${l.releaseYear}]` : ""} [ID: ${
         l._id
       }, LINK: /lyrics/${l._id}/${slugMaker(l.title)}_${slugMaker(
-        l.artistId?.name || "Unknown"
-      )}]`
+        l.artistId?.name || "Unknown",
+      )}]`,
   )
   .join("\n")}`;
 
@@ -85,7 +87,7 @@ ${matchedArtists
     (a: any) =>
       `- ${a.name}${a.village ? ` from ${a.village}` : ""}${
         a.genre?.length ? ` (${a.genre.join(", ")})` : ""
-      } [LINK: /artists/${slugMaker(a.name)}]`
+      } [LINK: /artists/${slugMaker(a.name)}]`,
   )
   .join("\n")}`;
     }
@@ -98,8 +100,8 @@ ${matchedLyrics
       `- "${l.title}" by ${l.artistId?.name || "Unknown"}${
         l.album ? ` (${l.album})` : ""
       } [LINK: /lyrics/${l._id}/${slugMaker(l.title)}_${slugMaker(
-        l.artistId?.name || "Unknown"
-      )}]\n  Preview: ${(l.lyrics || "").substring(0, 150)}...`
+        l.artistId?.name || "Unknown",
+      )}]\n  Preview: ${(l.lyrics || "").substring(0, 150)}...`,
   )
   .join("\n\n")}`;
     }
@@ -111,6 +113,17 @@ WEBSITE CONTEXT:
 - Website Name: Tangkhul Lyrics
 - Purpose: A platform for Tangkhul songs, lyrics, artists, and cultural content
 - Available Pages: Home, Artists, Lyrics, About, Contact, Contribute, Feed, Search
+
+DEVELOPER CONTACT (share this ONLY if the user explicitly asks who built/developed/made this website, or asks for developer/contact info — when you share it, format EVERY item below as a markdown link exactly like the examples, never as a bare URL or email):
+- Developer: Chipui Kasar
+- Email: [tangkhullaalyrics@gmail.com](mailto:tangkhullaalyrics@gmail.com)
+- Instagram: [@chipui_ks](https://instagram.com/chipui_ks)
+- LinkedIn: [Chipui Kasar](https://www.linkedin.com/in/chipui-kasar-78058b104/)
+- YouTube: [LooksLikeYouTengkuma](https://www.youtube.com/@LooksLikeYouTengkuma)
+- Portfolio: [chipuikasar.netlify.app](https://chipuikasar.netlify.app/)
+- Other projects: [Ukhrul Rental](https://ukhrulrental.vercel.app/), [Khangkhui Phungdhar](https://khangkhuiphungdhar.vercel.app/), [Tangkhul Dictionary](https://tangkhuldictionary.lovable.app/), [Tengkuma](https://tengkuma.vercel.app/)
+
+If the user specifically and repeatedly asks for a phone/contact number (not just general contact info), share this instead: [Chat on WhatsApp](https://wa.me/918264163783?text=Iwui%20laa%20la%20sang%20ngaiya)
 
 CURRENT PAGE CONTEXT:
 ${
@@ -136,6 +149,8 @@ RULES:
 9. Use bullet points for lists
 10. Reference specific pages when relevant
 11. When mentioning a song, format it as: "Song Title" by Artist Name
+12. If the user asks who built/made/developed the website, or asks for developer/contact details, share the "DEVELOPER CONTACT" section above (name, links) — this is the one exception to rule 6
+13. If the user explicitly asks for a phone/contact NUMBER again after already being given the contact links (or insists on a number specifically), share the WhatsApp link from the "DEVELOPER CONTACT" section instead of a phone number
 
 URL FORMATS (IMPORTANT - USE THESE EXACT PATTERNS):
 - Artist page: /artists/{artist-name-slug}
@@ -184,7 +199,7 @@ Provide a helpful response based on the website context above.`;
         error: "Failed to process request",
         message: "Sorry, I encountered an error. Please try again.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

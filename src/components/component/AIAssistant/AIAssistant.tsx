@@ -203,48 +203,99 @@ export default function AIAssistant() {
     }
   };
 
-  // Parse markdown links and convert to JSX
-  const parseMarkdownLinks = useCallback((text: string) => {
-    const parts: (string | React.ReactElement)[] = [];
-    let lastIndex = 0;
+  // Convert a plain-text chunk's bare URLs/emails into clickable links
+  const linkifyPlainText = useCallback(
+    (text: string, keyPrefix: string): (string | React.ReactElement)[] => {
+      const bareRegex = /(https?:\/\/[^\s)]+)|([\w.+-]+@[\w-]+\.[\w.-]+)/g;
+      const out: (string | React.ReactElement)[] = [];
+      let last = 0;
+      let m;
 
-    // Regex to match markdown links: [text](url)
-    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-    let match;
+      while ((m = bareRegex.exec(text)) !== null) {
+        if (m.index > last) out.push(text.substring(last, m.index));
 
-    while ((match = linkRegex.exec(text)) !== null) {
-      // Add text before the link
-      if (match.index > lastIndex) {
-        parts.push(text.substring(lastIndex, match.index));
+        const isEmail = !!m[2];
+        const url = isEmail ? `mailto:${m[0]}` : m[0];
+        out.push(
+          <a
+            key={`${keyPrefix}-${m.index}`}
+            href={url}
+            target={isEmail ? undefined : "_blank"}
+            rel={isEmail ? undefined : "noopener noreferrer"}
+            className="text-primary underline hover:text-primary/80 font-medium"
+          >
+            {m[0]}
+          </a>,
+        );
+
+        last = m.index + m[0].length;
       }
 
-      // Add the link
-      const linkText = match[1];
-      const linkUrl = match[2];
-      parts.push(
-        <a
-          key={match.index}
-          href={linkUrl}
-          className="text-primary underline hover:text-primary/80 font-medium"
-          onClick={(e) => {
-            e.preventDefault();
-            window.location.href = linkUrl;
-          }}
-        >
-          {linkText}
-        </a>,
-      );
+      if (last < text.length) out.push(text.substring(last));
+      return out.length > 0 ? out : [text];
+    },
+    [],
+  );
 
-      lastIndex = match.index + match[0].length;
-    }
+  // Parse markdown links and convert to JSX
+  const parseMarkdownLinks = useCallback(
+    (text: string) => {
+      const parts: (string | React.ReactElement)[] = [];
+      let lastIndex = 0;
 
-    // Add remaining text
-    if (lastIndex < text.length) {
-      parts.push(text.substring(lastIndex));
-    }
+      // Regex to match markdown links: [text](url)
+      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+      let match;
 
-    return parts.length > 0 ? parts : [text];
-  }, []);
+      while ((match = linkRegex.exec(text)) !== null) {
+        // Add text before the link, linkifying any bare URLs/emails in it
+        if (match.index > lastIndex) {
+          parts.push(
+            ...linkifyPlainText(
+              text.substring(lastIndex, match.index),
+              `pre-${lastIndex}`,
+            ),
+          );
+        }
+
+        // Add the link
+        const linkText = match[1];
+        const linkUrl = match[2];
+        const isInternal = linkUrl.startsWith("/");
+        parts.push(
+          <a
+            key={match.index}
+            href={linkUrl}
+            className="text-primary underline hover:text-primary/80 font-medium"
+            target={isInternal ? undefined : "_blank"}
+            rel={isInternal ? undefined : "noopener noreferrer"}
+            onClick={
+              isInternal
+                ? (e) => {
+                    e.preventDefault();
+                    window.location.href = linkUrl;
+                  }
+                : undefined
+            }
+          >
+            {linkText}
+          </a>,
+        );
+
+        lastIndex = match.index + match[0].length;
+      }
+
+      // Add remaining text, linkifying any bare URLs/emails in it
+      if (lastIndex < text.length) {
+        parts.push(
+          ...linkifyPlainText(text.substring(lastIndex), `post-${lastIndex}`),
+        );
+      }
+
+      return parts.length > 0 ? parts : [text];
+    },
+    [linkifyPlainText],
+  );
 
   return (
     <>
