@@ -160,6 +160,25 @@ const nextConfig = {
     ];
   },
 
+  // Real HTTP 308 redirects for legacy URLs. These used to be redirect() calls
+  // inside force-static pages, which return a normal 200 page with a
+  // meta-refresh instead of an actual redirect.
+  async redirects() {
+    return [
+      { source: "/lyrics/page/1", destination: "/lyrics", permanent: true },
+      {
+        source: "/lyrics/page/:page(\\d+)",
+        destination: "/lyrics?page=:page",
+        permanent: true,
+      },
+      {
+        source: "/lyrics/:lyricsID/:title_artist/details",
+        destination: "/lyrics/:lyricsID/:title_artist",
+        permanent: true,
+      },
+    ];
+  },
+
   // Redirect trailing slashes
   trailingSlash: false,
 

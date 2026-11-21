@@ -29,6 +29,17 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
     [displayLyrics.lyrics]
   );
 
+  // The admin forms pre-fill releaseYear with the current year, so a year that
+  // is not earlier than the year the song was added to the site can't be told
+  // apart from that default. Only show it when it is clearly a real, earlier
+  // release year.
+  const addedYear = displayLyrics.createdAt
+    ? new Date(displayLyrics.createdAt).getFullYear()
+    : null;
+  const showReleaseYear =
+    Boolean(displayLyrics.releaseYear) &&
+    (addedYear === null || displayLyrics.releaseYear < addedYear);
+
   const escapeApostrophe = (text: string) => {
     return text?.replace(/'/g, "&apos;");
   };
@@ -107,10 +118,12 @@ const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
                 <span>{displayLyrics.album}</span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span>Release Date:</span>
-                <span>{displayLyrics.releaseYear}</span>
-              </div>
+              {showReleaseYear && (
+                <div className="flex items-center justify-between">
+                  <span>Release Year:</span>
+                  <span>{displayLyrics.releaseYear}</span>
+                </div>
+              )}
             </div>
             <div className="mt-4">
               {(displayLyrics.streamingLinks?.youtube ||

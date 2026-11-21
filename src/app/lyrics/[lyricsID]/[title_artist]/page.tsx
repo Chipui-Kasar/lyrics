@@ -5,13 +5,19 @@ import {
   generatePageMetadata,
   replaceAllHTMLTagsWithSpace,
   sanitizeAndDeduplicateHTML,
+  removeSlug,
   slugMaker,
   splitTitleArtistSlug,
 } from "@/lib/utils";
 import { ILyrics } from "@/models/IObjects";
-import { getSingleLyrics, getLyricsPage } from "@/service/allartists";
+import {
+  getSingleLyrics,
+  getLyricsPage,
+  getSingleArtistWithSongCount,
+} from "@/service/allartists";
 import { cache } from "react";
 import StructuredData from "@/components/StructureDataComponent";
+import RelatedSongs from "@/components/component/RelatedSongs/RelatedSongs";
 
 export const dynamic = "force-static";
 export const dynamicParams = true; // ISR for newly added lyrics not in build
@@ -53,9 +59,14 @@ export async function generateMetadata({
       sanitizeAndDeduplicateHTML(lyric.lyrics),
     )?.slice(0, 155) || "Traditional Tangkhul song";
 
+  // "<Song> Lyrics – <Artist> | Tangkhul Laa" when it fits the 60-char title
+  // limit; otherwise drop the suffix rather than let it be cut mid-word.
+  const baseTitle = `${songTitle} Lyrics – ${artistName}`;
+  const fullTitle = `${baseTitle} | Tangkhul Laa`;
+
   return generatePageMetadata({
-    title: `${songTitle} Lyrics — ${artistName}`,
-    description: `Complete lyrics to "${songTitle}" by ${artistName}${albumName !== "Single" ? ` from ${albumName}` : ""}. ${lyricsPreview}`,
+    title: fullTitle.length <= 60 ? fullTitle : baseTitle,
+    description: `Read the lyrics of "${songTitle}" by ${artistName}${albumName !== "Single" ? ` from ${albumName}` : ""}. ${lyricsPreview}`,
     url: `https://tangkhullyrics.com/lyrics/${lyric._id}/${slugMaker(
       songTitle,
     )}_${slugMaker(artistName)}`,
@@ -64,11 +75,10 @@ export async function generateMetadata({
         ? lyric.thumbnail
         : (lyric.artistId?.image ?? "/ogImage.jpg")
     }`,
-    keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul song lyrics translation, Tangkhul lyrics, Tangkhul songs, traditional music, ${songTitle} lyrics, ${artistName} songs`,
+    keywords: `${songTitle}, ${artistName}, ${albumName}, Tangkhul laa, Tangkhul lyrics, Tangkhul songs, ${songTitle} lyrics, ${artistName} songs`,
     ogType: "music.song",
     other: {
       "music:musician": artistUrl,
-      ...(lyric.releaseYear ? { "music:release_date": `${lyric.releaseYear}` } : {}),
     },
   });
 }
@@ -112,14 +122,6 @@ const LyricsPage = async ({
     "@context": "https://schema.org",
     "@type": "MusicRecording",
     name: songTitle,
-    composer: {
-      "@type": "Person",
-      name: artistName,
-    },
-    lyricist: {
-      "@type": "Person",
-      name: artistName,
-    },
     byArtist: {
       "@type": "MusicArtist",
       name: artistName,
@@ -142,13 +144,11 @@ const LyricsPage = async ({
     lyrics: {
       "@type": "CreativeWork",
       text: plainLyrics,
-      inLanguage: "tkh",
+      inLanguage: "nmf",
     },
-    genre: "Traditional Music",
-    inLanguage: "tkh",
-    description: `Traditional Tangkhul song "${songTitle}" by ${artistName} | Tangkhul Lyrics | Tangkhul lyrics translation`,
+    inLanguage: "nmf",
+    description: `Lyrics of the Tangkhul song "${songTitle}" by ${artistName}.`,
     url: lyricsUrl,
-    datePublished: lyric.createdAt || new Date().toISOString(),
     publisher: {
       "@type": "Organization",
       name: "Tangkhul Lyrics",
@@ -165,11 +165,22 @@ const LyricsPage = async ({
     ],
   };
 
+  // Other songs by the same artist (same tagged fetch as the artist page, so
+  // it is refreshed whenever that artist's data is revalidated).
+  const artistSongs: ILyrics[] = await getSingleArtistWithSongCount(
+    removeSlug(artistSlug),
+  );
+
   return (
     <>
       <StructuredData data={structuredData} />
       <StructuredData data={breadcrumbSchema} />
       <Lyrics lyrics={lyric} />
+      <RelatedSongs
+        artistName={artistName}
+        currentId={String(lyric._id)}
+        songs={Array.isArray(artistSongs) ? artistSongs : []}
+      />
     </>
   );
 };

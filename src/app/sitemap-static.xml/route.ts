@@ -41,12 +41,6 @@ export async function GET() {
         lastmod,
       },
       {
-        url: "/search",
-        priority: "0.8",
-        changefreq: "weekly",
-        lastmod,
-      },
-      {
         url: "/allartists",
         priority: "0.9",
         changefreq: "weekly",

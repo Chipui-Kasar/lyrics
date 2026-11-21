@@ -8,10 +8,10 @@ export async function generateMetadata() {
   return generatePageMetadata({
     title: "About Us - Tangkhul Lyrics",
     description:
-      "Learn more about Tangkhul Lyrics, our mission, and how we bring Tangkhul music lyrics to the world.",
+      "About Tangkhul Lyrics: a community archive of Tangkhul laa (Tangkhul song lyrics) with hundreds of songs, browsable by artist.",
     url: "https://tangkhullyrics.com/about",
     keywords:
-      "About Tangkhul Lyrics, Tangkhul music, Tangkhul songs, lyrics platform",
+      "About Tangkhul Lyrics, Tangkhul laa, Tangkhul music, Tangkhul songs, lyrics platform",
   });
 }
 

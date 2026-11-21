@@ -16,6 +16,28 @@ const About = () => {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
         <div className="container px-4 md:px-6 m-auto">
           <div className="grid md:grid-cols-2 gap-8">
+            <div className="md:col-span-2">
+              <h2 className="text-3xl font-bold">Tangkhul Laa, Lyrics &amp; Artists</h2>
+              <p className="mt-4 text-muted-foreground">
+                Tangkhul Lyrics is a growing home for Tangkhul laa, the songs of
+                the Tangkhul Naga community of Ukhrul, Manipur. Here you can
+                read the lyrics to hundreds of Tangkhul songs, browse them by
+                artist, and search by song title, artist name or a line you
+                remember.
+              </p>
+              <p className="mt-4 text-muted-foreground">
+                Whether you are looking for a song you heard at a gathering, a
+                favourite from a Tangkhul singer, or the words to sing along
+                with, start with the{" "}
+                <a href="/allartists" className="underline underline-offset-4">
+                  artist list
+                </a>{" "}
+                or use the search bar at the top. Every artist page lists all of
+                their songs, and every song page shows the full lyrics together
+                with a video when one is available.
+              </p>
+            </div>
+
             <div>
               <h2 className="text-3xl font-bold">Who We Are</h2>
               <p className="mt-4 text-muted-foreground">

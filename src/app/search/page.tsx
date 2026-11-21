@@ -12,6 +12,7 @@ export async function generateMetadata() {
     description:
       "Search through our comprehensive collection of Tangkhul songs, lyrics, and artists. Discover your favorite Tangkhul music with powerful search functionality.",
     url: "https://tangkhullyrics.com/search",
+    robots: "noindex, follow",
     keywords:
       "search Tangkhul lyrics, find Tangkhul songs, Tangkhul artist search, Tangkhul music search, song finder, lyrics search",
     structuredData: {

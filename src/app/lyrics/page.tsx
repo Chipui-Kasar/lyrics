@@ -27,9 +27,9 @@ export async function generateMetadata({
 
   if (!page) {
     return generatePageMetadata({
-      title: "All Tangkhul Lyrics - Complete Song Collection",
+      title: "All Tangkhul Laa Lyrics – Complete Song List",
       description:
-        "Explore 416+ authentic Tangkhul song lyrics from 80+ artists. Browse our complete collection of traditional and contemporary Tangkhul music.",
+        "Read the lyrics to hundreds of Tangkhul songs (Tangkhul laa) from 90+ Tangkhul artists. Browse the full A–Z song collection.",
       url: BASE_URL,
       keywords:
         "Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, Ukhrul music, Tangkhul artists, traditional songs, Manipur music",
@@ -47,9 +47,9 @@ export async function generateMetadata({
 
   if (page === 1) {
     return generatePageMetadata({
-      title: "All Tangkhul Lyrics - Complete Song Collection",
+      title: "All Tangkhul Laa Lyrics – Complete Song List",
       description:
-        "Explore 416+ authentic Tangkhul song lyrics from 80+ artists. Browse our complete collection of traditional and contemporary Tangkhul music.",
+        "Read the lyrics to hundreds of Tangkhul songs (Tangkhul laa) from 90+ Tangkhul artists. Browse the full A–Z song collection.",
       url: BASE_URL,
       keywords:
         "Tangkhul lyrics, Tangkhul songs, Tangkhul Laa, Ukhrul music, Tangkhul artists, traditional songs, Manipur music",

@@ -42,17 +42,16 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
+    default: "Tangkhul Laa Lyrics – Tangkhul Song Lyrics & Artists",
     template: "%s | Tangkhul Lyrics",
   },
   description:
-    "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
+    "Read the lyrics to hundreds of Tangkhul songs (Tangkhul laa) and browse them by artist. Find your favourite Tangkhul singers and sing along.",
   applicationName: "Tangkhul Lyrics",
   referrer: "origin-when-cross-origin",
   keywords: [
     "Tangkhul lyrics",
     "Tangkhul artists",
-    "Tangkhul lyrics translation",
     "Tangkhul songs",
     "Tangkhul music",
     "Tangkhul Laa lyrics",
@@ -61,8 +60,6 @@ export const metadata: Metadata = {
     "Tribal songs",
     "Traditional music",
     "Contemporary Tangkhul music",
-    "Tangkhul song lyrics translation",
-    "Tangkhul song meanings",
   ],
   authors: [
     { name: "Tangkhul Lyrics Team", url: "https://tangkhullyrics.com/about" },
@@ -75,9 +72,6 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL("https://tangkhullyrics.com"),
-  alternates: {
-    canonical: "https://tangkhullyrics.com",
-  },
   robots: {
     index: true,
     follow: true,
@@ -115,9 +109,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://tangkhullyrics.com",
     siteName: "Tangkhul Lyrics",
-    title: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
+    title: "Tangkhul Laa Lyrics – Tangkhul Song Lyrics & Artists",
     description:
-      "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
+      "Read the lyrics to hundreds of Tangkhul songs (Tangkhul laa) and browse them by artist. Find your favourite Tangkhul singers and sing along.",
     images: [
       {
         url: "/ogImage.jpg",
@@ -132,9 +126,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@TangkhulLyrics",
     creator: "@TangkhulLyrics",
-    title: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
+    title: "Tangkhul Laa Lyrics – Tangkhul Song Lyrics & Artists",
     description:
-      "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
+      "Read the lyrics to hundreds of Tangkhul songs (Tangkhul laa) and browse them by artist. Find your favourite Tangkhul singers and sing along.",
     images: ["/ogImage.jpg"],
   },
   verification: {
@@ -168,7 +162,6 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-        <link rel="alternate" hrefLang="en" href="https://tangkhullyrics.com" />
         {/* DNS prefetch for external resources - lower priority */}
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
@@ -214,7 +207,7 @@ export default function RootLayout({
               name: "Tangkhul Lyrics",
               alternateName: "tangkhullyrics.com",
               description:
-                "The largest collection of Tangkhul song lyrics online",
+                "Tangkhul song lyrics (Tangkhul laa) and artists",
               url: "https://tangkhullyrics.com",
               potentialAction: {
                 "@type": "SearchAction",

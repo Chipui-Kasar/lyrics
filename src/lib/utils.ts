@@ -150,11 +150,11 @@ export function generatePageMetadata({
     },
 
     robots: {
-      index: robots.includes("index"),
-      follow: robots.includes("follow"),
+      index: !robots.includes("noindex"),
+      follow: !robots.includes("nofollow"),
       googleBot: {
-        index: robots.includes("index"),
-        follow: robots.includes("follow"),
+        index: !robots.includes("noindex"),
+        follow: !robots.includes("nofollow"),
         "max-video-preview": -1,
         "max-image-preview": "large",
         "max-snippet": -1,

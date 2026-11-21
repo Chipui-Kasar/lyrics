@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { generatePageMetadata } from "@/lib/utils";
 import { IArtists } from "@/models/IObjects";
 import {
@@ -35,18 +36,18 @@ const fetchHomeData = async () => {
 
 export async function generateMetadata() {
   return generatePageMetadata({
-    title: "Tangkhul Lyrics | Song Lyrics, Artists & Cultural Music",
+    title: "Tangkhul Laa Lyrics – Tangkhul Song Lyrics & Artists",
     description:
-      "Browse 1000+ authentic Tangkhul song lyrics. Discover trending hits, traditional favorites and new releases from top Tangkhul artists with cultural context.",
+      "Read the lyrics to hundreds of Tangkhul songs (Tangkhul laa) and browse them by artist. Find your favourite Tangkhul singers and sing along.",
     url: "https://tangkhullyrics.com",
     keywords:
-      "Tangkhul lyrics, Tangkhul songs, Tangkhul music, Northeast India songs, Manipur tribal music, traditional songs, cultural heritage, song translations, Tangkhul artists, folk music, indigenous music, ethnic songs",
+      "Tangkhul laa, Tangkhul lyrics, Tangkhul songs, Tangkhul music, Northeast India songs, Manipur tribal music, traditional songs, cultural heritage, Tangkhul artists, folk music, indigenous music, ethnic songs",
     image: "/ogImage.jpg",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: "Tangkhul Lyrics",
-      description: "Best collection of Tangkhul song lyrics and cultural music",
+      description: "Tangkhul song lyrics (Tangkhul laa) and artists",
       url: "https://tangkhullyrics.com",
       potentialAction: {
         "@type": "SearchAction",
@@ -65,13 +66,7 @@ const HomePage = async () => {
       {/* Lazy load promotional banner for better LCP */}
       <PromotionalBanner />
 
-      <section
-        className="critical-path above-fold container py-4 sm:py-6 md:py-8 m-auto"
-        role="main"
-      >
-        <h1 className="sr-only">
-          Tangkhul Song Lyrics — Preserving Culture Through Music
-        </h1>
+      <section className="critical-path above-fold container py-4 sm:py-6 md:py-8 m-auto">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="col-span-2 grid gap-4">
             <section className="below-fold non-critical">
@@ -92,6 +87,22 @@ const HomePage = async () => {
       </section>
       <section className="below-fold non-critical">
         <ContributeLyrics headingLevel="h2" />
+      </section>
+
+      {/* Visible h1 + one line for search engines, kept small and at the
+          bottom so visitors reach artists and songs straight away. The longer
+          text lives on the About page. */}
+      <section className="container m-auto px-4 pb-8 text-center">
+        <h1 className="text-lg font-semibold">
+          Tangkhul Laa – Tangkhul Song Lyrics
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Read Tangkhul laa (Tangkhul song lyrics) from hundreds of songs and
+          artists.{" "}
+          <Link href="/about" className="underline underline-offset-4">
+            About us
+          </Link>
+        </p>
       </section>
     </div>
   );
