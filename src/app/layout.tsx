@@ -10,10 +10,10 @@ import Script from "next/script";
 import ClientShell from "@/components/component/ClientShell/ClientShell";
 import { NavigationLoader } from "@/components/NavigationLoader";
 
+// No `weight`/`style`: Inter is a variable font, so this loads ONE file that
+// covers every weight (was 4 weights + italic = several font files).
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
   preload: true,
   display: "swap",
   variable: "--font-inter",

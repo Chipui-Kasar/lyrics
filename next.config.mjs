@@ -37,10 +37,6 @@ const nextConfig = {
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
       "@radix-ui/react-select",
-      "next/image",
-      "next/link",
-      "react",
-      "react-dom",
     ],
     scrollRestoration: true,
     optimizeCss: true,
@@ -54,97 +50,6 @@ const nextConfig = {
         as: "*.js",
       },
     },
-  },
-
-  // Optimized webpack configuration for production
-  webpack: (config, { isServer, dev }) => {
-    // Only apply optimizations in production
-    if (!dev) {
-      config.optimization = {
-        ...config.optimization,
-        usedExports: true,
-        sideEffects: false,
-        moduleIds: "deterministic",
-        concatenateModules: true, // Scope hoisting for smaller bundles
-        splitChunks: {
-          chunks: "all",
-          minSize: 20000,
-          maxSize: 150000, // Reduced from 244000 to create smaller chunks
-          minChunks: 1,
-          maxAsyncRequests: 30,
-          maxInitialRequests: 25,
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            // Framework chunk for React and Next.js core
-            framework: {
-              chunks: "all",
-              name: "framework",
-              test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
-              priority: 40,
-              enforce: true,
-            },
-            // Next.js specific libraries
-            nextjs: {
-              test: /[\\/]node_modules[\\/]next[\\/]/,
-              name: "nextjs",
-              priority: 35,
-              enforce: true,
-            },
-            // Auth libraries (next-auth, bcrypt)
-            auth: {
-              test: /[\\/]node_modules[\\/](next-auth|bcryptjs)[\\/]/,
-              name: "auth",
-              priority: 33,
-              enforce: true,
-            },
-            // UI libraries (radix-ui, lucide-react)
-            ui: {
-              test: /[\\/]node_modules[\\/](@radix-ui|lucide-react|clsx|class-variance-authority|tailwind-merge)[\\/]/,
-              name: "ui",
-              priority: 32,
-              enforce: true,
-            },
-            // Database/API libraries (mongoose, cloudinary)
-            data: {
-              test: /[\\/]node_modules[\\/](mongoose|cloudinary|next-cloudinary)[\\/]/,
-              name: "data",
-              priority: 31,
-              enforce: true,
-            },
-            // Other libraries chunk
-            lib: {
-              test: /[\\/]node_modules[\\/]/,
-              name(module) {
-                const packageName = module.context.match(
-                  /[\\/]node_modules[\\/](.*?)([\\/]|$)/
-                )?.[1];
-                return `lib-${packageName?.replace("@", "")}`;
-              },
-              priority: 30,
-              minChunks: 1,
-              reuseExistingChunk: true,
-            },
-            // Commons chunk for shared components
-            commons: {
-              name: "commons",
-              minChunks: 2,
-              priority: 20,
-              reuseExistingChunk: true,
-            },
-          },
-        },
-      };
-
-      // Optimize for modern browsers
-      if (!isServer) {
-        config.resolve.alias = {
-          ...config.resolve.alias,
-        };
-      }
-    }
-
-    return config;
   },
 
   // Enhanced security headers for Best Practices score

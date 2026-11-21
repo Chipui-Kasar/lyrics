@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import SearchResult from "./SearchResult";
 import { useLocalSearch } from "@/hooks/useLocalSearch";
+import CacheInitializer from "@/components/CacheInitializer";
 
 export default function SearchClient() {
   const searchParams = useSearchParams();
@@ -11,10 +12,15 @@ export default function SearchClient() {
   const { lyrics, artists, source } = useLocalSearch(query);
 
   return (
-    <SearchResult
-      params={query}
-      lyrics={{ lyrics, artists }}
-      source={source}
-    />
+    <>
+      {/* Syncs the full lyrics/artists list into IndexedDB for local-first
+          search. Only mounted here so other pages don't pay for it. */}
+      <CacheInitializer />
+      <SearchResult
+        params={query}
+        lyrics={{ lyrics, artists }}
+        source={source}
+      />
+    </>
   );
 }

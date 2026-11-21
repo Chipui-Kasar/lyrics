@@ -1,117 +1,29 @@
-"use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 
 interface PromotionalItem {
-  id: string;
   title: string;
   description: string;
-  imageUrl?: string;
-  linkUrl?: string;
-  buttonText?: string;
-  backgroundColor?: string;
-  textColor?: string;
-  isActive: boolean;
+  linkUrl: string;
+  buttonText: string;
+  backgroundColor: string;
 }
 
+// A single static promotion. This used to be an auto-rotating carousel, but
+// swapping to slide 2 after 5s produced a new, larger paint that Lighthouse
+// and Chrome's real-user metrics counted as the page's LCP (~5.8s on mobile).
+// To change the promotion, edit this object (e.g. swap in the "Submit Your
+// Lyrics" copy: linkUrl "/contribute", buttonText "Contribute").
+const PROMOTION: PromotionalItem = {
+  title: "🎵 New Release: Tangkhul Songs Collection",
+  description:
+    "Discover authentic traditional melodies preserved for generations",
+  linkUrl: "/lyrics",
+  buttonText: "Explore Now",
+  backgroundColor: "bg-gradient-to-r from-[#79095c] to-[#001fff]",
+};
+
 const PromotionalBanner = () => {
-  // Sample promotional data - you can modify this manually
-  const [promotionalItems] = useState<PromotionalItem[]>([
-    {
-      id: "1",
-      title: "🎵 New Release: Tangkhul Songs Collection",
-      description:
-        "Discover authentic traditional melodies preserved for generations",
-      imageUrl: "/placeholder.svg",
-      linkUrl: "/lyrics",
-      buttonText: "Explore Now",
-      backgroundColor: "bg-gradient-to-r from-[#79095c] to-[#001fff]",
-      textColor: "text-white",
-      isActive: false,
-    },
-    {
-      id: "2",
-      title: "🎤 Submit Your Lyrics & Win Prizes!",
-      description: "Help preserve our culture by contributing lyrics",
-      imageUrl: "/placeholder.svg",
-      linkUrl: "/contribute",
-      buttonText: "Contribute",
-      backgroundColor: "bg-gradient-to-r from-[#001fff] to-[#79095c]",
-      textColor: "text-white",
-      isActive: false,
-    },
-  ]);
-
-  // Carousel state
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const SLIDE_DURATION_MS = 5000;
-
-  // Auto-play carousel. The progress bar itself is a CSS animation (see
-  // JSX below) rather than a per-frame React state update — a 20ms
-  // setInterval driving setState was re-rendering this component (and
-  // everything under it: gradients, backdrop-blur buttons, SVGs) 50
-  // times/second continuously, which is expensive to composite and was
-  // competing with the main thread during scroll.
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1,
-      );
-    }, SLIDE_DURATION_MS);
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, promotionalItems.length, currentIndex]);
-
-  // Get the current promotional item
-  const activeItem = promotionalItems[currentIndex];
-
-  // Navigation functions
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === promotionalItems.length - 1 ? 0 : prevIndex + 1,
-    );
-  };
-
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? promotionalItems.length - 1 : prevIndex - 1,
-    );
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
-  const toggleAutoPlay = () => {
-    setIsAutoPlaying(!isAutoPlaying);
-  };
-
-  if (!activeItem) {
-    return (
-      <section
-        className="w-full bg-gray-50 dark:bg-gray-900 py-6 border-y border-gray-200 dark:border-gray-700"
-        style={{ minHeight: "200px" }}
-      >
-        <div className="container mx-auto px-4">
-          <div
-            className="relative overflow-hidden rounded-xl shadow-lg bg-gradient-to-r from-[#79095c] to-[#001fff] p-6 md:p-8"
-            style={{ minHeight: "168px" }}
-          >
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex-1 text-center md:text-left">
-                <div className="h-8 bg-white/20 rounded mb-2 max-w-sm"></div>
-                <div className="h-6 bg-white/20 rounded mb-4 max-w-md"></div>
-                <div className="h-10 w-32 bg-white/20 rounded"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const item = PROMOTION;
 
   return (
     <section
@@ -120,160 +32,46 @@ const PromotionalBanner = () => {
     >
       <div className="container mx-auto p-4 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
         <div
-          className={`relative overflow-hidden rounded-xl shadow-lg ${activeItem.backgroundColor} p-6 pb-14 md:p-8 transition-all duration-500 ease-in-out`}
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => setIsAutoPlaying(true)}
+          className={`relative overflow-hidden rounded-xl shadow-lg ${item.backgroundColor} p-6 md:p-8`}
         >
           {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-10" aria-hidden="true">
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
             <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-16 -translate-y-16"></div>
             <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/10 rounded-full translate-x-24 translate-y-24"></div>
           </div>
 
-          {/* Navigation Arrows — min 44×44px touch targets (WCAG 2.1 AA) */}
-          <button
-            onClick={goToPrevious}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white transition-all duration-300 hover:scale-110"
-            aria-label="Previous promotion"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-
-          <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white transition-all duration-300 hover:scale-110"
-            aria-label="Next promotion"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Content Section — side padding prevents text from being obscured by the arrow buttons */}
             <div className="flex-1 text-center md:text-left">
-              <p
-                className={`text-xl sm:text-2xl md:text-3xl font-bold mb-2 ${activeItem.textColor}`}
-              >
-                {activeItem.title}
+              <p className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-white">
+                {item.title}
               </p>
-              <p className={`text-lg mb-4 ${activeItem.textColor} opacity-90`}>
-                {activeItem.description}
+              <p className="text-lg mb-4 text-white opacity-90">
+                {item.description}
               </p>
 
-              {/* Call to Action Button */}
-              {activeItem.linkUrl && activeItem.buttonText && (
-                <Link
-                  href={activeItem.linkUrl}
-                  prefetch={true}
-                  rel="noopener noreferrer"
+              <Link
+                href={item.linkUrl}
+                className="inline-flex items-center px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-lg font-semibold text-white transition-all duration-300 hover:scale-105 transform"
+              >
+                {item.buttonText}
+                <svg
+                  className="ml-2 w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
-                  <button className="inline-flex items-center px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-lg font-semibold text-white transition-all duration-300 hover:scale-105 transform">
-                    {activeItem.buttonText}
-                    <svg
-                      className="ml-2 w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
-                </Link>
-              )}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </Link>
             </div>
           </div>
-
-          {/* Slide Indicators — min 44×44px touch target via padding (WCAG 2.1 AA) */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
-            {promotionalItems.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center"
-                aria-label={`Go to slide ${index + 1}`}
-              >
-                <span
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex
-                      ? "bg-white scale-110"
-                      : "bg-white/50 hover:bg-white/70"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* Auto-play Progress Bar — a CSS animation (GPU-composited,
-              off the React render loop) rather than a per-frame width
-              update. key={currentIndex} restarts it on every slide. */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 overflow-hidden">
-            <div
-              key={currentIndex}
-              className="h-full w-full bg-white/60 origin-left animate-[promo-progress_5000ms_linear_forwards]"
-              style={{
-                animationPlayState: isAutoPlaying ? "running" : "paused",
-              }}
-            />
-          </div>
-
-          {/* Decorative Elements */}
-          <div className="absolute top-4 right-4 flex space-x-1 opacity-60">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            <div
-              className="w-2 h-2 bg-white rounded-full animate-pulse"
-              style={{ animationDelay: "0.2s" }}
-            ></div>
-            <div
-              className="w-2 h-2 bg-white rounded-full animate-pulse"
-              style={{ animationDelay: "0.4s" }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Promotional Banner Indicator */}
-        <div className="text-center mt-2 flex items-center justify-center gap-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">
-            Featured Promotion
-          </span>
-          <span className="text-xs text-gray-400">
-            {currentIndex + 1} / {promotionalItems.length}
-          </span>
-          <button
-            onClick={toggleAutoPlay}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 ml-2"
-            aria-label={isAutoPlaying ? "Pause carousel" : "Play carousel"}
-          >
-            {isAutoPlaying ? "⏸️" : "▶️"}
-          </button>
         </div>
       </div>
     </section>

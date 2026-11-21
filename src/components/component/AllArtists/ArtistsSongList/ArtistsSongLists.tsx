@@ -7,48 +7,22 @@ import Link from "next/link";
 import { ILyrics } from "@/models/IObjects";
 import { cloudinaryWebP, generateArtistBio, slugMaker } from "@/lib/utils";
 
-import { useEffect, useMemo, useState } from "react";
-import {
-  getCachedArtistPage,
-  revalidateArtistPageCache,
-  seedArtistPageCache,
-} from "@/lib/cacheService";
+import { useEffect, useMemo } from "react";
+import { seedArtistPageCache } from "@/lib/cacheService";
 
 const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
   const initialSlug = slugMaker(lyrics[0]?.artistId?.name || "");
-  const [displayLyrics, setDisplayLyrics] = useState(lyrics || []);
+  // The server-rendered list is already fresh (ISR + on-demand revalidation),
+  // so render it as-is. Re-reading IndexedDB and refetching here used to
+  // replace the content after hydration, which pushed LCP out to ~4.7s.
+  const displayLyrics = useMemo(() => lyrics || [], [lyrics]);
 
   useEffect(() => {
     if (!initialSlug || lyrics.length === 0) return;
-    let cancelled = false;
-
+    // Keep the offline cache warm; this is a local write, no network.
     seedArtistPageCache(initialSlug, lyrics).catch((error) => {
       console.error("Failed to seed artist cache:", error);
     });
-
-    getCachedArtistPage(initialSlug)
-      .then(({ data }) => {
-        if (!cancelled && data.length > 0) {
-          setDisplayLyrics(data);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to read artist cache:", error);
-      });
-
-    revalidateArtistPageCache(initialSlug)
-      .then((fresh) => {
-        if (!cancelled && fresh.length > 0) {
-          setDisplayLyrics(fresh);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to refresh artist cache:", error);
-      });
-
-    return () => {
-      cancelled = true;
-    };
   }, [initialSlug, lyrics]);
 
   const sortedLyrics = useMemo(
@@ -136,7 +110,7 @@ const ArtistsSongLists = ({ lyrics }: { lyrics: ILyrics[] }) => {
                           lyric.title
                         )}_${slugMaker(lyric.artistId?.name)}`}
                         className="font-medium hover:underline"
-                        prefetch={true}
+                        prefetch={false}
                         rel="noopener noreferrer"
                       >
                         {lyric.title}

@@ -7,47 +7,21 @@ import { handleShare, sanitizeAndDeduplicateHTML, slugMaker } from "@/lib/utils"
 import { ILyrics } from "@/models/IObjects";
 import { Video } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import {
-  getCachedLyric,
-  revalidateLyricCache,
-  seedLyricCache,
-} from "@/lib/cacheService";
+import { useEffect, useMemo } from "react";
+import { seedLyricCache } from "@/lib/cacheService";
 
 const Lyrics: React.FC<{ lyrics: ILyrics }> = ({ lyrics }) => {
   if (!lyrics._id) notFound();
-  const [displayLyrics, setDisplayLyrics] = useState(lyrics);
+  // The server-rendered lyric is already fresh (ISR + on-demand revalidation),
+  // so render it as-is instead of re-reading IndexedDB and refetching, which
+  // used to replace the content after hydration and delay LCP.
+  const displayLyrics = lyrics;
 
   useEffect(() => {
-    let cancelled = false;
-
+    // Keep the offline cache warm; this is a local write, no network.
     seedLyricCache(lyrics).catch((error) => {
       console.error("Failed to seed lyric cache:", error);
     });
-
-    getCachedLyric(lyrics._id)
-      .then(({ data }) => {
-        if (!cancelled && data) {
-          setDisplayLyrics(data);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to read lyric cache:", error);
-      });
-
-    revalidateLyricCache(lyrics._id)
-      .then((fresh) => {
-        if (!cancelled && fresh) {
-          setDisplayLyrics(fresh);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to refresh lyric cache:", error);
-      });
-
-    return () => {
-      cancelled = true;
-    };
   }, [lyrics]);
 
   const sanitizedLyrics = useMemo(
