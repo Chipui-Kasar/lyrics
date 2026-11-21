@@ -94,6 +94,9 @@ export default function AllArtistsHydrated({ initialArtists }: Props) {
   return (
     <section className="container py-4 sm:py-8 md:py-10 m-auto">
       <PopularArtists
+        headingLevel="h1"
+        title="All Tangkhul Artists"
+        description="Browse every Tangkhul artist and singer on Tangkhul Lyrics."
         artists={artists
           .filter((artist: IArtists) => artist.name !== "Pamching Kasar")
           .sort((a, b) => a.name.localeCompare(b.name))}

@@ -6,18 +6,26 @@ import ArtistViewToggle from "./ArtistViewToggle";
 
 interface PopularArtistsProps {
   artists: IArtists[];
+  /** Use "h1" on pages where this block is the page's main heading. */
+  headingLevel?: "h1" | "h2";
+  title?: string;
+  description?: string;
 }
 
-const PopularArtists = ({ artists }: PopularArtistsProps) => {
+const PopularArtists = ({
+  artists,
+  headingLevel = "h2",
+  title = "Browse by Artists",
+  description = "Explore the most popular artists on our platform.",
+}: PopularArtistsProps) => {
+  const Heading = headingLevel;
   return (
     <div className="rounded-lg bg-muted p-6 shadow-lg bg-gradient-to-r from-[#79095c33] to-[#001fff29]">
       <ArtistViewToggle
         header={
           <>
-            <h2 className="text-2xl font-bold">Browse by Artists</h2>
-            <p className="mt-2 text-muted-foreground">
-              Explore the most popular artists on our platform.
-            </p>
+            <Heading className="text-2xl font-bold">{title}</Heading>
+            <p className="mt-2 text-muted-foreground">{description}</p>
           </>
         }
       >

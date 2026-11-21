@@ -6,7 +6,7 @@ import Footer from "@/components/component/Footer/Footer";
 import SessionProviderWrapper from "@/components/component/SessionProviderWrapper";
 import SessionValidator from "@/components/SessionValidator";
 import ErrorBoundary from "@/components/component/ErrorBoundary/ErrorBoundary";
-import Script from "next/script";
+import AdSenseLoader from "@/components/AdSenseLoader";
 import ClientShell from "@/components/component/ClientShell/ClientShell";
 import { NavigationLoader } from "@/components/NavigationLoader";
 
@@ -237,12 +237,7 @@ export default function RootLayout({
             }),
           }}
         />
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1569774903364815"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-          data-ad-frequency-hint="30s"
-        />
+        <AdSenseLoader />
         <SessionProviderWrapper>
           <SessionValidator>
             <ErrorBoundary>
