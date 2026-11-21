@@ -1,8 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { MouseEvent, ReactNode } from "react";
+import { ReactNode } from "react";
 
 interface NavigationLinkProps {
   href: string;
@@ -13,6 +10,11 @@ interface NavigationLinkProps {
   [key: string]: any;
 }
 
+/**
+ * Thin wrapper around next/link. It used to intercept clicks to show a
+ * full-screen overlay spinner; now Next's own navigation runs and the route's
+ * loading.tsx ring spinner is the only loading indicator.
+ */
 export function NavigationLink({
   href,
   children,
@@ -21,37 +23,8 @@ export function NavigationLink({
   rel,
   ...props
 }: NavigationLinkProps) {
-  const router = useRouter();
-
-  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    // Don't interfere with modified clicks
-    if (e.ctrlKey || e.shiftKey || e.metaKey || e.button !== 0) {
-      return;
-    }
-
-    // Don't interfere with external links
-    if (href.startsWith("http") || href.startsWith("//")) {
-      return;
-    }
-
-    e.preventDefault();
-
-    // Show loading spinner immediately
-    window.dispatchEvent(new Event("navigationStart"));
-
-    // Navigate
-    router.push(href);
-  };
-
   return (
-    <Link
-      href={href}
-      onClick={handleClick}
-      className={className}
-      prefetch={prefetch}
-      rel={rel}
-      {...props}
-    >
+    <Link href={href} className={className} prefetch={prefetch} rel={rel} {...props}>
       {children}
     </Link>
   );
