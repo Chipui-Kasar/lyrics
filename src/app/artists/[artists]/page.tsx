@@ -100,9 +100,18 @@ export default async function ArtistPage({
   const resolvedParams = await params; // Resolve the promise to get the actual params
   
   // Ensure the URL uses the proper slug format
+  // Next.js leaves non-ASCII params percent-encoded (e.g. "kashy%C3%A9alo"),
+  // while slugMaker returns the decoded form ("kashyéalo"). Compare decoded
+  // values, otherwise accented slugs redirect to themselves forever.
   const expectedSlug = slugMaker(resolvedParams.artists);
-  if (resolvedParams.artists !== expectedSlug) {
-    permanentRedirect(`/artists/${expectedSlug}`);
+  let currentSlug = resolvedParams.artists;
+  try {
+    currentSlug = decodeURIComponent(currentSlug);
+  } catch {
+    // keep raw value
+  }
+  if (currentSlug !== expectedSlug) {
+    permanentRedirect(`/artists/${encodeURIComponent(expectedSlug)}`);
   }
 
   const lyrics = await fetchFeaturedLyrics(expectedSlug);
